@@ -2,7 +2,6 @@ import os
 from pymk import error
 
 class BaseCondition(object):
-
     def __call__(self, task):
         pass
 
@@ -30,7 +29,3 @@ class FileDoesNotExists(BaseCondition):
 
     def __call__(self, task):
         return not os.path.exists(self.filename)
-
-class OutputFileDoesNotExists(BaseCondition):
-    def __call__(self, task):
-        return not os.path.exists(task.output_file)
