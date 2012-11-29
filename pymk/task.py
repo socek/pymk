@@ -1,3 +1,5 @@
+import os
+
 TASKS = {}
 
 class BaseTask(object):
@@ -5,25 +7,41 @@ class BaseTask(object):
     name = None
     output_file = None
 
-    def test_conditions(self):
+    @classmethod
+    def test_conditions(cls):
         make_rebuild = True
-        for condition in self.conditions:
-            make_rebuild = condition(self)
+        for condition in cls.conditions:
+            make_rebuild = condition(cls)
             if make_rebuild:
                 break
         return make_rebuild
 
-    def run(self):
-        if self.test_conditions():
-            print ' * Building "%s"' %(self.name)
-            self.build()
+    @classmethod
+    def run(cls):
+        if cls.test_conditions():
+            print ' * Building "%s"' %(cls.name)
+            cls.build()
             return True
         else:
-            print " * '%s' is up to date" %(self.name)
+            print " * '%s' is up to date" %(cls.name)
             return False
 
-    def build(self):
+    @classmethod
+    def build(cls):
         pass
+
+    @classmethod
+    def condition_FileExists(cls, task):
+        if os.path.exists(cls.output_file):
+            return False
+        else:
+            cls.run()
+            return True
+
+    @classmethod
+    def condition_FileChanged(cls, task):
+        from pymk.condition import FileChanged
+        return FileChanged(cls.output_file, cls)(task)
 
 def TaskDecorator(cls):
     if cls.name:
