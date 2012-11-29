@@ -11,17 +11,21 @@ class FileChanged(BaseCondition):
         self.task = task
 
     def __call__(self, task):
-        try:
-            if os.path.getmtime(self.filename) > os.path.getmtime(task.output_file) :
-                return True
-            else:
-                return False
-        except OSError:
-            if self.task:
-                self.task().run()
-                return True
-            else:
-                raise error.CouldNotCreateFile(self.filename)
+        if task.output_file:
+            try:
+                if os.path.getmtime(self.filename) > os.path.getmtime(task.output_file) :
+                    return True
+                else:
+                    return False
+            except OSError:
+                if self.task:
+                    self.task.run(False)
+                    return True
+                else:
+                    raise error.CouldNotCreateFile(self.filename)
+        else:
+            self.task.run(False)
+            return True
 
 class FileDoesNotExists(BaseCondition):
     def __init__(self, filename):

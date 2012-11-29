@@ -15,3 +15,11 @@ class TaskAlreadyExists(PymkError):
         return 'Task name already exists "%s".' %(self.task_name)
 
 class NoMkfileFound(Exception): pass
+
+class CommandError(PymkError):
+    def __init__(self, number, text):
+        self.number = number
+        self.text = text
+
+    def __str__(self):
+        return 'Command error (%d): %s' %(self.number, self.text)

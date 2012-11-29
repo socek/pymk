@@ -7,8 +7,15 @@ logger = logging.getLogger('pymk')
 
 class BaseTask(object):
     conditions = []
-    name = None
+    _name = None
     output_file = None
+
+    @classmethod
+    def name(cls):
+        if cls._name:
+            return cls.name
+        else:
+            return cls.__name__
 
     @classmethod
     def test_conditions(cls):
@@ -23,13 +30,14 @@ class BaseTask(object):
         return make_rebuild
 
     @classmethod
-    def run(cls):
+    def run(cls, log_uptodate = True):
         if cls.test_conditions():
-            logger.info(" * Building '%s'" %(cls.name))
+            logger.info(" * Building '%s'" %(cls.name()))
             cls.build()
             return True
         else:
-            logger.info(" * '%s' is up to date" %(cls.name))
+            if log_uptodate:
+                logger.info(" * '%s' is up to date" %(cls.name()))
             return False
 
     @classmethod
@@ -61,10 +69,7 @@ def AddTask(cls):
     """
     Adds task to task list."
     """
-    if cls.name:
-        name = cls.name
-    else:
-        name = cls.__name__
+    name = cls.name()
     if TASKS.has_key(name):
         raise TaskAlreadyExists(name)
     TASKS[name] = cls

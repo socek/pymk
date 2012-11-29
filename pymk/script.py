@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 from pymk.task import TASKS
-from pymk.error import NoMkfileFound
+from pymk.error import NoMkfileFound, CommandError
 
 def run():
     def start_loggin():
@@ -32,3 +32,5 @@ def run():
         parse_command()
     except NoMkfileFound:
         return 1
+    except CommandError:
+        return 2
