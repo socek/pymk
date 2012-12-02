@@ -19,15 +19,21 @@ class BaseTask(object):
 
     @classmethod
     def test_conditions(cls):
-        make_rebuild = True
-        if cls.output_file:
-            if not os.path.exists(cls.output_file):
-                return True
+        make_rebuild = False
         for condition in cls.conditions:
-            make_rebuild = condition(cls)
-            if make_rebuild:
-                break
-        return make_rebuild
+            cond = condition(cls)
+            make_rebuild = make_rebuild or cond
+        if make_rebuild:
+            return make_rebuild
+        else:
+            if cls.output_file:
+                if not os.path.exists(cls.output_file):
+                    return True
+                else:
+                    return False
+            if len(cls.conditions) == 0:
+                return True
+
 
     @classmethod
     def run(cls, log_uptodate = True):
@@ -58,12 +64,12 @@ class BaseTask(object):
 
     @classmethod
     def condition_FileChanged(cls, task):
+        ret = cls.run(False)
         if cls.output_file:
             from pymk.condition import FileChanged
             return FileChanged(cls.output_file, cls)(task)
         else:
-            cls.run()
-            return True
+            return ret
 
 def AddTask(cls):
     """

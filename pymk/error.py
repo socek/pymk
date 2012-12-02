@@ -23,3 +23,10 @@ class CommandError(PymkError):
 
     def __str__(self):
         return 'Command error (%d): %s' %(self.number, self.text)
+
+class BadTaskName(Exception):
+    def __init__(self, taskname):
+        self.taskname = taskname
+
+    def __str__(self):
+        return 'Bad task name: %s' %(self.taskname)

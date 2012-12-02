@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 from pymk.task import TASKS
-from pymk.error import NoMkfileFound, CommandError
+from pymk.error import NoMkfileFound, CommandError, BadTaskName
 
 def run():
     cmd = {
@@ -36,7 +36,10 @@ def run():
             logger.info(text)
         else:
             for task in cmd['tasks']:
-                TASKS[task]().run()
+                try:
+                    TASKS[task]().run()
+                except KeyError:
+                    raise BadTaskName(task)
     #---------------------------------------------------------------------------
     try:
         parse_command()
@@ -44,7 +47,12 @@ def run():
         append_python_path()
         import_mkfile()
         run_tasks()
-    except NoMkfileFound:
+    except NoMkfileFound, er:
+        logger.info(er)
         return 1
-    except CommandError:
+    except CommandError, er:
+        logger.info(er)
         return 2
+    except BadTaskName, er:
+        logger.info(er)
+        return 3
