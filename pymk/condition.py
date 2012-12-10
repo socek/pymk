@@ -2,10 +2,15 @@ import os
 from pymk import error
 
 class BaseCondition(object):
+    """Base of all conditions."""
     def __call__(self, task):
-        pass
+        """__call__(self, task)
+        Method that will be called to check if condition
+        """
 
 class FileChanged(BaseCondition):
+    """Condition returns true if file provided was changed. If task argument is
+    provided, then run that task if it should be done."""
     def __init__(self, filename, task=None):
         self.filename = filename
         self.task = task
@@ -31,6 +36,8 @@ class FileChanged(BaseCondition):
             return True
 
 class FileDoesNotExists(BaseCondition):
+    """Condition returns ture if file does not exists."""
+
     def __init__(self, filename):
         self.filename = filename
 

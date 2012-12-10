@@ -6,19 +6,27 @@ TASKS = {}
 logger = logging.getLogger('pymk')
 
 class BaseTask(object):
+    """Base of all taks."""
     conditions = []
     _name = None
     output_file = None
 
     @classmethod
     def name(cls):
+        """name() -> str
+        Returns name of the tasks provided by class value _name, or just classname if _name == None.
+        """
         if cls._name:
-            return cls.name
+            return cls._name
         else:
             return cls.__name__
 
     @classmethod
     def test_conditions(cls):
+        """test_conditions() -> bool
+        Test all condition of the task and rebuild the dependency tasks.
+        Return True if this task needs to be rebuilded.
+        """
         make_rebuild = False
         for condition in cls.conditions:
             cond = condition(cls)
@@ -37,6 +45,9 @@ class BaseTask(object):
 
     @classmethod
     def run(cls, log_uptodate = True):
+        """run(log_uptodate = True): -> bool
+        Test condition of this task, and rebuild it if nessesery.
+        """
         if cls.test_conditions():
             logger.info(" * Building '%s'" %(cls.name()))
             cls.build()
@@ -48,10 +59,15 @@ class BaseTask(object):
 
     @classmethod
     def build(cls):
-        pass
+        """build() -> None
+        What to do with this task to rebuild it. This method needs to be reimplemented after inheriting.
+        """
 
     @classmethod
     def condition_FileExists(cls, task):
+        """condition_FileExists(cls, task) -> bool
+        Condition that will run this task if not crated before.
+        """
         if cls.output_file:
             if os.path.exists(cls.output_file):
                 return False
@@ -64,6 +80,9 @@ class BaseTask(object):
 
     @classmethod
     def condition_FileChanged(cls, task):
+        """condition_FileChanged(cls, task) -> bool
+        Condition that will run this task if nessesery and return True if file is newwer then task.output_file.
+        """
         ret = cls.run(False)
         if cls.output_file:
             from pymk.condition import FileChanged
@@ -73,7 +92,7 @@ class BaseTask(object):
 
 def AddTask(cls):
     """
-    Adds task to task list."
+    Decorator that adds task to task list.
     """
     name = cls.name()
     if TASKS.has_key(name):
