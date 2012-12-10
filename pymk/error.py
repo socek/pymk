@@ -1,4 +1,6 @@
-class PymkError(Exception): pass
+class PymkError(Exception):
+    """Base exception for pymk. Do nothing special.
+    """
 
 class CouldNotCreateFile(PymkError):
     """Raised when there is a file in condition, but mkfile do not defines how to build it."""

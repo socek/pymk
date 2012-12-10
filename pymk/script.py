@@ -6,6 +6,14 @@ from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentVa
 import argparse
 
 def run():
+    """run() -> error code
+    Parse command line args and do the task provided. More info with inputing "pymk -h"
+
+    @return:
+     1. no mkfile.py found or it is corrupted
+     2. error in external program
+     3. wrong task name
+    """
     def parse_command():
         parser = argparse.ArgumentParser()
         parser.add_argument('task', nargs='*',
