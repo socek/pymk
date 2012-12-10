@@ -2,54 +2,74 @@ import os
 import sys
 import logging
 from pymk.task import TASKS
-from pymk.error import NoMkfileFound, CommandError, BadTaskName
+from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue
+import argparse
 
 def run():
-    cmd = {
-        'tasks' : [],
-        'options' : [],
-    }
     def parse_command():
-        for element in sys.argv[1:]:
-            if element.startswith('-'):
-                cmd['options'].append(element[1:])
-            else:
-                cmd['tasks'].append(element)
-    def start_loggin():
+        parser = argparse.ArgumentParser()
+        parser.add_argument('task', nargs='*',
+                            help='List of task to do.')
+        parser.add_argument('-l', '--log', dest='log', default='info',
+                            help='Ser log level from "debug" or "info".')
+        parser.add_argument('-a', '--all', dest='all', action='store_true',
+                            help='Show all tasks avalible.')
+        return parser.parse_args()
+
+    def start_loggin(args):
         FORMAT = '%(message)s'
-        if 'd' in cmd['options']:
+        if args.log == 'debug':
             logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-        else:
+        elif args.log == 'info':
             logging.basicConfig(level=logging.INFO, format=FORMAT)
+        else:
+            raise WrongArgumentValue('Wrong argument for log! Avalible are: "debug" and "info".')
         return logging.getLogger('pymk')
+
     def append_python_path():
         sys.path.append(os.getcwd())
+
     def import_mkfile():
         if not os.path.exists('mkfile.py'):
-            logger.info("No mkfile.py file found!")
+            print "No mkfile.py file found!"
             raise NoMkfileFound()
         import mkfile
-    def run_tasks():
-        if len(sys.argv) == 1:
+
+    def run_tasks(args):
+        def list_all_tasks():
             text = 'Avalible tasks:\n\t'
             text += '\n\t'.join(TASKS.keys())
             logger.info(text)
-        else:
-            for task in cmd['tasks']:
+        def run_default_task_or_list_all_tasks():
+            try:
+                import mkfile
+                mkfile._DEFAULT.run()
+            except AttributeError:
+                list_all_tasks()
+        def run_all_inputet_tasks():
+            for task in args.task:
                 try:
-                    TASKS[task]().run()
+                    TASKS[task].run()
                 except KeyError:
                     raise BadTaskName(task)
+        #-----------------------------------------------------------------------
+        if args.all:
+            list_all_tasks()
+        elif len(args.task) == 0:
+            run_default_task_or_list_all_tasks()
+        else:
+            run_all_inputet_tasks()
     #---------------------------------------------------------------------------
     try:
-        parse_command()
-        logger = start_loggin()
         append_python_path()
         import_mkfile()
-        run_tasks()
     except NoMkfileFound, er:
-        logger.info(er)
         return 1
+
+    try:
+        args = parse_command()
+        logger = start_loggin(args)
+        run_tasks(args)
     except CommandError, er:
         logger.info(er)
         return 2

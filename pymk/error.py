@@ -30,3 +30,7 @@ class BadTaskName(Exception):
 
     def __str__(self):
         return 'Bad task name: %s' %(self.taskname)
+
+class WrongArgumentValue(Exception):
+    def __init__(self, description):
+        self.description = description
