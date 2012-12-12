@@ -2,8 +2,14 @@ import os
 import logging
 from pymk.error import TaskAlreadyExists
 
-TASKS = {}
 logger = logging.getLogger('pymk')
+
+class TaskData(object):
+    TASKS = None
+
+    @classmethod
+    def init(cls):
+        cls.TASKS = {}
 
 class BaseTask(object):
     """Base of all taks."""
@@ -95,7 +101,7 @@ def AddTask(cls):
     Decorator that adds task to task list.
     """
     name = cls.name()
-    if name in TASKS:
+    if name in TaskData.TASKS:
         raise TaskAlreadyExists(name)
-    TASKS[name] = cls
+    TaskData.TASKS[name] = cls
     return cls

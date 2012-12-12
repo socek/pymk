@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from pymk.task import TASKS
+from pymk.task import TaskData
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue
 import argparse
 
@@ -21,18 +21,20 @@ def import_mkfile():
         log.error("No mkfile.py file found!")
         raise NoMkfileFound()
     if 'mkfile' in sys.modules:
-        import mkfile
-        reload(mkfile)
+        module = __import__("mkfile", globals(), locals())
+        reload(module)
+    else:
+        module = __import__("mkfile", globals(), locals())
+    return module
 
-def run_tasks(args):
+def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n\t'
-        text += '\n\t'.join(TASKS.keys())
+        text += '\n\t'.join(TaskData.TASKS.keys())
         log.info(text)
         return 'list all'
     def run_default_task_or_list_all_tasks():
         try:
-            import mkfile
             mkfile._DEFAULT.run()
             return 'run default'
         except AttributeError:
@@ -40,10 +42,10 @@ def run_tasks(args):
     def run_all_inputet_tasks():
         for task in args.task:
             try:
-                TASKS[task].run()
+                TaskData.TASKS[task].run()
             except KeyError:
                 raise BadTaskName(task)
-        return 'all tasks'
+        return 'run tasks'
     #-----------------------------------------------------------------------
     if args.all:
         return list_all_tasks()
@@ -84,12 +86,13 @@ def run():
         args = parse_command()
         start_loggin(args)
         append_python_path()
-        import_mkfile()
+        TaskData.init()
+        module = import_mkfile()
     except NoMkfileFound, er:
         return 1
 
     try:
-        run_tasks(args)
+        run_tasks(module, args)
     except CommandError, er:
         log.info(er)
         return 2
