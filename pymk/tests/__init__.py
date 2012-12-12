@@ -4,6 +4,8 @@ import logging
 
 all_test_cases = [
     task.TaskTest,
+    task.FileDoesNotExistsConditionTest,
+    task.FileChangedConditionTest,
 ]
 
 def get_all_test_suite():

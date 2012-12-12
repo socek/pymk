@@ -42,3 +42,5 @@ class WrongArgumentValue(PymkError):
     """Raised when argument has a list of values, but inputet value is not in this list."""
     def __init__(self, description):
         self.description = description
+
+class TaskMustHaveOutputFile(PymkError): pass

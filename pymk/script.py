@@ -99,3 +99,6 @@ def run():
     except BadTaskName, er:
         log.info(er)
         return 3
+    except TaskMustHaveOutputFile:
+        log.info
+        return 4

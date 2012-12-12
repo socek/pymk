@@ -1,8 +1,12 @@
 from pymk.task import BaseTask, AddTask
-
+from pymk.condition import FileDoesNotExists
 
 @AddTask
-class task_0(BaseTask):
+class task_2(BaseTask):
+
+    conditions = [
+        FileDoesNotExists('test.txt'),
+    ]
 
     @classmethod
     def build(cls):
@@ -10,5 +14,3 @@ class task_0(BaseTask):
         fp.write(cls.__name__)
         fp.write('\n')
         fp.close()
-
-_DEFAULT=task_0

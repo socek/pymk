@@ -30,10 +30,12 @@ class FileChanged(BaseCondition):
                     else:
                         raise error.CouldNotCreateFile(self.filename)
             else:
-                return True
+                if os.path.exists(self.filename):
+                    return True
+                else:
+                    raise error.CouldNotCreateFile(self.filename)
         else:
-            self.task.run(False)
-            return True
+            raise error.TaskMustHaveOutputFile()
 
 class FileDoesNotExists(BaseCondition):
     """Condition returns ture if file does not exists."""

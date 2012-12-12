@@ -2,7 +2,7 @@ from pymk.task import BaseTask, AddTask
 
 
 @AddTask
-class task(BaseTask):
+class task_1(BaseTask):
 
     @classmethod
     def build(cls):
