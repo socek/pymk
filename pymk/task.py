@@ -95,7 +95,7 @@ def AddTask(cls):
     Decorator that adds task to task list.
     """
     name = cls.name()
-    if TASKS.has_key(name):
+    if name in TASKS:
         raise TaskAlreadyExists(name)
     TASKS[name] = cls
     return cls
