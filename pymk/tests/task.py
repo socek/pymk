@@ -32,11 +32,10 @@ class TaskTest(PymkTestCase):
         self._template('one_task', 'mkfile.py')
         self._import_mkfile()
         self._add_task('task_1')
-        self._pymk_runtask()
-        self._pymk_runtask()
-        self._pymk_runtask()
+        self._pymk_runtask(['task_1'])
+        self._pymk_runtask(['task_1', 'task_1'])
+        self._pymk_runtask(['task_1', 'task_1', 'task_1'])
 
-        self._check_output_file(['task_1', 'task_1', 'task_1'])
 
 class FileDoesNotExistsConditionTest(PymkTestCase):
     def test_make(self):
@@ -44,14 +43,9 @@ class FileDoesNotExistsConditionTest(PymkTestCase):
         self._import_mkfile()
 
         self._args.task.append('task_2')
-        self._pymk_runtask()
-        self._check_output_file(['task_2'])
-
-        self._pymk_runtask()
-        self._check_output_file(['task_2', 'task_2'])
-
-        self._pymk_runtask()
-        self._check_output_file(['task_2', 'task_2', 'task_2'])
+        self._pymk_runtask(['task_2'])
+        self._pymk_runtask(['task_2', 'task_2'])
+        self._pymk_runtask(['task_2', 'task_2', 'task_2'])
 
     def test_uptodate(self):
         self._template('one_task_condition_1', 'mkfile.py')
@@ -59,10 +53,8 @@ class FileDoesNotExistsConditionTest(PymkTestCase):
         self._import_mkfile()
 
         self._add_task('task_2')
-        self._pymk_runtask()
-        self._check_output_file([])
-        self._pymk_runtask()
-        self._check_output_file([])
+        self._pymk_runtask([])
+        self._pymk_runtask([])
 
 class FileChangedConditionTest(PymkTestCase):
 
@@ -101,10 +93,8 @@ class FileChangedConditionTest(PymkTestCase):
         self._add_task('task_4')
 
         extra.touch('test.txt')
-        self._pymk_runtask()
-        self._check_output_file(['task_4'])
-        self._pymk_runtask()
-        self._check_output_file(['task_4'])
+        self._pymk_runtask(['task_4'])
+        self._pymk_runtask(['task_4'])
 
     def test_FileChanged_condition_make_twice(self):
         self._template('one_task_condition_3', 'mkfile.py')
@@ -113,14 +103,11 @@ class FileChangedConditionTest(PymkTestCase):
         self._add_task('task_4')
 
         extra.touch('test.txt')
-        self._pymk_runtask()
-        self._check_output_file(['task_4'])
+        self._pymk_runtask(['task_4'])
 
         sleep(0.01)
         extra.touch('test.txt')
-        self._pymk_runtask()
-        self._check_output_file(['task_4', 'task_4'])
+        self._pymk_runtask(['task_4', 'task_4'])
 
         sleep(0.01)
-        self._pymk_runtask()
-        self._check_output_file(['task_4', 'task_4'])
+        self._pymk_runtask(['task_4', 'task_4'])

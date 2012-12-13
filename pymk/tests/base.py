@@ -48,8 +48,9 @@ class PymkTestCase(unittest.TestCase):
     def _pymk(self):
         return run_tasks(self._mkfile, self._args)
 
-    def _pymk_runtask(self):
+    def _pymk_runtask(self, output_file):
         self.assertEqual(self._pymk(), 'run tasks')
+        self._check_output_file(output_file)
 
     def _check_output_file(self, test_data):
         try:
