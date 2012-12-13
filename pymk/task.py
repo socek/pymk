@@ -1,6 +1,6 @@
 import os
 import logging
-from pymk.error import TaskAlreadyExists
+from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile
 
 logger = logging.getLogger('pymk')
 
@@ -81,8 +81,7 @@ class BaseTask(object):
                 cls.run()
                 return True
         else:
-            cls.run()
-            return True
+            raise TaskMustHaveOutputFile(cls.name())
 
     @classmethod
     def condition_FileChanged(cls, task):
@@ -90,11 +89,8 @@ class BaseTask(object):
         Condition that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
         ret = cls.run(False)
-        if cls.output_file:
-            from pymk.condition import FileChanged
-            return FileChanged(cls.output_file, cls)(task)
-        else:
-            return ret
+        from pymk.condition import FileChanged
+        return FileChanged(cls.output_file, cls)(task) or ret
 
 def AddTask(cls):
     """

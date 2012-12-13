@@ -7,6 +7,8 @@ all_test_cases = [
     task.TaskTest,
     condition.FileDoesNotExistsConditionTest,
     condition.FileChangedConditionTest,
+    task.TaskConditionFileExistsTest,
+    task.TaskConditionFileChangedTest,
 ]
 
 def get_all_test_suite():

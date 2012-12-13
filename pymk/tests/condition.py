@@ -35,7 +35,7 @@ class FileChangedConditionTest(PymkTestCase):
 
     def test_FileChanged_condition_make_fail_2(self):
         self._template('one_task_condition_2', 'mkfile.py')
-        extra.touch('test.txt')
+        self.touch('test.txt', None)
         self._import_mkfile()
 
         self._add_task('task_3')
@@ -58,7 +58,7 @@ class FileChangedConditionTest(PymkTestCase):
 
         self._add_task('task_4')
 
-        extra.touch('test.txt')
+        self.touch('test.txt', None)
         self._pymk_runtask(['task_4'])
         self._pymk_runtask(['task_4'])
 
@@ -68,12 +68,11 @@ class FileChangedConditionTest(PymkTestCase):
 
         self._add_task('task_4')
 
-        extra.touch('test.txt')
+        self.touch('test.txt', None)
         self._pymk_runtask(['task_4'])
 
-        sleep(0.01)
-        extra.touch('test.txt')
+        self.touch('test.txt')
         self._pymk_runtask(['task_4', 'task_4'])
 
-        sleep(0.01)
+        sleep(0.001)
         self._pymk_runtask(['task_4', 'task_4'])

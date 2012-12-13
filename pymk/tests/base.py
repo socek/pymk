@@ -4,8 +4,10 @@ import sys
 import shutil
 import tempfile
 import logging
+from time import sleep
 
 from pymk.script import import_mkfile, run_tasks, TaskData
+from pymk.extra import touch
 
 class ArgsMockup(object):
     def __init__(self):
@@ -61,3 +63,11 @@ class PymkTestCase(unittest.TestCase):
 
     def _add_task(self, task):
         self._args.task.append(task)
+
+    def _remove_task(self, task):
+        self._args.task.remove(task)
+
+    def touch(self, path, wait=0.005):
+        if wait:
+            sleep(wait)
+        touch(path)

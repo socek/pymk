@@ -17,6 +17,8 @@ class FileChanged(BaseCondition):
 
     def __call__(self, task):
         if task.output_file:
+            if self.task and not self.task.output_file:
+                raise error.TaskMustHaveOutputFile(self.task.name())
             if os.path.exists(task.output_file):
                 try:
                     if os.path.getmtime(self.filename) > os.path.getmtime(task.output_file) :
@@ -35,7 +37,7 @@ class FileChanged(BaseCondition):
                 else:
                     raise error.CouldNotCreateFile(self.filename)
         else:
-            raise error.TaskMustHaveOutputFile()
+            raise error.TaskMustHaveOutputFile(task.name())
 
 class FileDoesNotExists(BaseCondition):
     """Condition returns ture if file does not exists."""
