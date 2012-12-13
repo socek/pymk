@@ -1,11 +1,12 @@
 import unittest
-import task
 import logging
+import task
+import condition
 
 all_test_cases = [
     task.TaskTest,
-    task.FileDoesNotExistsConditionTest,
-    task.FileChangedConditionTest,
+    condition.FileDoesNotExistsConditionTest,
+    condition.FileChangedConditionTest,
 ]
 
 def get_all_test_suite():
@@ -18,4 +19,3 @@ def get_all_test_suite():
             suite.loadTestsFromTestCase(test_case)
         )
     return unittest.TestSuite(prepered_all_test_cases)
-
