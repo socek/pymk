@@ -44,8 +44,10 @@ class WrongArgumentValue(PymkError):
         self.description = description
 
 class TaskMustHaveOutputFile(PymkError):
+    """Raised when task has no output_file setted, but the condition assigned to
+    that task (or to task that this task is assigned as dependency) need this value."""
     def __init__(self, name):
         self.name = name
 
     def __str__(self):
-        return self.name
+        return 'Taks must have output_file setted: %s' %(self.name)

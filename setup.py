@@ -14,7 +14,6 @@ if __name__ == '__main__':
         description="New view of make.",
         author='Dominik "Socek" Długajczyk',
         author_email='msocek@gmail.com',
-        license='GNU GPL',
         packages=find_packages(),
         install_requires=install_requires,
         dependency_links=dependency_links,

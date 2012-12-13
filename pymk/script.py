@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 from pymk.task import TaskData
-from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue
+from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile
 import argparse
 
 log = logging.getLogger('pymk')
@@ -18,7 +18,6 @@ def append_python_path(cwd = None):
 
 def import_mkfile():
     if not os.path.exists('mkfile.py'):
-        log.error("No mkfile.py file found!")
         raise NoMkfileFound()
     if 'mkfile' in sys.modules:
         module = __import__("mkfile", globals(), locals())
@@ -62,6 +61,8 @@ def run():
      1. no mkfile.py found or it is corrupted
      2. error in external program
      3. wrong task name
+     4. provided task has no output_file, which is needed becouse of conditions
+     5. could not create a file that is in depedency
     """
     def parse_command():
         parser = argparse.ArgumentParser()
@@ -89,16 +90,20 @@ def run():
         TaskData.init()
         module = import_mkfile()
     except NoMkfileFound, er:
+        log.error("No mkfile.py file found!")
         return 1
 
     try:
         run_tasks(module, args)
     except CommandError, er:
-        log.info(er)
+        log.error(er)
         return 2
     except BadTaskName, er:
-        log.info(er)
+        log.error(er)
         return 3
-    except TaskMustHaveOutputFile:
-        log.info
+    except TaskMustHaveOutputFile, er:
+        log.error(er)
         return 4
+    except CouldNotCreateFile, er:
+        log.error(er)
+        return 5

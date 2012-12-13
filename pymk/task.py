@@ -5,10 +5,12 @@ from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile
 logger = logging.getLogger('pymk')
 
 class TaskData(object):
+    """Info about collected tasks."""
     TASKS = None
 
     @classmethod
     def init(cls):
+        """Init new task collection."""
         cls.TASKS = {}
 
 class BaseTask(object):
