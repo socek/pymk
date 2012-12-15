@@ -11,6 +11,7 @@ all_test_cases = [
     task.TaskConditionFileExistsTest,
     task.TaskConditionFileChangedTest,
     extra.TouchTest,
+    extra.FindFilesTest,
 ]
 
 def get_all_test_suite():
