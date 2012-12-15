@@ -77,6 +77,7 @@ class BaseTask(object):
         """
         if cls.output_file:
             if os.path.exists(cls.output_file):
+                cls.run(False)
                 return False
             else:
                 cls.run()

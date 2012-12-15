@@ -111,7 +111,7 @@ class TaskConditionFileExistsTest(PymkTestCase):
         self._pymk_runtask(['task_7c', 'task_7b', 'task_7a'])
 
         self.touch('c.out')
-        self._pymk_runtask(['task_7c', 'task_7b', 'task_7a'])
+        self._pymk_runtask(['task_7c', 'task_7b', 'task_7a', 'task_7b'])
 
         self._remove_task('task_7a')
         self._add_task('task_7b')
