@@ -64,3 +64,18 @@ class FindFilesTest(PymkTestCase):
             './first/file3.test'
         ]
         self.assertEqual(should_found, list(extra.find_files('.', '*.test')))
+
+class RunCmdTest(PymkTestCase):
+
+    def test_success(self):
+        ret = extra.run_cmd(['ls -al'])
+        self.assertEqual(file, type(ret[0]))
+        self.assertEqual(file, type(ret[1]))
+
+    def test_show_output(self):
+        ret = extra.run_cmd(['ls', '*.py'], show_output=True)
+        self.assertEqual(None, ret[0])
+        self.assertEqual(None, ret[1])
+
+    def test_fail(self):
+        self.assertRaises(Perror.CommandError, extra.run_cmd, ['ls *.py'])
