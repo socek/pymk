@@ -19,8 +19,8 @@ class FileDoesNotExistsConditionTest(PymkTestCase):
         self._import_mkfile()
 
         self._add_task('task_2')
-        self._pymk_runtask([])
-        self._pymk_runtask([])
+        self._pymk_runtask(['task_2'])
+        self._pymk_runtask(['task_2', 'task_2'])
 
 class FileChangedConditionTest(PymkTestCase):
 

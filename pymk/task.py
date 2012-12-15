@@ -47,8 +47,7 @@ class BaseTask(object):
                     return True
                 else:
                     return False
-            if len(cls.conditions) == 0:
-                return True
+            return True
 
 
     @classmethod
