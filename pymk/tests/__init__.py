@@ -2,6 +2,7 @@ import unittest
 import logging
 import task
 import condition
+import extra
 
 all_test_cases = [
     task.TaskTest,
@@ -9,6 +10,7 @@ all_test_cases = [
     condition.FileChangedConditionTest,
     task.TaskConditionFileExistsTest,
     task.TaskConditionFileChangedTest,
+    extra.TouchTest,
 ]
 
 def get_all_test_suite():
