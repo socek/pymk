@@ -3,8 +3,8 @@ from pymk import error
 
 class BaseDependency(object):
     """Base of all dependencys."""
-    def __call__(self, task):
-        """__call__(self, task) -> bool
+    def __call__(self, task, dependency_force=False):
+        """__call__(self, task, dependency_force) -> bool
         Method that will be called to check if dependency need to be rebuilded (if
         it is a task), and return True if task assigned will have to rebuild.
         """
@@ -16,7 +16,9 @@ class FileChanged(BaseDependency):
         self.filename = filename
         self.task = task
 
-    def __call__(self, task):
+    def __call__(self, task, dependency_force=False):
+        if dependency_force:
+            return True
         if task.output_file:
             if self.task and not self.task.output_file:
                 raise error.TaskMustHaveOutputFile(self.task.name())
@@ -46,11 +48,13 @@ class FileDoesNotExists(BaseDependency):
     def __init__(self, filename):
         self.filename = filename
 
-    def __call__(self, task):
+    def __call__(self, task, dependency_force=False):
+        if dependency_force:
+            return True
         return not os.path.exists(self.filename)
 
 class AlwaysRebuild(BaseDependency):
     """Dependency will always make a task rebuild."""
 
-    def __call__(self, task):
+    def __call__(self, task, dependency_force=False):
         return True

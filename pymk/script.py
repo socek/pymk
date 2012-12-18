@@ -34,14 +34,16 @@ def run_tasks(mkfile, args):
         return 'list all'
     def run_default_task_or_list_all_tasks():
         try:
-            mkfile._DEFAULT.run(force=args.force)
+            mkfile._DEFAULT.run(force=args.force,
+                                dependency_force=args.dependency_force)
             return 'run default'
         except AttributeError:
             return list_all_tasks()
     def run_all_inputet_tasks():
         for task in args.task:
             try:
-                TaskData.TASKS[task].run(force=args.force)
+                TaskData.TASKS[task].run(force=args.force,
+                                         dependency_force=args.dependency_force)
             except KeyError:
                 raise BadTaskName(task)
         return 'run tasks'
@@ -74,6 +76,8 @@ def run():
                             help='Show all tasks avalible.')
         parser.add_argument('-f', '--force', dest='force', action='store_true',
                             help='Force task to rebuild.')
+        parser.add_argument('-d', '--dependency-force', dest='dependency_force', action='store_true',
+                            help='Force depedency to rebuild (use only with --force).')
         return parser.parse_args()
 
     def start_loggin(args):

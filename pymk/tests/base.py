@@ -14,6 +14,7 @@ class ArgsMockup(object):
         self.all = False
         self.task = []
         self.force = False
+        self.dependency_force = False
 
 class PymkTestCase(unittest.TestCase):
     def setUp(self):

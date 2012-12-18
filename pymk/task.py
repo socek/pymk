@@ -30,14 +30,14 @@ class BaseTask(object):
             return cls.__name__
 
     @classmethod
-    def test_dependencys(cls):
+    def test_dependencys(cls, dependency_force=False):
         """test_dependencys() -> bool
         Test all dependency of the task and rebuild the dependency tasks.
         Return True if this task needs to be rebuilded.
         """
         make_rebuild = False
         for dependency in cls.dependencys:
-            cond = dependency(cls)
+            cond = dependency(cls, dependency_force=dependency_force)
             make_rebuild = make_rebuild or cond
         if make_rebuild:
             return make_rebuild
@@ -53,11 +53,11 @@ class BaseTask(object):
 
 
     @classmethod
-    def run(cls, log_uptodate=True, force=False):
+    def run(cls, log_uptodate=True, force=False, dependency_force=False):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
-        if force or cls.test_dependencys():
+        if cls.test_dependencys(force and dependency_force) or force:
             logger.info(" * Building '%s'" %(cls.name()))
             cls.build()
             return True
@@ -73,10 +73,12 @@ class BaseTask(object):
         """
 
     @classmethod
-    def dependency_FileExists(cls, task):
+    def dependency_FileExists(cls, task, dependency_force=False):
         """dependency_FileExists(cls, task) -> bool
         Dependency that will run this task if not crated before.
         """
+        if dependency_force:
+            cls.run(True, True, True)
         if cls.output_file:
             if os.path.exists(cls.output_file):
                 cls.run(False)
@@ -88,10 +90,12 @@ class BaseTask(object):
             raise TaskMustHaveOutputFile(cls.name())
 
     @classmethod
-    def dependency_FileChanged(cls, task):
+    def dependency_FileChanged(cls, task, dependency_force=False):
         """dependency_FileChanged(cls, task) -> bool
         Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
+        if dependency_force:
+            cls.run(True, True, True)
         ret = cls.run(False)
         from pymk.dependency import FileChanged
         return FileChanged(cls.output_file, cls)(task) or ret

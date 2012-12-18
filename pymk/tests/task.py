@@ -49,7 +49,9 @@ class TaskTest(PymkTestCase):
         self.touch('a.out')
         self._pymk_runtask(['task_5'])
 
-    def test_forcing(self):
+class TaskForcing(PymkTestCase):
+
+    def test_forcing_file_changed(self):
         self._template('three_task_with_force', 'mkfile.py')
         self._import_mkfile()
         self._add_task('task_17a')
@@ -60,6 +62,44 @@ class TaskTest(PymkTestCase):
         self._args.force = True
         self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17a'])
         self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17a', 'task_17a'])
+
+    def test_dependency_forcing_file_changed(self):
+        self._template('three_task_with_force', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_17a')
+
+        self._args.dependency_force = True
+        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a'])
+        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a'])
+
+        self._args.force = True
+        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a'])
+        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a'])
+
+    def test_forcing_file_exist(self):
+        self._template('three_task_with_force_2', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_18a')
+
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a'])
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a'])
+
+        self._args.force = True
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18a'])
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18a', 'task_18a'])
+
+    def test_dependency_forcing_file_exist(self):
+        self._template('three_task_with_force_2', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_18a')
+
+        self._args.dependency_force = True
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a'])
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a'])
+
+        self._args.force = True
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a'])
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a'])
 
 class TaskDependencyFileExistsTest(PymkTestCase):
     def test_make_no_outputfile(self):

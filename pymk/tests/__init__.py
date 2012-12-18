@@ -8,6 +8,7 @@ all_test_cases = [
     task.TaskTest,
     task.TaskDependencyFileExistsTest,
     task.TaskDependencyFileChangedTest,
+    task.TaskForcing,
 
     dependency.FileDoesNotExistsDependencyTest,
     dependency.FileChangedDependencyTest,
