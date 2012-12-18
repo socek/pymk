@@ -1,3 +1,8 @@
+0.1.2 / 2012-12-18
+==================
+
+  * Reverted "Changed behavior of running test. Now, if no output_file provided, the task
+    will always be build." This will be managet by special condition.
 
 0.1.1 / 2012-12-15
 ==================

@@ -56,9 +56,9 @@ class TaskConditionFileExistsTest(PymkTestCase):
         self._add_task('task_9a')
 
         self._pymk_runtask(['task_9c', 'task_9b', 'task_9a'])
-        self._pymk_runtask(['task_9c', 'task_9b', 'task_9a', 'task_9a'])
+        self._pymk_runtask(['task_9c', 'task_9b', 'task_9a'])
         self.touch('b.out')
-        self._pymk_runtask(['task_9c', 'task_9b', 'task_9a', 'task_9a', 'task_9a'])
+        self._pymk_runtask(['task_9c', 'task_9b', 'task_9a'])
 
     def test_make_no_outputfile_fail1(self):
         self._template('three_task_condition_exists3', 'mkfile.py')
