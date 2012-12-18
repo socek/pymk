@@ -1,8 +1,8 @@
 import unittest
 import logging
-import task
-import dependency
-import extra
+from . import task
+from . import dependency
+from . import extra
 
 all_test_cases = [
     task.TaskTest,

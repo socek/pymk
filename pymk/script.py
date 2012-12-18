@@ -29,7 +29,7 @@ def import_mkfile():
 def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n\t'
-        text += '\n\t'.join(TaskData.TASKS.keys())
+        text += '\n\t'.join(list(TaskData.TASKS.keys()))
         log.info(text)
         return 'list all'
     def run_default_task_or_list_all_tasks():
@@ -89,21 +89,21 @@ def run():
         append_python_path()
         TaskData.init()
         module = import_mkfile()
-    except NoMkfileFound, er:
+    except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1
 
     try:
         run_tasks(module, args)
-    except CommandError, er:
+    except CommandError as er:
         log.error(er)
         return 2
-    except BadTaskName, er:
+    except BadTaskName as er:
         log.error(er)
         return 3
-    except TaskMustHaveOutputFile, er:
+    except TaskMustHaveOutputFile as er:
         log.error(er)
         return 4
-    except CouldNotCreateFile, er:
+    except CouldNotCreateFile as er:
         log.error(er)
         return 5
