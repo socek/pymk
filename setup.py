@@ -10,7 +10,7 @@ dependency_links = [
 
 if __name__ == '__main__':
     setup(name='Pymk',
-        version='0.1.1',
+        version='0.1.2',
         description="New view of make.",
         author='Dominik "Socek" Długajczyk',
         author_email='msocek@gmail.com',

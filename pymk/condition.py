@@ -4,8 +4,9 @@ from pymk import error
 class BaseCondition(object):
     """Base of all conditions."""
     def __call__(self, task):
-        """__call__(self, task)
-        Method that will be called to check if condition
+        """__call__(self, task) -> bool
+        Method that will be called to check if condition need to be rebuilded (if
+        it is a task), and return True if task assigned will have to rebuild.
         """
 
 class FileChanged(BaseCondition):
@@ -47,3 +48,9 @@ class FileDoesNotExists(BaseCondition):
 
     def __call__(self, task):
         return not os.path.exists(self.filename)
+
+class AlwaysRebuild(BaseCondition):
+    """Condition will always make a task rebuild."""
+
+    def __call__(self, task):
+        return True

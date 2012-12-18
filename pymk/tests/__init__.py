@@ -6,10 +6,13 @@ import extra
 
 all_test_cases = [
     task.TaskTest,
-    condition.FileDoesNotExistsConditionTest,
-    condition.FileChangedConditionTest,
     task.TaskConditionFileExistsTest,
     task.TaskConditionFileChangedTest,
+
+    condition.FileDoesNotExistsConditionTest,
+    condition.FileChangedConditionTest,
+    condition.AlwaysRebuildConditionTest,
+    
     extra.TouchTest,
     extra.FindFilesTest,
     extra.RunCmdTest,

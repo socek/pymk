@@ -2,7 +2,8 @@
 ==================
 
   * Reverted "Changed behavior of running test. Now, if no output_file provided, the task
-    will always be build." This will be managet by special condition.
+    will always be build." This will be managet by special condition AlwaysRebuild.
+  * Added AlwaysRebuild condition which will always rebuild assigned task.
 
 0.1.1 / 2012-12-15
 ==================

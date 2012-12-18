@@ -76,3 +76,23 @@ class FileChangedConditionTest(PymkTestCase):
 
         sleep(0.001)
         self._pymk_runtask(['task_4', 'task_4'])
+
+class AlwaysRebuildConditionTest(PymkTestCase):
+    def test_success(self):
+        self._template('three_task_condition_always1', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_16a')
+
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16a'])
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16a', 'task_16a'])
+
+    def test_dependency_rebuild(self):
+        self._template('three_task_condition_always1', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_16a')
+
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
+        self.touch('c.out')
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a'])
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a', 'task_16a'])
