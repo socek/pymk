@@ -13,6 +13,7 @@ class ArgsMockup(object):
     def __init__(self):
         self.all = False
         self.task = []
+        self.force = False
 
 class PymkTestCase(unittest.TestCase):
     def setUp(self):

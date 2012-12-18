@@ -34,14 +34,14 @@ def run_tasks(mkfile, args):
         return 'list all'
     def run_default_task_or_list_all_tasks():
         try:
-            mkfile._DEFAULT.run()
+            mkfile._DEFAULT.run(force=args.force)
             return 'run default'
         except AttributeError:
             return list_all_tasks()
     def run_all_inputet_tasks():
         for task in args.task:
             try:
-                TaskData.TASKS[task].run()
+                TaskData.TASKS[task].run(force=args.force)
             except KeyError:
                 raise BadTaskName(task)
         return 'run tasks'
@@ -72,6 +72,8 @@ def run():
                             help='Ser log level from "debug" or "info".')
         parser.add_argument('-a', '--all', dest='all', action='store_true',
                             help='Show all tasks avalible.')
+        parser.add_argument('-f', '--force', dest='force', action='store_true',
+                            help='Force task to rebuild.')
         return parser.parse_args()
 
     def start_loggin(args):

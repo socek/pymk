@@ -53,11 +53,11 @@ class BaseTask(object):
 
 
     @classmethod
-    def run(cls, log_uptodate = True):
+    def run(cls, log_uptodate=True, force=False):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
-        if cls.test_dependencys():
+        if force or cls.test_dependencys():
             logger.info(" * Building '%s'" %(cls.name()))
             cls.build()
             return True
