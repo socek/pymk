@@ -82,13 +82,13 @@ And then we execute
 And now we start playing. We need some dependency. Here's the file
 ::
     from pymk.task import BaseTask, AddTask
-    from pymk.condition import FileChanged
+    from pymk.dependency import FileChanged
 
     @AddTask
     class task(BaseTask):
         output_file = 'a.out'
 
-        conditions = [
+        dependencys = [
             FileChanged('b.out'),
         ]
 
@@ -121,13 +121,13 @@ and try again.
     $ pymk
      * Building 'task'
 
-As we can see, a.out will be created when b.out will be changed. This condition
+As we can see, a.out will be created when b.out will be changed. This dependency
 is implemented for files that can changed by external programs (or programmers).
 If we need a task depedency, like "if task changed, rebuild me" we can make something
 like that
 ::
     from pymk.task import BaseTask, AddTask
-    from pymk.condition import FileChanged
+    from pymk.dependency import FileChanged
 
     @AddTask
     class secon_task(BaseTask):
@@ -143,8 +143,8 @@ like that
     class task(BaseTask):
         output_file = 'a.out'
 
-        conditions = [
-            secon_task.condition_FileChanged,
+        dependencys = [
+            secon_task.dependency_FileChanged,
         ]
 
         @classmethod

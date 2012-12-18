@@ -3,7 +3,7 @@ class PymkError(Exception):
     """
 
 class CouldNotCreateFile(PymkError):
-    """Raised when there is a file in condition, but mkfile do not defines how to build it."""
+    """Raised when there is a file in dependency, but mkfile do not defines how to build it."""
     def __init__(self, filename):
         self.filename = filename
 
@@ -44,7 +44,7 @@ class WrongArgumentValue(PymkError):
         self.description = description
 
 class TaskMustHaveOutputFile(PymkError):
-    """Raised when task has no output_file setted, but the condition assigned to
+    """Raised when task has no output_file setted, but the dependency assigned to
     that task (or to task that this task is assigned as dependency) need this value."""
     def __init__(self, name):
         self.name = name

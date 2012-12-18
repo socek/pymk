@@ -61,7 +61,7 @@ def run():
      1. no mkfile.py found or it is corrupted
      2. error in external program
      3. wrong task name
-     4. provided task has no output_file, which is needed becouse of conditions
+     4. provided task has no output_file, which is needed becouse of dependencys
      5. could not create a file that is in depedency
     """
     def parse_command():

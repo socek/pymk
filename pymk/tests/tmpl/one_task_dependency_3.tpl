@@ -1,11 +1,13 @@
 from pymk.task import BaseTask, AddTask
-from pymk.condition import FileDoesNotExists
+from pymk.dependency import FileChanged
 
 @AddTask
-class task_2(BaseTask):
+class task_4(BaseTask):
 
-    conditions = [
-        FileDoesNotExists('test.txt'),
+    output_file = 'a.out'
+
+    dependencys = [
+        FileChanged('test.txt'),
     ]
 
     @classmethod

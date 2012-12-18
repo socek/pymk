@@ -1,12 +1,10 @@
 from pymk.task import BaseTask, AddTask
-from pymk.condition import FileChanged
+from pymk.dependency import FileChanged
 
 @AddTask
-class task_4(BaseTask):
+class task_3(BaseTask):
 
-    output_file = 'a.out'
-
-    conditions = [
+    dependencys = [
         FileChanged('test.txt'),
     ]
 

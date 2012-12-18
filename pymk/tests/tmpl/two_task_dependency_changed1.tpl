@@ -2,7 +2,7 @@ from pymk.task import BaseTask, AddTask
 from pymk.extra import touch
 
 @AddTask
-class task_6b(BaseTask):
+class task_8b(BaseTask):
     output_file = 'b.out'
 
     @classmethod
@@ -14,11 +14,11 @@ class task_6b(BaseTask):
         touch(cls.output_file)
 
 @AddTask
-class task_6a(BaseTask):
+class task_8a(BaseTask):
     output_file = 'a.out'
 
-    conditions = [
-        task_6b.condition_FileExists,
+    dependencys = [
+        task_8b.dependency_FileChanged,
     ]
 
     @classmethod

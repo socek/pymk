@@ -1,8 +1,9 @@
 from pymk.task import BaseTask, AddTask
 from pymk.extra import touch
+from pymk.dependency import AlwaysRebuild
 
 @AddTask
-class task_7c(BaseTask):
+class task_16c(BaseTask):
     output_file = 'c.out'
 
     @classmethod
@@ -14,11 +15,11 @@ class task_7c(BaseTask):
         touch(cls.output_file)
 
 @AddTask
-class task_7b(BaseTask):
+class task_16b(BaseTask):
     output_file = 'b.out'
 
-    conditions = [
-        task_7c.condition_FileChanged,
+    dependencys = [
+        task_16c.dependency_FileChanged,
     ]
 
     @classmethod
@@ -30,11 +31,12 @@ class task_7b(BaseTask):
         touch(cls.output_file)
 
 @AddTask
-class task_7a(BaseTask):
+class task_16a(BaseTask):
     output_file = 'a.out'
 
-    conditions = [
-        task_7b.condition_FileExists,
+    dependencys = [
+        task_16b.dependency_FileChanged,
+        AlwaysRebuild(),
     ]
 
     @classmethod

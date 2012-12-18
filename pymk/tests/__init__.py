@@ -1,18 +1,18 @@
 import unittest
 import logging
 import task
-import condition
+import dependency
 import extra
 
 all_test_cases = [
     task.TaskTest,
-    task.TaskConditionFileExistsTest,
-    task.TaskConditionFileChangedTest,
+    task.TaskDependencyFileExistsTest,
+    task.TaskDependencyFileChangedTest,
 
-    condition.FileDoesNotExistsConditionTest,
-    condition.FileChangedConditionTest,
-    condition.AlwaysRebuildConditionTest,
-    
+    dependency.FileDoesNotExistsDependencyTest,
+    dependency.FileChangedDependencyTest,
+    dependency.AlwaysRebuildDependencyTest,
+
     extra.TouchTest,
     extra.FindFilesTest,
     extra.RunCmdTest,

@@ -14,8 +14,8 @@ class task_11c(BaseTask):
 @AddTask
 class task_11b(BaseTask):
 
-    conditions = [
-        task_11c.condition_FileExists,
+    dependencys = [
+        task_11c.dependency_FileExists,
     ]
 
     @classmethod
@@ -28,8 +28,8 @@ class task_11b(BaseTask):
 @AddTask
 class task_11a(BaseTask):
 
-    conditions = [
-        task_11b.condition_FileExists,
+    dependencys = [
+        task_11b.dependency_FileExists,
     ]
 
     @classmethod

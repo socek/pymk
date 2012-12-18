@@ -15,7 +15,7 @@ class TaskData(object):
 
 class BaseTask(object):
     """Base of all taks."""
-    conditions = []
+    dependencys = []
     _name = None
     output_file = None
 
@@ -30,14 +30,14 @@ class BaseTask(object):
             return cls.__name__
 
     @classmethod
-    def test_conditions(cls):
-        """test_conditions() -> bool
-        Test all condition of the task and rebuild the dependency tasks.
+    def test_dependencys(cls):
+        """test_dependencys() -> bool
+        Test all dependency of the task and rebuild the dependency tasks.
         Return True if this task needs to be rebuilded.
         """
         make_rebuild = False
-        for condition in cls.conditions:
-            cond = condition(cls)
+        for dependency in cls.dependencys:
+            cond = dependency(cls)
             make_rebuild = make_rebuild or cond
         if make_rebuild:
             return make_rebuild
@@ -47,7 +47,7 @@ class BaseTask(object):
                     return True
                 else:
                     return False
-            if len(cls.conditions) == 0:
+            if len(cls.dependencys) == 0:
                 return True
             return False
 
@@ -55,9 +55,9 @@ class BaseTask(object):
     @classmethod
     def run(cls, log_uptodate = True):
         """run(log_uptodate = True): -> bool
-        Test condition of this task, and rebuild it if nessesery.
+        Test dependency of this task, and rebuild it if nessesery.
         """
-        if cls.test_conditions():
+        if cls.test_dependencys():
             logger.info(" * Building '%s'" %(cls.name()))
             cls.build()
             return True
@@ -73,9 +73,9 @@ class BaseTask(object):
         """
 
     @classmethod
-    def condition_FileExists(cls, task):
-        """condition_FileExists(cls, task) -> bool
-        Condition that will run this task if not crated before.
+    def dependency_FileExists(cls, task):
+        """dependency_FileExists(cls, task) -> bool
+        Dependency that will run this task if not crated before.
         """
         if cls.output_file:
             if os.path.exists(cls.output_file):
@@ -88,12 +88,12 @@ class BaseTask(object):
             raise TaskMustHaveOutputFile(cls.name())
 
     @classmethod
-    def condition_FileChanged(cls, task):
-        """condition_FileChanged(cls, task) -> bool
-        Condition that will run this task if nessesery and return True if file is newwer then task.output_file.
+    def dependency_FileChanged(cls, task):
+        """dependency_FileChanged(cls, task) -> bool
+        Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
         ret = cls.run(False)
-        from pymk.condition import FileChanged
+        from pymk.dependency import FileChanged
         return FileChanged(cls.output_file, cls)(task) or ret
 
 def AddTask(cls):

@@ -1,16 +1,16 @@
 import os
 from pymk import error
 
-class BaseCondition(object):
-    """Base of all conditions."""
+class BaseDependency(object):
+    """Base of all dependencys."""
     def __call__(self, task):
         """__call__(self, task) -> bool
-        Method that will be called to check if condition need to be rebuilded (if
+        Method that will be called to check if dependency need to be rebuilded (if
         it is a task), and return True if task assigned will have to rebuild.
         """
 
-class FileChanged(BaseCondition):
-    """Condition returns true if file provided was changed. If task argument is
+class FileChanged(BaseDependency):
+    """Dependency returns true if file provided was changed. If task argument is
     provided, then run that task if it should be done."""
     def __init__(self, filename, task=None):
         self.filename = filename
@@ -40,8 +40,8 @@ class FileChanged(BaseCondition):
         else:
             raise error.TaskMustHaveOutputFile(task.name())
 
-class FileDoesNotExists(BaseCondition):
-    """Condition returns ture if file does not exists."""
+class FileDoesNotExists(BaseDependency):
+    """Dependency returns ture if file does not exists."""
 
     def __init__(self, filename):
         self.filename = filename
@@ -49,8 +49,8 @@ class FileDoesNotExists(BaseCondition):
     def __call__(self, task):
         return not os.path.exists(self.filename)
 
-class AlwaysRebuild(BaseCondition):
-    """Condition will always make a task rebuild."""
+class AlwaysRebuild(BaseDependency):
+    """Dependency will always make a task rebuild."""
 
     def __call__(self, task):
         return True

@@ -1,9 +1,10 @@
 0.1.2 / 2012-12-18
 ==================
 
+  * Changed "condition" name to "dependency".
   * Reverted "Changed behavior of running test. Now, if no output_file provided, the task
-    will always be build." This will be managet by special condition AlwaysRebuild.
-  * Added AlwaysRebuild condition which will always rebuild assigned task.
+    will always be build." This will be managet by special dependency AlwaysRebuild.
+  * Added AlwaysRebuild dependency which will always rebuild assigned task.
   * Fixed closing subprocess when pymk gets abort signal.
 
 0.1.1 / 2012-12-15
