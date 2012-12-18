@@ -21,4 +21,7 @@ def run_cmd(args, show_output=False):
                 raise CommandError(error, spp.stderr.read())
     except KeyboardInterrupt:
         pass
+    finally:
+        if spp.poll() == None:
+            spp.kill()
     return spp.stdout, spp.stderr
