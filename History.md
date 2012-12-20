@@ -1,3 +1,9 @@
+0.1.4 / 2012-12-20
+==================
+
+  * Fixed aborting pymk by keyboard.
+  * Changed description.
+
 0.1.3 / 2012-12-18
 ==================
 
