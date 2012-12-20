@@ -19,9 +19,10 @@ def run_cmd(args, show_output=False):
                 raise CommandError(error, '')
             else:
                 raise CommandError(error, spp.stderr.read())
-    except KeyboardInterrupt:
-        pass
     finally:
-        if spp.poll() == None:
-            spp.kill()
+        try:
+            if spp.poll() == None:
+                spp.kill()
+        except OSError:
+            pass
     return spp.stdout, spp.stderr

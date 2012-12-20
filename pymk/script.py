@@ -65,6 +65,7 @@ def run():
      3. wrong task name
      4. provided task has no output_file, which is needed becouse of dependencys
      5. could not create a file that is in depedency
+     6. command aborted (by keyboard)
     """
     def parse_command():
         parser = argparse.ArgumentParser()
@@ -113,3 +114,6 @@ def run():
     except CouldNotCreateFile as er:
         log.error(er)
         return 5
+    except KeyboardInterrupt:
+        log.error('\rCommand aborted!')
+        return 6
