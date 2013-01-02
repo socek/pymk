@@ -4,6 +4,7 @@ from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile
 
 logger = logging.getLogger('pymk')
 
+
 class TaskData(object):
     """Info about collected tasks."""
     TASKS = None
@@ -12,6 +13,7 @@ class TaskData(object):
     def init(cls):
         """Init new task collection."""
         cls.TASKS = {}
+
 
 class BaseTask(object):
     """Base of all taks."""
@@ -51,19 +53,18 @@ class BaseTask(object):
                 return True
             return False
 
-
     @classmethod
     def run(cls, log_uptodate=True, force=False, dependency_force=False):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
         if cls.test_dependencys(force and dependency_force) or force:
-            logger.info(" * Building '%s'" %(cls.name()))
+            logger.info(" * Building '%s'" % (cls.name()))
             cls.build()
             return True
         else:
             if log_uptodate:
-                logger.info(" * '%s' is up to date" %(cls.name()))
+                logger.info(" * '%s' is up to date" % (cls.name()))
             return False
 
     @classmethod
@@ -99,6 +100,7 @@ class BaseTask(object):
         ret = cls.run(False)
         from pymk.dependency import FileChanged
         return FileChanged(cls.output_file, cls)(task) or ret
+
 
 def AddTask(cls):
     """

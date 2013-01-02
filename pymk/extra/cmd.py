@@ -1,5 +1,7 @@
 from subprocess import Popen, PIPE
 from pymk.error import CommandError
+
+
 def run_cmd(args, show_output=False):
     """run_cmd(args, show_output=False) -> stdout, stderr
     Run external program.

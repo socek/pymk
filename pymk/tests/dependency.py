@@ -3,6 +3,7 @@ import pymk.error as Perror
 from pymk import extra
 from pymk.tests.base import PymkTestCase
 
+
 class FileDoesNotExistsDependencyTest(PymkTestCase):
     def test_make(self):
         self._template('one_task_dependency_1', 'mkfile.py')
@@ -21,6 +22,7 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self._add_task('task_2')
         self._pymk_runtask([])
         self._pymk_runtask([])
+
 
 class FileChangedDependencyTest(PymkTestCase):
 
@@ -77,6 +79,7 @@ class FileChangedDependencyTest(PymkTestCase):
         sleep(0.001)
         self._pymk_runtask(['task_4', 'task_4'])
 
+
 class AlwaysRebuildDependencyTest(PymkTestCase):
     def test_success(self):
         self._template('three_task_dependency_always1', 'mkfile.py')
@@ -85,7 +88,8 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
 
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16a'])
-        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16a', 'task_16a'])
+        self._pymk_runtask(
+            ['task_16c', 'task_16b', 'task_16a', 'task_16a', 'task_16a'])
 
     def test_dependency_rebuild(self):
         self._template('three_task_dependency_always1', 'mkfile.py')
@@ -94,5 +98,7 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
 
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
         self.touch('c.out')
-        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a'])
-        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a', 'task_16a'])
+        self._pymk_runtask(
+            ['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a'])
+        self._pymk_runtask(['task_16c', 'task_16b', 'task_16a',
+                           'task_16b', 'task_16a', 'task_16a'])

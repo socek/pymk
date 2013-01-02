@@ -4,6 +4,7 @@ import pymk.error as Perror
 from pymk import extra
 from pymk.tests.base import PymkTestCase
 
+
 class TouchTest(PymkTestCase):
     test_file = 'testme.file'
 
@@ -23,6 +24,7 @@ class TouchTest(PymkTestCase):
         second_file_time = os.path.getmtime(self.test_file)
 
         self.assertNotEqual(first_file_time, second_file_time)
+
 
 class FindFilesTest(PymkTestCase):
 
@@ -64,6 +66,7 @@ class FindFilesTest(PymkTestCase):
             './first/file3.test'
         ]
         self.assertEqual(should_found, list(extra.find_files('.', '*.test')))
+
 
 class RunCmdTest(PymkTestCase):
 

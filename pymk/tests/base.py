@@ -9,12 +9,14 @@ from time import sleep
 from pymk.script import import_mkfile, run_tasks, TaskData
 from pymk.extra import touch
 
+
 class ArgsMockup(object):
     def __init__(self):
         self.all = False
         self.task = []
         self.force = False
         self.dependency_force = False
+
 
 class PymkTestCase(unittest.TestCase):
     def setUp(self):
@@ -23,7 +25,8 @@ class PymkTestCase(unittest.TestCase):
         sys.path.append(self._actual_path)
         os.chdir(self._actual_path)
         self._args = ArgsMockup()
-        logging.getLogger('pymk').info('=== (%s) %s ===' %(self.__class__.__name__, self._testMethodName))
+        logging.getLogger('pymk').info('=== (%s) %s ===' % (
+            self.__class__.__name__, self._testMethodName))
 
     def tearDown(self):
         sys.path.remove(self._actual_path)
@@ -35,10 +38,11 @@ class PymkTestCase(unittest.TestCase):
             del self._mkfile
         self._mkfile = None
 
-    def _template(self, name, out_path = None, vars = {}):
-        template_path = os.path.join(self._normal_path, 'pymk', 'tests', 'tmpl', name + '.tpl')
+    def _template(self, name, out_path=None, vars={}):
+        template_path = os.path.join(
+            self._normal_path, 'pymk', 'tests', 'tmpl', name + '.tpl')
         template = open(template_path).read()
-        out_data = template %vars
+        out_data = template % vars
         if not out_path:
             out_path = name
         out_file = open(out_path, 'w')

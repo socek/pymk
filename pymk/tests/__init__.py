@@ -19,6 +19,7 @@ all_test_cases = [
     extra.RunCmdTest,
 ]
 
+
 def get_all_test_suite():
     logging.basicConfig(level=logging.INFO, format="%(asctime)-15s:%(message)s", filename='test.log')
     logging.getLogger('pymk').info('\n\t*** TESTING STARTED ***')

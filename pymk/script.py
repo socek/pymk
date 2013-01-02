@@ -7,7 +7,8 @@ import argparse
 
 log = logging.getLogger('pymk')
 
-def append_python_path(cwd = None):
+
+def append_python_path(cwd=None):
     """append_python_path(cwd) -> None
     Append provided (or actual cwd if not provided) path to python path.
     """
@@ -15,6 +16,7 @@ def append_python_path(cwd = None):
         sys.path.append(cwd)
     else:
         sys.path.append(os.getcwd())
+
 
 def import_mkfile():
     if not os.path.exists('mkfile.py'):
@@ -26,12 +28,14 @@ def import_mkfile():
         module = __import__("mkfile", globals(), locals())
     return module
 
+
 def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n\t'
         text += '\n\t'.join(list(TaskData.TASKS.keys()))
         log.info(text)
         return 'list all'
+
     def run_default_task_or_list_all_tasks():
         try:
             mkfile._DEFAULT.run(force=args.force,
@@ -39,6 +43,7 @@ def run_tasks(mkfile, args):
             return 'run default'
         except AttributeError:
             return list_all_tasks()
+
     def run_all_inputet_tasks():
         for task in args.task:
             try:
@@ -54,6 +59,7 @@ def run_tasks(mkfile, args):
         return run_default_task_or_list_all_tasks()
     else:
         return run_all_inputet_tasks()
+
 
 def run():
     """run() -> error code
@@ -77,8 +83,9 @@ def run():
                             help='Show all tasks avalible.')
         parser.add_argument('-f', '--force', dest='force', action='store_true',
                             help='Force task to rebuild.')
-        parser.add_argument('-d', '--dependency-force', dest='dependency_force', action='store_true',
-                            help='Force depedency to rebuild (use only with --force).')
+        parser.add_argument(
+            '-d', '--dependency-force', dest='dependency_force', action='store_true',
+            help='Force depedency to rebuild (use only with --force).')
         return parser.parse_args()
 
     def start_loggin(args):
@@ -88,8 +95,9 @@ def run():
         elif args.log == 'info':
             logging.basicConfig(level=logging.INFO, format=FORMAT)
         else:
-            raise WrongArgumentValue('Wrong argument for log! Avalible are: "debug" and "info".')
-    #---------------------------------------------------------------------------
+            raise WrongArgumentValue(
+                'Wrong argument for log! Avalible are: "debug" and "info".')
+    #-------------------------------------------------------------------------
     try:
         args = parse_command()
         start_loggin(args)

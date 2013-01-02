@@ -1,5 +1,7 @@
 import os
 import fnmatch
+
+
 def find_files(directory, pattern):
     """find_files(directory, pattern) - None
     Yields path with founded files.
