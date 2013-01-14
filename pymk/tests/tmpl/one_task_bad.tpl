@@ -2,9 +2,7 @@ from pymk.task import BaseTask, AddTask
 
 
 @AddTask
-class task_1(BaseTask):
-
-    dependencys = []
+class task_19(BaseTask):
     
     @classmethod
     def build(cls):

@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 import sys
 
 install_requires = [
+    'jinja2',
 ]
 
 dependency_links = [
@@ -10,7 +11,7 @@ dependency_links = [
 
 if __name__ == '__main__':
     setup(name='Pymk',
-          version='0.1.4',
+          version='0.1.5',
           description="Make like program, which reads python script as makefile.",
           author='Dominik "Socek" Długajczyk',
           author_email='msocek@gmail.com',

@@ -6,6 +6,8 @@ from pymk.dependency import AlwaysRebuild
 class task_16c(BaseTask):
     output_file = 'c.out'
 
+    dependencys = []
+
     @classmethod
     def build(cls):
         fp = open('a.out', 'a')

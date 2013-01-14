@@ -5,6 +5,8 @@ from pymk.task import BaseTask, AddTask
 class task_5(BaseTask):
     output_file = 'a.out'
 
+    dependencys = []
+
     @classmethod
     def build(cls):
         fp = open('a.out', 'a')

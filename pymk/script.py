@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from pymk.task import TaskData
+from pymk.task import TaskData, BaseTask
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile
 import argparse
 
@@ -104,6 +104,7 @@ def run():
         append_python_path()
         TaskData.init()
         module = import_mkfile()
+        TaskData.initTasks()
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1

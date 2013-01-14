@@ -50,6 +50,11 @@ class TaskTest(PymkTestCase):
         self.touch('a.out')
         self._pymk_runtask(['task_5'])
 
+    def test_bad_task(self):
+        self._template('one_task_bad', 'mkfile.py')
+
+        self.assertRaises(Perror.NoDependencysInAClass, self._import_mkfile)
+
 
 class TaskForcing(PymkTestCase):
 

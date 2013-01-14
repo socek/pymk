@@ -1,6 +1,6 @@
 import os
 import logging
-from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile
+from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile, NoDependencysInAClass
 
 logger = logging.getLogger('pymk')
 
@@ -8,6 +8,15 @@ logger = logging.getLogger('pymk')
 class TaskData(object):
     """Info about collected tasks."""
     TASKS = None
+    _all_tasks = []
+
+    @classmethod
+    def initTasks(cls):
+        for subcls in BaseTask.__subclasses__():
+            if not subcls in cls._all_tasks:
+                cls._all_tasks.append(subcls)
+                if subcls.dependencys == None:
+                    raise NoDependencysInAClass(subcls)
 
     @classmethod
     def init(cls):
@@ -17,7 +26,7 @@ class TaskData(object):
 
 class BaseTask(object):
     """Base of all taks."""
-    dependencys = []
+    dependencys = None
     _name = None
     output_file = None
 

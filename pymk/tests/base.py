@@ -52,6 +52,7 @@ class PymkTestCase(unittest.TestCase):
     def _import_mkfile(self):
         TaskData.init()
         self._mkfile = import_mkfile()
+        TaskData.initTasks()
 
     def _pymk(self):
         return run_tasks(self._mkfile, self._args)

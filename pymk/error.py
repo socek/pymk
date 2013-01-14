@@ -58,3 +58,12 @@ class TaskMustHaveOutputFile(PymkError):
 
     def __str__(self):
         return 'Taks must have output_file setted: %s' % (self.name)
+
+class NoDependencysInAClass(PymkError):
+    """NoDependencysInAClass is raised when no depedencys attribute was provided,
+    or this attribute has wrong name."""
+    def __init__(self, cls):
+        self.cls = cls
+
+    def __str__(self):
+        return 'Class %s has no "dependencys" attribute or it has wrong name.' %(self.cls.__name__)

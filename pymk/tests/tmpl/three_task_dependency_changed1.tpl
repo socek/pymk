@@ -4,6 +4,8 @@ from pymk.extra import touch
 @AddTask
 class task_12c(BaseTask):
     output_file = 'c.out'
+    
+    dependencys = []
 
     @classmethod
     def build(cls):

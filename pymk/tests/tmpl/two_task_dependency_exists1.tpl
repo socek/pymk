@@ -5,6 +5,8 @@ from pymk.extra import touch
 class task_6b(BaseTask):
     output_file = 'b.out'
 
+    dependencys = []
+
     @classmethod
     def build(cls):
         fp = open('a.out', 'a')
