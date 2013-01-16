@@ -5,6 +5,7 @@
     pymk will fail. It is becouse of often,  hidden, TYPO errors.
   * no need of adding @classmethod decorator in build function
   * added template functionality with jinja2
+  * added generating of graph
 
 0.1.4 / 2012-12-20
 ==================
