@@ -69,7 +69,7 @@ class BaseTask(object):
         """
         if cls.test_dependencys(force and dependency_force) or force:
             logger.info(" * Building '%s'" % (cls.name()))
-            cls.build()
+            cls().build()
             return True
         else:
             if log_uptodate:

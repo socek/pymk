@@ -6,10 +6,9 @@ class task_11c(BaseTask):
 
     dependencys = []
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()
 
@@ -20,10 +19,9 @@ class task_11b(BaseTask):
         task_11c.dependency_FileExists,
     ]
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()
 
@@ -34,9 +32,8 @@ class task_11a(BaseTask):
         task_11b.dependency_FileExists,
     ]
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()

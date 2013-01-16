@@ -7,13 +7,12 @@ class task_13c(BaseTask):
 
     dependencys = []
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()
-        touch(cls.output_file)
+        touch(self.output_file)
 
 @AddTask
 class task_13b(BaseTask):
@@ -23,13 +22,12 @@ class task_13b(BaseTask):
         task_13c.dependency_FileChanged,
     ]
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()
-        touch(cls.output_file)
+        touch(self.output_file)
 
 @AddTask
 class task_13a(BaseTask):
@@ -38,9 +36,8 @@ class task_13a(BaseTask):
         task_13b.dependency_FileChanged,
     ]
 
-    @classmethod
-    def build(cls):
+    def build(self):
         fp = open('a.out', 'a')
-        fp.write(cls.__name__)
+        fp.write(self.__class__.__name__)
         fp.write('\n')
         fp.close()
