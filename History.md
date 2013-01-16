@@ -1,3 +1,11 @@
+0.1.5 / 2013-??-??
+==================
+
+  * "dependency" is now always needed in BastTask class. Now if it is not an list,
+    pymk will fail. It is becouse of often,  hidden, TYPO errors.
+  * no need of adding @classmethod decorator in build function
+  * added template functionality with jinja2
+
 0.1.4 / 2012-12-20
 ==================
 
