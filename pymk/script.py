@@ -1,8 +1,9 @@
 import os
 import sys
 import logging
-from pymk.task import TaskData, BaseTask
+from pymk.task import TaskData
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile
+from pymk.graph import draw_graph
 import argparse
 
 log = logging.getLogger('pymk')
@@ -83,6 +84,8 @@ def run():
                             help='Show all tasks avalible.')
         parser.add_argument('-f', '--force', dest='force', action='store_true',
                             help='Force task to rebuild.')
+        parser.add_argument('-g', '--graph', dest='graph',
+                            help='Draw a graph of tasks to a file.')
         parser.add_argument(
             '-d', '--dependency-force', dest='dependency_force', action='store_true',
             help='Force depedency to rebuild (use only with --force).')
@@ -109,20 +112,23 @@ def run():
         log.error("No mkfile.py file found!")
         return 1
 
-    try:
-        run_tasks(module, args)
-    except CommandError as er:
-        log.error(er)
-        return 2
-    except BadTaskName as er:
-        log.error(er)
-        return 3
-    except TaskMustHaveOutputFile as er:
-        log.error(er)
-        return 4
-    except CouldNotCreateFile as er:
-        log.error(er)
-        return 5
-    except KeyboardInterrupt:
-        log.error('\rCommand aborted!')
-        return 6
+    if args.graph:
+        draw_graph(args.graph)
+    else:
+        try:
+            run_tasks(module, args)
+        except CommandError as er:
+            log.error(er)
+            return 2
+        except BadTaskName as er:
+            log.error(er)
+            return 3
+        except TaskMustHaveOutputFile as er:
+            log.error(er)
+            return 4
+        except CouldNotCreateFile as er:
+            log.error(er)
+            return 5
+        except KeyboardInterrupt:
+            log.error('\rCommand aborted!')
+            return 6
