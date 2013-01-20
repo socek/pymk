@@ -86,6 +86,8 @@ def run():
                             help='Force task to rebuild.')
         parser.add_argument('-g', '--graph', dest='graph',
                             help='Draw a graph of tasks to a file.')
+        parser.add_argument('-t', '--task-graph', dest='task_graph',
+                            help='Draw a graph of runned tasks to a file.')
         parser.add_argument(
             '-d', '--dependency-force', dest='dependency_force', action='store_true',
             help='Force depedency to rebuild (use only with --force).')
@@ -132,3 +134,7 @@ def run():
         except KeyboardInterrupt:
             log.error('\rCommand aborted!')
             return 6
+        finally:
+            from pymk.graph import draw_done_task_graph
+            if args.task_graph:
+                draw_done_task_graph(args.task_graph)

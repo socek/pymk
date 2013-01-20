@@ -50,6 +50,12 @@ class BaseTask(object):
         for dependency in cls.dependencys:
             cond = dependency(cls, dependency_force=dependency_force)
             make_rebuild = make_rebuild or cond
+            cls.running_list_element['childs'].append({
+                'type': 'dependency',
+                'data': dependency,
+                'runned': cond,
+                'childs': [],
+            })
         if make_rebuild:
             return make_rebuild
         else:
@@ -63,17 +69,32 @@ class BaseTask(object):
             return False
 
     @classmethod
-    def run(cls, log_uptodate=True, force=False, dependency_force=False):
+    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
+        cls.running_list_element = {
+            'type': 'task',
+            'data': cls,
+            'runned': None,
+            'childs': [],
+        }
+        if parent:
+            parent.running_list_element['childs'].append(cls.running_list_element)
+        else:
+            from pymk.graph import running_list
+            running_list.append(cls.running_list_element)
         if cls.test_dependencys(force and dependency_force) or force:
             logger.info(" * Building '%s'" % (cls.name()))
-            cls().build()
+            try:
+                cls().build()
+            finally:
+                cls.running_list_element['runned'] = True
             return True
         else:
             if log_uptodate:
                 logger.info(" * '%s' is up to date" % (cls.name()))
+            cls.running_list_element['runned'] = False
             return False
 
     @classmethod
@@ -88,13 +109,13 @@ class BaseTask(object):
         Dependency that will run this task if not crated before.
         """
         if dependency_force:
-            cls.run(True, True, True)
+            cls.run(True, True, True, task)
+            return True
         if cls.output_file:
             if os.path.exists(cls.output_file):
-                cls.run(False)
-                return False
+                return cls.run(False, parent=task)
             else:
-                cls.run()
+                cls.run(parent=task)
                 return True
         else:
             raise TaskMustHaveOutputFile(cls.name())
@@ -105,8 +126,8 @@ class BaseTask(object):
         Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
         if dependency_force:
-            cls.run(True, True, True)
-        ret = cls.run(False)
+            cls.run(True, True, True, parent=task)
+        ret = cls.run(False, parent=task)
         from pymk.dependency import FileChanged
         return FileChanged(cls.output_file, cls)(task) or ret
 
