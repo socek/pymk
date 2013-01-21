@@ -47,10 +47,10 @@ class DependencyShow(Show):
             )
             self.extra = '[shape=dot]'
         else:
-            self._name = self.dep.im_self.__name__
-            if self.dep.im_func.__name__ == 'dependency_FileChanged':
+            self._name = self.dep.parent.__name__
+            if self.dep.__class__.__name__ == 'InnerFileChanged':
                 self.extra = '[shape=dot,label="C"]'
-            elif self.dep.im_func.__name__ == 'dependency_FileExists':
+            elif self.dep.__class__.__name__ == 'InnerFileExists':
                 self.extra = '[shape=dot,label="E"]'
             self._details = ''
 
@@ -70,7 +70,7 @@ class TaskShow(Show):
         if self.runned:
             color = 'red'
 
-        self._details = 'shape=%s, regular=1,style=filled,fillcolor=%s' %(shape, color)
+        self._details = 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)
         return super(TaskShow, self).print_detailed()
 
 
@@ -115,7 +115,6 @@ def draw_done_task_graph(filename):
             depShow.print_detailed()
             if parent_data:
                 datalog.write('%s -> %s %s;\n' % (depShow.name, parent_data.name, depShow.extra))
-
 
     datalog.write('digraph {\n')
     for task_data in running_list:
