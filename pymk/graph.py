@@ -33,16 +33,19 @@ class DependencyShow(Show):
             self._details = 'shape=circle,regular=1,style=filled,fillcolor=white,label="%s"' % (
                 self._name.replace('/', '\\n')
             )
+            self.extra = '[shape=dot]'
         elif _type == FileDoesNotExists:
             self._name = self.dep.filename
             self._details = 'shape=triangle, regular=1,style=filled,fillcolor=white,label="%s"' % (
                 self._name.replace('/', '/\\n')
             )
+            self.extra = '[shape=dot]'
         elif _type == AlwaysRebuild:
-            self._name = 'AlwaysRebuild'
+            self._name = 'Always\\nRebuild'
             self._details = 'shape=diamond, regular=1,style=filled,fillcolor=white,label="%s"' % (
                 self._name.replace('/', '/\\n')
             )
+            self.extra = '[shape=dot]'
         else:
             self._name = self.dep.im_self.__name__
             if self.dep.im_func.__name__ == 'dependency_FileChanged':
@@ -105,13 +108,10 @@ def draw_done_task_graph(filename):
                 print_data(child, taskShow)
             taskShow.print_detailed()
         else:
-            if type(data['data']) == AlwaysRebuild:
-                parent_data.always_rebuild = True
-                return
             depShow = DependencyShow(data['data'])
             if data['runned']:
                 depShow._details = depShow._details.replace('white', 'red')
-                depShow.extra = depShow.extra.replace(']', 'color=red]')
+                depShow.extra = depShow.extra.replace(']', ',color=red]')
             depShow.print_detailed()
             if parent_data:
                 datalog.write('%s -> %s %s;\n' % (depShow.name, parent_data.name, depShow.extra))

@@ -113,7 +113,8 @@ class BaseTask(object):
             return True
         if cls.output_file:
             if os.path.exists(cls.output_file):
-                return cls.run(False, parent=task)
+                cls.run(False, parent=task)
+                return False
             else:
                 cls.run(parent=task)
                 return True
