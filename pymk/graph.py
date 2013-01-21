@@ -1,6 +1,5 @@
-from pymk.dependency import AlwaysRebuild, FileChanged, FileDoesNotExists
 from pymk.task import TaskData
-from tempfile import TemporaryFile
+from tempfile import TemporaryFile, NamedTemporaryFile
 from subprocess import Popen
 
 datalog = TemporaryFile('wr')
@@ -20,39 +19,6 @@ class Show(object):
         if not self.name in self.detailed:
             self.detailed.append(self.name)
             datalog.write('%s [%s];\n' % (self.name, self._details))
-
-
-class DependencyShow(Show):
-
-    def __init__(self, dependency):
-        self.dep = dependency
-
-        _type = type(self.dep)
-        if _type == FileChanged:
-            self._name = self.dep.filename
-            self._details = 'shape=circle,regular=1,style=filled,fillcolor=white,label="%s"' % (
-                self._name.replace('/', '\\n')
-            )
-            self.extra = '[shape=dot]'
-        elif _type == FileDoesNotExists:
-            self._name = self.dep.filename
-            self._details = 'shape=triangle, regular=1,style=filled,fillcolor=white,label="%s"' % (
-                self._name.replace('/', '/\\n')
-            )
-            self.extra = '[shape=dot]'
-        elif _type == AlwaysRebuild:
-            self._name = 'Always\\nRebuild'
-            self._details = 'shape=diamond, regular=1,style=filled,fillcolor=white,label="%s"' % (
-                self._name.replace('/', '/\\n')
-            )
-            self.extra = '[shape=dot]'
-        else:
-            self._name = self.dep.parent.__name__
-            if self.dep.__class__.__name__ == 'InnerFileChanged':
-                self.extra = '[shape=dot,label="C"]'
-            elif self.dep.__class__.__name__ == 'InnerFileExists':
-                self.extra = '[shape=dot,label="E"]'
-            self._details = ''
 
 
 class TaskShow(Show):
@@ -75,25 +41,24 @@ class TaskShow(Show):
 
 
 def run_dot(pipe, filename):
+
     filepipe = open(filename, 'w')
     spp = Popen(['dot', '-x', '-Tpng'], stdin=pipe, stdout=filepipe)
     spp.wait()
 
 
 def draw_graph(filename):
+    datalog = NamedTemporaryFile('wr', delete=False)
     datalog.write('digraph {\n')
     for task in TaskData._all_tasks:
         taskShow = TaskShow(task)
         for dep in task.dependencys:
-            if type(dep) == AlwaysRebuild:
-                taskShow.always_rebuild = True
-            else:
-                depShow = DependencyShow(dep)
-                depShow.print_detailed()
-                datalog.write('%s -> %s %s;\n' % (depShow.name, taskShow.name, depShow.extra))
+            dep.write_graph_detailed(datalog)
+            datalog.write('"%s" -> %s %s;\n' % (dep.name, taskShow.name, dep.extra))
         taskShow.print_detailed()
 
     datalog.write('}\n')
+    print datalog.name
     datalog.seek(0)
     run_dot(datalog, filename)
 
@@ -108,13 +73,12 @@ def draw_done_task_graph(filename):
                 print_data(child, taskShow)
             taskShow.print_detailed()
         else:
-            depShow = DependencyShow(data['data'])
-            if data['runned']:
-                depShow._details = depShow._details.replace('white', 'red')
-                depShow.extra = depShow.extra.replace(']', ',color=red]')
-            depShow.print_detailed()
+            # if data['runned']:
+                # depShow._details = depShow._details.replace('white', 'red')
+                # depShow.extra = depShow.extra.replace(']', ',color=red]')
+            data['data'].write_graph_detailed(datalog)
             if parent_data:
-                datalog.write('%s -> %s %s;\n' % (depShow.name, parent_data.name, depShow.extra))
+                datalog.write('"%s" -> %s %s;\n' % (data['data'].name, parent_data.name, data['data'].extra))
 
     datalog.write('digraph {\n')
     for task_data in running_list:
