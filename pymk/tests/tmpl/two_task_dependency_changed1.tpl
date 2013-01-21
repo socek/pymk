@@ -19,7 +19,7 @@ class task_8a(BaseTask):
     output_file = 'a.out'
 
     dependencys = [
-        task_8b.dependency_FileChanged,
+        task_8b.dependency_FileChanged(),
     ]
 
     def build(self):

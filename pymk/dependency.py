@@ -62,3 +62,34 @@ class AlwaysRebuild(BaseDependency):
 
     def __call__(self, task, dependency_force=False):
         return True
+
+
+class InnerDependency(BaseDependency):
+
+    def __init__(self, parent):
+        self.parent = parent
+
+
+class InnerFileExists(InnerDependency):
+
+    def __call__(self, task, dependency_force=False):
+        if dependency_force:
+            self.parent.run(True, True, True, task)
+            return True
+        if self.parent.output_file:
+            if os.path.exists(self.parent.output_file):
+                self.parent.run(False, parent=task)
+                return False
+            else:
+                self.parent.run(parent=task)
+                return True
+        else:
+            raise error.TaskMustHaveOutputFile(self.parent.name())
+
+class InnerFileChanged(InnerDependency):
+
+    def __call__(self, task, dependency_force=False):
+        if dependency_force:
+            self.parent.run(True, True, True, parent=task)
+        ret = self.parent.run(False, parent=task)
+        return FileChanged(self.parent.output_file, self.parent)(task) or ret

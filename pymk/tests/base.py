@@ -74,7 +74,7 @@ class PymkTestCase(unittest.TestCase):
     def _remove_task(self, task):
         self._args.task.remove(task)
 
-    def touch(self, path, wait=0.005):
+    def touch(self, path, wait=0.01):
         if wait:
             sleep(wait)
         touch(path)

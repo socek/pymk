@@ -4,7 +4,7 @@ from pymk.extra import touch
 @AddTask
 class task_12c(BaseTask):
     output_file = 'c.out'
-    
+
     dependencys = []
 
     def build(self):
@@ -19,7 +19,7 @@ class task_12b(BaseTask):
     output_file = 'b.out'
 
     dependencys = [
-        task_12c.dependency_FileChanged,
+        task_12c.dependency_FileChanged(),
     ]
 
     def build(self):
@@ -34,7 +34,7 @@ class task_12a(BaseTask):
     output_file = 'a.out'
 
     dependencys = [
-        task_12b.dependency_FileChanged,
+        task_12b.dependency_FileChanged(),
     ]
 
     def build(self):

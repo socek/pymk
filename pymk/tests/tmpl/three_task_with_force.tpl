@@ -19,7 +19,7 @@ class task_17b(BaseTask):
     output_file = 'b.out'
 
     dependencys = [
-        task_17c.dependency_FileChanged,
+        task_17c.dependency_FileChanged(),
     ]
 
     def build(self):
@@ -34,7 +34,7 @@ class task_17a(BaseTask):
     output_file = 'a.out'
 
     dependencys = [
-        task_17b.dependency_FileChanged,
+        task_17b.dependency_FileChanged(),
     ]
 
     def build(self):

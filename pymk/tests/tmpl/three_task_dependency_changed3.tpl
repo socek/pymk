@@ -18,7 +18,7 @@ class task_14c(BaseTask):
 class task_14b(BaseTask):
 
     dependencys = [
-        task_14c.dependency_FileChanged,
+        task_14c.dependency_FileChanged(),
     ]
 
     def build(self):
@@ -32,7 +32,7 @@ class task_14b(BaseTask):
 class task_14a(BaseTask):
 
     dependencys = [
-        task_14b.dependency_FileChanged,
+        task_14b.dependency_FileChanged(),
     ]
 
     def build(self):

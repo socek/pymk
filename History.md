@@ -6,6 +6,8 @@
   * no need of adding @classmethod decorator in build function
   * added template functionality with jinja2
   * added generating of graph
+  * changed all dependencys to classes
+    WARNING: This is not backward compatible!
 
 0.1.4 / 2012-12-20
 ==================

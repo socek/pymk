@@ -1,6 +1,7 @@
 import os
 import logging
-from pymk.error import TaskAlreadyExists, TaskMustHaveOutputFile, NoDependencysInAClass
+from pymk.error import TaskAlreadyExists, NoDependencysInAClass
+from pymk.dependency import InnerFileExists, InnerFileChanged
 
 logger = logging.getLogger('pymk')
 
@@ -104,33 +105,18 @@ class BaseTask(object):
         """
 
     @classmethod
-    def dependency_FileExists(cls, task, dependency_force=False):
-        """dependency_FileExists(cls, task) -> bool
+    def dependency_FileExists(cls):
+        """dependency_FileExists(cls) -> bool
         Dependency that will run this task if not crated before.
         """
-        if dependency_force:
-            cls.run(True, True, True, task)
-            return True
-        if cls.output_file:
-            if os.path.exists(cls.output_file):
-                cls.run(False, parent=task)
-                return False
-            else:
-                cls.run(parent=task)
-                return True
-        else:
-            raise TaskMustHaveOutputFile(cls.name())
+        return InnerFileExists(cls)
 
     @classmethod
-    def dependency_FileChanged(cls, task, dependency_force=False):
+    def dependency_FileChanged(cls):
         """dependency_FileChanged(cls, task) -> bool
         Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
-        if dependency_force:
-            cls.run(True, True, True, parent=task)
-        ret = cls.run(False, parent=task)
-        from pymk.dependency import FileChanged
-        return FileChanged(cls.output_file, cls)(task) or ret
+        return InnerFileChanged(cls)
 
 
 def AddTask(cls):
