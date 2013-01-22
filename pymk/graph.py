@@ -6,40 +6,6 @@ datalog = TemporaryFile('wr')
 running_list = []
 
 
-class Show(object):
-    detailed = []
-
-    extra = ''
-
-    @property
-    def name(self):
-        return '"' + self._name + '"'
-
-    def print_detailed(self):
-        if not self.name in self.detailed:
-            self.detailed.append(self.name)
-            datalog.write('%s [%s];\n' % (self.name, self._details))
-
-
-class TaskShow(Show):
-    def __init__(self, task):
-        self._name = task.__name__
-        self.always_rebuild = False
-        self.runned = False
-
-    def print_detailed(self):
-        shape = 'box'
-        color = 'white'
-        if self.always_rebuild:
-            shape = 'hexagon'
-            color = 'grey'
-        if self.runned:
-            color = 'red'
-
-        self._details = 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)
-        return super(TaskShow, self).print_detailed()
-
-
 def run_dot(pipe, filename):
 
     filepipe = open(filename, 'w')
@@ -51,11 +17,10 @@ def draw_graph(filename):
     datalog = NamedTemporaryFile('wr', delete=False)
     datalog.write('digraph {\n')
     for task in TaskData._all_tasks:
-        taskShow = TaskShow(task)
         for dep in task.dependencys:
             dep.write_graph_detailed(datalog)
-            datalog.write('"%s" -> %s %s;\n' % (dep.name, taskShow.name, dep.extra))
-        taskShow.print_detailed()
+            datalog.write('"%s" -> %s %s;\n' % (dep.name, task.name(), dep.extra))
+        task.write_graph_detailed(datalog)
 
     datalog.write('}\n')
     print datalog.name

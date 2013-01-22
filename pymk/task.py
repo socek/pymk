@@ -1,7 +1,7 @@
 import os
 import logging
 from pymk.error import TaskAlreadyExists, NoDependencysInAClass
-from pymk.dependency import InnerFileExists, InnerFileChanged
+from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild
 
 logger = logging.getLogger('pymk')
 
@@ -30,6 +30,8 @@ class BaseTask(object):
     dependencys = None
     _name = None
     output_file = None
+    detailed = []
+    _runned = {}
 
     @classmethod
     def name(cls):
@@ -40,6 +42,18 @@ class BaseTask(object):
             return cls._name
         else:
             return cls.__name__
+
+    @classmethod
+    def _set_runned(cls, value):
+        cls._runned[cls.__name__] = value
+        return cls._runned[cls.__name__]
+
+    @classmethod
+    def _get_runned(cls):
+        try:
+            return cls._runned[cls.__name__]
+        except KeyError:
+            return False
 
     @classmethod
     def test_dependencys(cls, dependency_force=False):
@@ -90,13 +104,11 @@ class BaseTask(object):
             try:
                 cls().build()
             finally:
-                cls.running_list_element['runned'] = True
-            return True
+                return cls._set_runned(True)
         else:
             if log_uptodate:
                 logger.info(" * '%s' is up to date" % (cls.name()))
-            cls.running_list_element['runned'] = False
-            return False
+            return cls._set_runned(False)
 
     @classmethod
     def build(cls):
@@ -117,6 +129,25 @@ class BaseTask(object):
         Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
         """
         return InnerFileChanged(cls)
+
+    # -- graph specyfic --
+    @classmethod
+    def write_graph_detailed(cls, datalog):
+        if not cls.name in cls.detailed:
+            cls.detailed.append(cls.name())
+            datalog.write('"%s" [%s];\n' % (cls.name(), cls.get_graph_details()))
+
+    @classmethod
+    def get_graph_details(cls):
+        shape = 'box'
+        color = 'white'
+        if AlwaysRebuild in [type(dependency) for dependency in cls.dependencys]:
+            shape = 'hexagon'
+            color = 'grey'
+        if cls._get_runned():
+            color = 'red'
+
+        return 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)
 
 
 def AddTask(cls):
