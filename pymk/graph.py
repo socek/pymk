@@ -1,4 +1,5 @@
 from pymk.task import TaskData
+from pymk.dependency import AlwaysRebuild
 from tempfile import TemporaryFile, NamedTemporaryFile
 from subprocess import Popen
 
@@ -17,6 +18,8 @@ def draw_graph(filename):
     datalog.write('digraph {\n')
     for task in TaskData._all_tasks:
         for dep in task.dependencys:
+            if type(dep) == AlwaysRebuild:
+                continue
             dep.write_graph_detailed(datalog)
             datalog.write('"%s" -> %s %s;\n' % (dep.name, task.name(), dep.extra()))
         task.write_graph_detailed(datalog)
@@ -30,6 +33,8 @@ def draw_done_task_graph(filename, tasks):
     def write_task_to_datalog(datalog, task, parent=None):
         if hasattr(task, 'dependencys'):
             for dep in task.dependencys:
+                if type(dep) == AlwaysRebuild:
+                    continue
                 if hasattr(dep, 'parent'):
                     write_task_to_datalog(datalog, dep.parent)
                 else:

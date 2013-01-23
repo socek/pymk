@@ -142,7 +142,7 @@ class BaseTask(object):
         shape = 'box'
         color = 'white'
         if AlwaysRebuild in [type(dependency) for dependency in cls.dependencys]:
-            shape = 'hexagon'
+            shape = 'circle'
             color = 'grey'
         if cls._get_runned():
             color = 'red'

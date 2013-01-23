@@ -39,9 +39,12 @@ def run_tasks(mkfile, args):
 
     def run_default_task_or_list_all_tasks():
         try:
-            mkfile._DEFAULT.run(force=args.force,
-                                dependency_force=args.dependency_force)
-            return 'run default'
+            if args.graph:
+                return 'do graph of all'
+            else:
+                mkfile._DEFAULT.run(force=args.force,
+                                    dependency_force=args.dependency_force)
+                return 'run default'
         except AttributeError:
             return list_all_tasks()
 
@@ -86,8 +89,6 @@ def run():
                             help='Force task to rebuild.')
         parser.add_argument('-g', '--graph', dest='graph',
                             help='Draw a graph of tasks to a file.')
-        parser.add_argument('-t', '--task-graph', dest='task_graph',
-                            help='Draw a graph of runned tasks to a file.')
         parser.add_argument(
             '-d', '--dependency-force', dest='dependency_force', action='store_true',
             help='Force depedency to rebuild (use only with --force).')
@@ -114,32 +115,32 @@ def run():
         log.error("No mkfile.py file found!")
         return 1
 
-    if args.graph:
-        draw_graph(args.graph)
-    else:
-        try:
-            run_tasks(module, args)
-        except CommandError as er:
-            log.error(er)
-            return 2
-        except BadTaskName as er:
-            log.error(er)
-            return 3
-        except TaskMustHaveOutputFile as er:
-            log.error(er)
-            return 4
-        except CouldNotCreateFile as er:
-            log.error(er)
-            return 5
-        except KeyboardInterrupt:
-            log.error('\rCommand aborted!')
-            return 6
-        finally:
-            if len(args.task) == 0:
-                tasks = [module._DEFAULT]
-            else:
-                tasks = [TaskData.TASKS[task] for task in args.task]
+    try:
+        run_tasks(module, args)
+    except CommandError as er:
+        log.error(er)
+        return 2
+    except BadTaskName as er:
+        log.error(er)
+        return 3
+    except TaskMustHaveOutputFile as er:
+        log.error(er)
+        return 4
+    except CouldNotCreateFile as er:
+        log.error(er)
+        return 5
+    except KeyboardInterrupt:
+        log.error('\rCommand aborted!')
+        return 6
+    finally:
+        if len(args.task) == 0:
+            tasks = False
+        else:
+            tasks = [TaskData.TASKS[task] for task in args.task]
 
-            from pymk.graph import draw_done_task_graph
-            if args.task_graph:
-                draw_done_task_graph(args.task_graph,tasks)
+        from pymk.graph import draw_done_task_graph
+        if args.graph:
+            if tasks:
+                draw_done_task_graph(args.graph, tasks)
+            else:
+                draw_graph(args.graph)
