@@ -135,6 +135,11 @@ def run():
             log.error('\rCommand aborted!')
             return 6
         finally:
+            if len(args.task) == 0:
+                tasks = [module._DEFAULT]
+            else:
+                tasks = [TaskData.TASKS[task] for task in args.task]
+
             from pymk.graph import draw_done_task_graph
             if args.task_graph:
-                draw_done_task_graph(args.task_graph)
+                draw_done_task_graph(args.task_graph,tasks)

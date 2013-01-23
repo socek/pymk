@@ -7,7 +7,6 @@ class BaseDependency(object):
     detailed = []
 
     def __init__(self):
-        self.extra = ''
         self.runned = False
 
     def __call__(self, task, dependency_force=False):
@@ -19,6 +18,9 @@ class BaseDependency(object):
         return self.runned
 
     # === graph specyfic ===
+    def extra(self):
+        return ''
+
     def get_graph_name(self):
         return '"' + self.name + '"'
 
@@ -36,6 +38,7 @@ class BaseDependency(object):
             self.detailed.append(self.name)
             datalog.write('"%s" [fillcolor=%s,%s];\n' % (self.name, self._get_shape_color(), self.get_graph_details()))
 
+
 class FileChanged(BaseDependency):
     """Dependency returns true if file provided was changed. If task argument is
     provided, then run that task if it should be done."""
@@ -44,7 +47,6 @@ class FileChanged(BaseDependency):
         super(FileChanged, self).__init__()
         self.filename = filename
         self.task = task
-        self.extra = '[label="C"]'
 
     def do_test(self, task, dependency_force=False):
         if dependency_force:
@@ -73,6 +75,12 @@ class FileChanged(BaseDependency):
             raise error.TaskMustHaveOutputFile(task.name())
 
     # === graph specyfic ===
+    def extra(self):
+        if self.runned:
+            return '[label="C",color="red"]'
+        else:
+            return '[label="C"]'
+
     @property
     def name(self):
         return self.filename
@@ -89,7 +97,6 @@ class FileDoesNotExists(BaseDependency):
     def __init__(self, filename):
         super(FileDoesNotExists, self).__init__()
         self.filename = filename
-        self.extra = '[label="NE"]'
 
     def do_test(self, task, dependency_force=False):
         if dependency_force:
@@ -97,6 +104,12 @@ class FileDoesNotExists(BaseDependency):
         return not os.path.exists(self.filename)
 
     # === graph specyfic ===
+    def extra(self):
+        if self.runned:
+            return '[label="NE",color="red"]'
+        else:
+            return '[label="NE"]'
+
     @property
     def name(self):
         return self.filename
@@ -106,17 +119,23 @@ class FileDoesNotExists(BaseDependency):
             self.name.replace('/', '\\n')
         )
 
+
 class AlwaysRebuild(BaseDependency):
     """Dependency will always make a task rebuild."""
 
     def __init__(self):
         super(AlwaysRebuild, self).__init__()
-        self.extra = '[label="A",color="red"]'
 
     def do_test(self, task, dependency_force=False):
         return True
 
     # === graph specyfic ===
+    def extra(self):
+        if self.runned:
+            return '[label="A",color="red"]'
+        else:
+            return '[label="A"]'
+
     @property
     def name(self):
         return id(self)
@@ -141,7 +160,6 @@ class InnerFileExists(InnerDependency):
 
     def __init__(self, parent):
         super(InnerFileExists, self).__init__(parent)
-        self.extra = '[label="E"]'
 
     def do_test(self, task, dependency_force=False):
         if dependency_force:
@@ -157,15 +175,28 @@ class InnerFileExists(InnerDependency):
         else:
             raise error.TaskMustHaveOutputFile(self.parent.name())
 
+    # === graph specyfic ===
+    def extra(self):
+        if self.runned:
+            return '[label="E",color="red"]'
+        else:
+            return '[label="E"]'
+
 
 class InnerFileChanged(InnerDependency):
 
     def __init__(self, parent):
         super(InnerFileChanged, self).__init__(parent)
-        self.extra = '[label="C"]'
 
     def do_test(self, task, dependency_force=False):
         if dependency_force:
             self.parent.run(True, True, True, parent=task)
         ret = self.parent.run(False, parent=task)
         return FileChanged(self.parent.output_file, self.parent)(task) or ret
+
+    # === graph specyfic ===
+    def extra(self):
+        if self.runned:
+            return '[label="C",color="red"]'
+        else:
+            return '[label="C"]'
