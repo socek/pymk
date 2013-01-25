@@ -8,6 +8,7 @@
   * added generating of graph
   * changed all dependencys to classes
     WARNING: This is not backward compatible!
+  * added help feature
 
 0.1.4 / 2012-12-20
 ==================

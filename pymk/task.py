@@ -32,6 +32,7 @@ class BaseTask(object):
     output_file = None
     detailed = []
     _runned = {}
+    help = ''
 
     @classmethod
     def name(cls):

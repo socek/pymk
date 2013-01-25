@@ -32,8 +32,16 @@ def import_mkfile():
 
 def run_tasks(mkfile, args):
     def list_all_tasks():
-        text = 'Avalible tasks:\n\t'
-        text += '\n\t'.join(list(TaskData.TASKS.keys()))
+        text = 'Avalible tasks:\n'
+        task_names_size = 0
+        for name in TaskData.TASKS.keys():
+            if len(name) > task_names_size:
+                task_names_size = len(name)
+        task_names_size += 2
+        template = '\t%-' + str(task_names_size) + 's %s\n'
+        for name, task in TaskData.TASKS.items():
+            text += template %(task.name(), task.help)
+
         log.info(text)
         return 'list all'
 
@@ -136,7 +144,10 @@ def run():
         if len(args.task) == 0:
             tasks = False
         else:
-            tasks = [TaskData.TASKS[task] for task in args.task]
+            try:
+                tasks = [TaskData.TASKS[task] for task in args.task]
+            except KeyError:
+                pass
 
         from pymk.graph import draw_done_task_graph
         if args.graph:
