@@ -1,4 +1,4 @@
-0.1.5 / 2013-??-??
+0.2.0 / 2013-??-??
 ==================
 
   * "dependency" is now always needed in BastTask class. Now if it is not an list,

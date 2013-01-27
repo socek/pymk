@@ -4,9 +4,44 @@ import logging
 from pymk.task import TaskData
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile
 from pymk.graph import draw_graph
+from pymk.extra import run_cmd
 import argparse
 
 log = logging.getLogger('pymk')
+
+
+def make_graph(args, is_graphviz):
+    from pymk.graph import draw_done_task_graph
+
+    def make_task_list():
+        if len(args.task) == 0:
+            return False
+        else:
+            try:
+                return [TaskData.TASKS[task] for task in args.task]
+            except KeyError:
+                return False
+        return tasks
+    #---------------------------------------------------------------------------
+    if is_graphviz:
+        tasks = make_task_list()
+
+        if tasks:
+            draw_done_task_graph(args.graph, tasks)
+        else:
+            draw_graph(args.graph)
+    else:
+        log.error('ERROR: No dot executable found!')
+
+
+def check_for_graphviz(args):
+    if args.graph:
+        try:
+            run_cmd('which dot')
+            return True
+        except CommandError:
+            pass
+    return False
 
 
 def append_python_path(cwd=None):
@@ -40,7 +75,7 @@ def run_tasks(mkfile, args):
         task_names_size += 2
         template = '\t%-' + str(task_names_size) + 's %s\n'
         for name, task in TaskData.TASKS.items():
-            text += template %(task.name(), task.help)
+            text += template % (task.name(), task.help)
 
         log.info(text)
         return 'list all'
@@ -112,6 +147,7 @@ def run():
             raise WrongArgumentValue(
                 'Wrong argument for log! Avalible are: "debug" and "info".')
     #-------------------------------------------------------------------------
+
     try:
         args = parse_command()
         start_loggin(args)
@@ -119,6 +155,7 @@ def run():
         TaskData.init()
         module = import_mkfile()
         TaskData.initTasks()
+        is_graphviz = check_for_graphviz(args)
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1
@@ -141,17 +178,5 @@ def run():
         log.error('\rCommand aborted!')
         return 6
     finally:
-        if len(args.task) == 0:
-            tasks = False
-        else:
-            try:
-                tasks = [TaskData.TASKS[task] for task in args.task]
-            except KeyError:
-                pass
-
-        from pymk.graph import draw_done_task_graph
         if args.graph:
-            if tasks:
-                draw_done_task_graph(args.graph, tasks)
-            else:
-                draw_graph(args.graph)
+            make_graph(args, is_graphviz)
