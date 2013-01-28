@@ -9,7 +9,7 @@ class CouldNotCreateFile(PymkError):
         self.filename = filename
 
     def __str__(self):
-        return 'Could not create file %s' % (self.filename)
+        return 'Error: Could not create file %s' % (self.filename)
 
 
 class TaskAlreadyExists(PymkError):
@@ -18,7 +18,7 @@ class TaskAlreadyExists(PymkError):
         self.task_name = task_name
 
     def __str__(self):
-        return 'Task name already exists "%s".' % (self.task_name)
+        return 'Error: Task name already exists "%s".' % (self.task_name)
 
 
 class NoMkfileFound(PymkError):
@@ -32,7 +32,7 @@ class CommandError(PymkError):
         self.text = text
 
     def __str__(self):
-        return 'Command error (%d): %s' % (self.number, self.text)
+        return 'Error: Command error (%d): %s' % (self.number, self.text)
 
 
 class BadTaskName(PymkError):
@@ -41,7 +41,7 @@ class BadTaskName(PymkError):
         self.taskname = taskname
 
     def __str__(self):
-        return 'Bad task name: %s' % (self.taskname)
+        return 'Error: Bad task name: %s' % (self.taskname)
 
 
 class WrongArgumentValue(PymkError):
@@ -57,7 +57,8 @@ class TaskMustHaveOutputFile(PymkError):
         self.name = name
 
     def __str__(self):
-        return 'Taks must have output_file setted: %s' % (self.name)
+        return 'Error: Taks must have output_file setted: %s' % (self.name)
+
 
 class NoDependencysInAClass(PymkError):
     """NoDependencysInAClass is raised when no depedencys attribute was provided,
@@ -66,4 +67,16 @@ class NoDependencysInAClass(PymkError):
         self.cls = cls
 
     def __str__(self):
-        return 'Class %s has no "dependencys" attribute or it has wrong name.' %(self.cls.__name__)
+        return 'Error: Class %s has no "dependencys" attribute or it has wrong name.' % (self.cls.__name__)
+
+
+class NotADependencyError(PymkError):
+    """NotADependencyError is raised when some object in dependency list are not
+    an object inherited from pymk.dependency.BaseDependency."""
+
+    def __init__(self, dependency, task):
+        self.dependency = dependency
+        self.task = task
+
+    def __str__(self):
+        return 'Error: Object "%s" of a task "%s" is not a dependency!' % (str(self.dependency.__name__), self.task.__name__)

@@ -1,7 +1,7 @@
 import os
 import logging
-from pymk.error import TaskAlreadyExists, NoDependencysInAClass
-from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild
+from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
+from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, BaseDependency
 
 logger = logging.getLogger('pymk')
 
@@ -18,6 +18,9 @@ class TaskData(object):
                 cls._all_tasks.append(subcls)
                 if subcls.dependencys == None:
                     raise NoDependencysInAClass(subcls)
+                for dependency in subcls.dependencys:
+                    if not issubclass(type(dependency), BaseDependency):
+                        raise NotADependencyError(dependency, subcls)
 
     @classmethod
     def init(cls):

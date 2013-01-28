@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 from pymk.task import TaskData
-from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile
+from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError
 from pymk.graph import draw_graph
 from pymk.extra import run_cmd
 import argparse
@@ -159,6 +159,9 @@ def run():
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1
+    except NotADependencyError as er:
+        log.error(er)
+        return 7
 
     try:
         run_tasks(module, args)
