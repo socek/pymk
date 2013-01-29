@@ -16,6 +16,7 @@ class ArgsMockup(object):
         self.task = []
         self.force = False
         self.dependency_force = False
+        self.graph = False
 
 
 class PymkTestCase(unittest.TestCase):
@@ -43,8 +44,6 @@ class PymkTestCase(unittest.TestCase):
             self._normal_path, 'pymk', 'tests', 'tmpl', name + '.tpl')
         template = open(template_path).read()
         out_data = template % vars
-        if not out_path:
-            out_path = name
         out_file = open(out_path, 'w')
         out_file.write(out_data)
         out_file.close()

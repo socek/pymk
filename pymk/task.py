@@ -42,10 +42,7 @@ class BaseTask(object):
         """name() -> str
         Returns name of the tasks provided by class value _name, or just classname if _name == None.
         """
-        if cls._name:
-            return cls._name
-        else:
-            return cls.__name__
+        return cls.__name__
 
     @classmethod
     def _set_runned(cls, value):
