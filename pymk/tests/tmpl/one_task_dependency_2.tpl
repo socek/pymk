@@ -1,8 +1,7 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 from pymk.dependency import FileChanged
 
-@AddTask
-class task_3(BaseTask):
+class task_3(Task):
 
     dependencys = [
         FileChanged('test.txt'),

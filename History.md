@@ -9,6 +9,7 @@
   * changed all dependencys to classes
     WARNING: This is not backward compatible!
   * added help feature
+  * changed generathing data from decorator to metaclass.
 
 0.1.4 / 2012-12-20
 ==================

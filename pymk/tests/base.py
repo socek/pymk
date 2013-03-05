@@ -6,7 +6,7 @@ import tempfile
 import logging
 from time import sleep
 
-from pymk.script import import_mkfile, run_tasks, TaskData
+from pymk.script import import_mkfile, run_tasks, TaskMeta
 from pymk.extra import touch
 
 
@@ -49,9 +49,8 @@ class PymkTestCase(unittest.TestCase):
         out_file.close()
 
     def _import_mkfile(self):
-        TaskData.init()
+        TaskMeta.init()
         self._mkfile = import_mkfile()
-        TaskData.initTasks()
 
     def _pymk(self):
         return run_tasks(self._mkfile, self._args)

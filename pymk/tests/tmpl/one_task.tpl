@@ -1,11 +1,10 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 
 
-@AddTask
-class task_1(BaseTask):
+class task_1(Task):
 
     dependencys = []
-    
+
     def build(self):
         fp = open('a.out', 'a')
         fp.write(self.__class__.__name__)

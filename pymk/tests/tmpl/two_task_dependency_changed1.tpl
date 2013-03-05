@@ -1,8 +1,7 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 from pymk.extra import touch
 
-@AddTask
-class task_8b(BaseTask):
+class task_8b(Task):
     output_file = 'b.out'
 
     dependencys = []
@@ -14,8 +13,7 @@ class task_8b(BaseTask):
         fp.close()
         touch(self.output_file)
 
-@AddTask
-class task_8a(BaseTask):
+class task_8a(Task):
     output_file = 'a.out'
 
     dependencys = [

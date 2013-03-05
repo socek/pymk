@@ -82,3 +82,6 @@ class RunCmdTest(PymkTestCase):
 
     def test_fail(self):
         self.assertRaises(Perror.CommandError, extra.run_cmd, ['ls *.py'])
+
+    def test_fail_with_show_enabled(self):
+        self.assertRaises(Perror.CommandError, extra.run_cmd, ['ls *.py'], True)

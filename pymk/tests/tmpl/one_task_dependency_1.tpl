@@ -1,8 +1,7 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 from pymk.dependency import FileDoesNotExists
 
-@AddTask
-class task_2(BaseTask):
+class task_2(Task):
 
     dependencys = [
         FileDoesNotExists('test.txt'),

@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from pymk.task import TaskData
+from pymk.task import TaskMeta
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError
 from pymk.graph import draw_graph
 from pymk.extra import run_cmd
@@ -18,7 +18,7 @@ def make_graph(args, is_graphviz):
             return False
         else:
             try:
-                return [TaskData.TASKS[task] for task in args.task]
+                return [TaskMeta.tasks[task] for task in args.task]
             except KeyError:
                 return False
         return tasks
@@ -69,12 +69,12 @@ def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n'
         task_names_size = 0
-        for name in TaskData.TASKS.keys():
+        for name in TaskMeta.tasks.keys():
             if len(name) > task_names_size:
                 task_names_size = len(name)
         task_names_size += 2
         template = '\t%-' + str(task_names_size) + 's %s\n'
-        for name, task in TaskData.TASKS.items():
+        for name, task in TaskMeta.tasks.items():
             text += template % (task.name(), task.help)
 
         log.info(text)
@@ -94,7 +94,7 @@ def run_tasks(mkfile, args):
     def run_all_inputet_tasks():
         for task in args.task:
             try:
-                TaskData.TASKS[task].run(force=args.force,
+                TaskMeta.tasks[task].run(force=args.force,
                                          dependency_force=args.dependency_force)
             except KeyError:
                 raise BadTaskName(task)
@@ -152,9 +152,7 @@ def run():
         args = parse_command()
         start_loggin(args)
         append_python_path()
-        TaskData.init()
         module = import_mkfile()
-        TaskData.initTasks()
         is_graphviz = check_for_graphviz(args)
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")

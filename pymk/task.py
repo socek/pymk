@@ -6,36 +6,45 @@ from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Ba
 logger = logging.getLogger('pymk')
 
 
-class TaskData(object):
-    """Info about collected tasks."""
-    TASKS = None
-    _all_tasks = []
+class TaskMeta(type):
+    tasks = {}
 
-    @classmethod
-    def initTasks(cls):
-        for subcls in BaseTask.__subclasses__():
-            if not subcls in cls._all_tasks:
-                cls._all_tasks.append(subcls)
-                if subcls.dependencys == None:
-                    raise NoDependencysInAClass(subcls)
-                for dependency in subcls.dependencys:
-                    if not issubclass(type(dependency), BaseDependency):
-                        raise NotADependencyError(dependency, subcls)
+    def __init__(cls, name, bases, dct):
+        def check_if_task_exists(name):
+            if name in list(TaskMeta.tasks):
+                raise TaskAlreadyExists(name)
+
+        def validate_dependency(cls):
+            if cls.dependencys == None:
+                raise NoDependencysInAClass(cls)
+            for dependency in cls.dependencys:
+                if not issubclass(type(dependency), BaseDependency):
+                    raise NotADependencyError(dependency, cls)
+        #-----------------------------------------------------------------------
+        if name != 'Task':
+            check_if_task_exists(name)
+            TaskMeta.tasks[name] = cls
+            validate_dependency(cls)
 
     @classmethod
     def init(cls):
         """Init new task collection."""
-        cls.TASKS = {}
+        cls.tasks = {}
 
 
-class BaseTask(object):
+class Task(object):
     """Base of all taks."""
+
+    __metaclass__ = TaskMeta
+
     dependencys = None
     _name = None
     output_file = None
     detailed = []
     _runned = {}
     help = ''
+    hide = False
+    hide_graph = False
 
     @classmethod
     def name(cls):
@@ -105,7 +114,8 @@ class BaseTask(object):
             try:
                 cls().build()
             finally:
-                return cls._set_runned(True)
+                runned = cls._set_runned(True)
+            return runned
         else:
             if log_uptodate:
                 logger.info(" * '%s' is up to date" % (cls.name()))
@@ -134,7 +144,7 @@ class BaseTask(object):
     # -- graph specyfic --
     @classmethod
     def write_graph_detailed(cls, datalog):
-        if not cls.name in cls.detailed:
+        if not cls.hide_graph and not cls.name in cls.detailed:
             cls.detailed.append(cls.name())
             datalog.write('"%s" [%s];\n' % (cls.name(), cls.get_graph_details()))
 
@@ -149,14 +159,3 @@ class BaseTask(object):
             color = 'red'
 
         return 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)
-
-
-def AddTask(cls):
-    """
-    Decorator that adds task to task list.
-    """
-    name = cls.name()
-    if name in TaskData.TASKS:
-        raise TaskAlreadyExists(name)
-    TaskData.TASKS[name] = cls
-    return cls

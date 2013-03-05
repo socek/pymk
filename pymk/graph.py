@@ -1,4 +1,4 @@
-from pymk.task import TaskData
+from pymk.task import TaskMeta
 from pymk.dependency import AlwaysRebuild
 from tempfile import TemporaryFile, NamedTemporaryFile
 from subprocess import Popen
@@ -16,7 +16,7 @@ def run_dot(pipe, filename):
 def draw_graph(filename):
     datalog = NamedTemporaryFile('wr', delete=False)
     datalog.write('digraph {\n')
-    for task in TaskData._all_tasks:
+    for task in TaskMeta.tasks.values():
         for dep in task.dependencys:
             if type(dep) == AlwaysRebuild:
                 continue

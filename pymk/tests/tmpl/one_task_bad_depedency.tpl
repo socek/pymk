@@ -1,8 +1,7 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 
 
-@AddTask
-class task_20(BaseTask):
+class task_20(Task):
 
     dependencys = [int]
 

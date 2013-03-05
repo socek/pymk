@@ -1,9 +1,8 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 from pymk.extra import touch
 from pymk.dependency import AlwaysRebuild
 
-@AddTask
-class task_16c(BaseTask):
+class task_16c(Task):
     output_file = 'c.out'
 
     dependencys = []
@@ -15,8 +14,7 @@ class task_16c(BaseTask):
         fp.close()
         touch(self.output_file)
 
-@AddTask
-class task_16b(BaseTask):
+class task_16b(Task):
     output_file = 'b.out'
 
     dependencys = [
@@ -30,8 +28,7 @@ class task_16b(BaseTask):
         fp.close()
         touch(self.output_file)
 
-@AddTask
-class task_16a(BaseTask):
+class task_16a(Task):
     output_file = 'a.out'
 
     dependencys = [

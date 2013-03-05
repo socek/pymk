@@ -1,8 +1,7 @@
-from pymk.task import BaseTask, AddTask
+from pymk.task import Task
 
 
-@AddTask
-class task_5(BaseTask):
+class task_5(Task):
     output_file = 'a.out'
 
     dependencys = []
