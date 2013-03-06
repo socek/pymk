@@ -69,13 +69,15 @@ def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n'
         task_names_size = 0
-        for name in TaskMeta.tasks.keys():
-            if len(name) > task_names_size:
-                task_names_size = len(name)
+        for name, task in TaskMeta.tasks.items():
+            if not task.hide:
+                if len(name) > task_names_size:
+                    task_names_size = len(name)
         task_names_size += 2
         template = '\t%-' + str(task_names_size) + 's %s\n'
         for name, task in TaskMeta.tasks.items():
-            text += template % (task.name(), task.help)
+            if not task.hide:
+                text += template % (task.name(), task.help)
 
         log.info(text)
         return 'list all'
