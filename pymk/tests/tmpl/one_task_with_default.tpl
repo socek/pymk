@@ -11,4 +11,6 @@ class task_0(Task):
         fp.write('\n')
         fp.close()
 
-_DEFAULT=task_0
+SETTINGS = {
+    'default task' : task_0,
+}

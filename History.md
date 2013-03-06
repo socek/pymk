@@ -10,6 +10,8 @@
     WARNING: This is not backward compatible!
   * added help feature
   * changed generathing data from decorator to metaclass.
+  * added hidding tasks.
+  * added settings instead of _DEFAULT value.
 
 0.1.4 / 2012-12-20
 ==================

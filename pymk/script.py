@@ -87,7 +87,7 @@ def run_tasks(mkfile, args):
             if args.graph:
                 return 'do graph of all'
             else:
-                mkfile._DEFAULT.run(force=args.force,
+                mkfile.SETTINGS['default task'].run(force=args.force,
                                     dependency_force=args.dependency_force)
                 return 'run default'
         except AttributeError:
