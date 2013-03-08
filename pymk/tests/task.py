@@ -1,6 +1,4 @@
 import os
-from time import sleep
-from pymk import extra
 from pymk.script import import_mkfile
 from pymk.tests.base import PymkTestCase
 import pymk.error as Perror

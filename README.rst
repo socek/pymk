@@ -2,7 +2,7 @@ Introduction
 ============
 
 pymk is a script that provides the sam functionality that "makefile" does, but
-the "makefile" (mkfile.py) is a python script. Code of mkfile.py is cleared, and
+the "makefile" (mkfile.py) is a python script. Code of mkfile.py is clean, and
 it can do more things (like check all files from all folders and subfolders named
 "migrations").
 
@@ -23,12 +23,10 @@ of taks and will find nothing.
 
 Now we need to make simple task. Put this in mkfile.py
 ::
-    from pymk.task import BaseTask, AddTask
+    from pymk.task import Task
 
-    @AddTask
-    class task(BaseTask):
-
-        @classmethod
+    class task(Task):
+        dependencys = []
         def build(cls):
             print 'Hello'
 
@@ -44,7 +42,9 @@ And now we can execute
 If you want pymk to run some task by default, just put this line at the end of
 the mkfile.py
 ::
-    _DEFAULT=task
+    SETTINGS = {
+        'default task' : task,
+    }
 
 And run
 ::
@@ -56,19 +56,20 @@ Ok, but now our task are build every time we make it. We need to make a file in
 our script, and point which file we are creating. Out mkfile.py should look like
 this
 ::
-    from pymk.task import BaseTask, AddTask
+    from pymk.task import Task
     from pymk.extra import touch
 
-    @AddTask
-    class task(BaseTask):
+    class task(Task):
+        dependencys = []
 
         output_file = 'a.out'
 
-        @classmethod
         def build(cls):
             touch(cls.output_file)
 
-    _DEFAULT=task
+    SETTINGS = {
+        'default task' : task,
+    }
 
 And then we execute
 ::
@@ -76,29 +77,29 @@ And then we execute
      * Building 'task'
     $ pymk
     * 'task' is up to date
-    $ cat a.out
-    bulded!
+    $ ls a.out
+    a.out
 
 And now we start playing. We need some dependency. Here's the file
 ::
-    from pymk.task import BaseTask, AddTask
+    from pymk.task import Task
     from pymk.dependency import FileChanged
 
-    @AddTask
-    class task(BaseTask):
+    class task(Task):
         output_file = 'a.out'
 
         dependencys = [
             FileChanged('b.out'),
         ]
 
-        @classmethod
         def build(cls):
             fp = open(cls.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
-    _DEFAULT=task
+    SETTINGS = {
+        'default task' : task,
+    }
 
 We can now try:
 ::
@@ -126,34 +127,33 @@ is implemented for files that can changed by external programs (or programmers).
 If we need a task depedency, like "if task changed, rebuild me" we can make something
 like that
 ::
-    from pymk.task import BaseTask, AddTask
-    from pymk.dependency import FileChanged
+    from pymk.task import Task
 
-    @AddTask
-    class secon_task(BaseTask):
+    class secon_task(Task):
         output_file = 'b.out'
 
-        @classmethod
+        dependencys = []
+
         def build(cls):
             fp = open(cls.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
-    @AddTask
-    class task(BaseTask):
+    class task(Task):
         output_file = 'a.out'
 
         dependencys = [
-            secon_task.dependency_FileChanged,
+            secon_task.dependency_FileChanged(),
         ]
 
-        @classmethod
         def build(cls):
             fp = open(cls.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
-    _DEFAULT=task
+    SETTINGS = {
+        'default task' : task,
+    }
 
 And new can run this:
 ::
@@ -166,8 +166,3 @@ And new can run this:
     $ touch b.out
     $ pymk
      * Building 'task'
-
-
-Documentation
-=============
-API documentation can be founded here: http://socek.org/pymk/doc/
