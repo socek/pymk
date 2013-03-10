@@ -3,6 +3,7 @@ import logging
 from . import task
 from . import dependency
 from . import extra
+from . import error
 
 all_test_cases = [
     task.TaskTest,
@@ -13,10 +14,14 @@ all_test_cases = [
     dependency.FileDoesNotExistsDependencyTest,
     dependency.FileChangedDependencyTest,
     dependency.AlwaysRebuildDependencyTest,
+    dependency.InnerFileExistsTest,
+    dependency.InnerFileChangedTest,
 
     extra.TouchTest,
     extra.FindFilesTest,
     extra.RunCmdTest,
+
+    error.ErrorsTests,
 ]
 
 

@@ -18,14 +18,14 @@ class BaseDependency(object):
         return self.runned
 
     # === graph specyfic ===
-    def extra(self):
-        return ''
+    # def extra(self):
+    #     return ''
 
     def get_graph_name(self):
-        return '"' + self.name + '"'
+        return '"' + str(self.name) + '"'
 
-    def get_graph_details(self):
-        return ''
+    # def get_graph_details(self):
+    #     return ''
 
     def _get_shape_color(self):
         if self.runned:
@@ -49,30 +49,41 @@ class FileChanged(BaseDependency):
         self.task = task
 
     def do_test(self, task, dependency_force=False):
+        def raise_error_if_task_has_no_output_file(task):
+            if task is None:
+                return
+            if task.output_file is None:
+                raise error.TaskMustHaveOutputFile(task.name())
+
+        def compare_mtime(first, second):
+            if os.path.getmtime(first) > os.path.getmtime(second):
+                return True
+            else:
+                return False
+
+        def make_dependent_file():
+            self.task.run(False)
+            return True
+
+        def check_dependent_file():
+            try:
+                return compare_mtime(self.filename, task.output_file)
+            except OSError:
+                return make_dependent_file()
+        #-----------------------------------------------------------------------
+        raise_error_if_task_has_no_output_file(task)
+        raise_error_if_task_has_no_output_file(self.task)
+
         if dependency_force:
             return True
-        if task.output_file:
-            if self.task and not self.task.output_file:
-                raise error.TaskMustHaveOutputFile(self.task.name())
-            if os.path.exists(task.output_file):
-                try:
-                    if os.path.getmtime(self.filename) > os.path.getmtime(task.output_file):
-                        return True
-                    else:
-                        return False
-                except OSError:
-                    if self.task:
-                        self.task.run(False)
-                        return True
-                    else:
-                        raise error.CouldNotCreateFile(self.filename)
-            else:
-                if os.path.exists(self.filename):
-                    return True
-                else:
-                    raise error.CouldNotCreateFile(self.filename)
+
+        if os.path.exists(task.output_file):
+            return check_dependent_file()
         else:
-            raise error.TaskMustHaveOutputFile(task.name())
+            if os.path.exists(self.filename):
+                return True
+            else:
+                raise error.CouldNotCreateFile(self.filename)
 
     # === graph specyfic ===
     def extra(self):

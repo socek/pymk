@@ -1,7 +1,9 @@
 from time import sleep
+import StringIO
 import pymk.error as Perror
-from pymk import extra
+from pymk.dependency import FileChanged, FileDoesNotExists, AlwaysRebuild, InnerFileExists, InnerFileChanged
 from pymk.tests.base import PymkTestCase
+from pymk.task import Task
 
 
 class FileDoesNotExistsDependencyTest(PymkTestCase):
@@ -22,6 +24,27 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self._add_task('task_2')
         self._pymk_runtask([])
         self._pymk_runtask([])
+
+    def test_graph(self):
+        dep = FileDoesNotExists('')
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+
+        dep.runned = True
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+
+        output = StringIO.StringIO()
+        dep.write_graph_detailed(output)
+        self.assertNotEqual(0, len(output.getvalue().strip()))
+
+    def test_check_force(self):
+        dep = FileDoesNotExists('filename')
+        self.assertTrue(dep.do_test(None, True))
 
 
 class FileChangedDependencyTest(PymkTestCase):
@@ -79,6 +102,48 @@ class FileChangedDependencyTest(PymkTestCase):
         sleep(0.001)
         self._pymk_runtask(['task_4', 'task_4'])
 
+    def test_graph(self):
+        dep = FileChanged('filename')
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+        dep.runned = True
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+
+        output = StringIO.StringIO()
+        dep.write_graph_detailed(output)
+        self.assertNotEqual(0, len(output.getvalue().strip()))
+
+    def test_check_force(self):
+        dep = FileChanged('filename')
+        self.assertTrue(dep.do_test(None, True))
+
+    def test_no_output_file(self):
+        task = Task()
+        task.output_file = 'something'
+        task2 = Task()
+        dep = FileChanged('filename', task2)
+        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, task)
+
+    def test_no_output_file2(self):
+        task = Task()
+        task.output_file = 'something'
+        task2 = Task()
+        dep = FileChanged('filename', task)
+        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, task2)
+
+    # def test_output_file_not_found(self):
+    #     task = Task()
+    #     task.output_file = tempfile.NamedTemporaryFile().name
+    #     task2 = Task()
+    #     task2.output_file = tempfile.NamedTemporaryFile().name
+    #     touch(task.output_file)
+    #     dep = FileChanged(task.output_file, task2)
+    #     print dep.do_test(task)
 
 class AlwaysRebuildDependencyTest(PymkTestCase):
     def test_success(self):
@@ -102,3 +167,45 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
             ['task_16c', 'task_16b', 'task_16a', 'task_16b', 'task_16a'])
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a',
                            'task_16b', 'task_16a', 'task_16a'])
+
+    def test_graph(self):
+        dep = AlwaysRebuild()
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+
+        dep.runned = True
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+        self.assertEqual(str, type(dep.get_graph_details()))
+
+        output = StringIO.StringIO()
+        dep.write_graph_detailed(output)
+        self.assertNotEqual(0, len(output.getvalue().strip()))
+
+class InnerFileExistsTest(PymkTestCase):
+    def test_graph(self):
+        dep = InnerFileExists(Task)
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+
+        dep.runned = True
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+
+
+class InnerFileChangedTest(PymkTestCase):
+    def test_graph(self):
+        dep = InnerFileChanged(Task)
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
+
+        dep.runned = True
+
+        self.assertEqual(str, type(dep.extra()))
+        self.assertEqual(str, type(dep.get_graph_name()))
