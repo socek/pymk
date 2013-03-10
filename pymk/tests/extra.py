@@ -85,3 +85,8 @@ class RunCmdTest(PymkTestCase):
 
     def test_fail_with_show_enabled(self):
         self.assertRaises(Perror.CommandError, extra.run_cmd, ['ls *.py'], True)
+
+    def test_providing_string(self):
+        ret = extra.run_cmd('ls', '*.py')
+        self.assertEqual(None, ret[0])
+        self.assertEqual(None, ret[1])

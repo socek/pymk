@@ -1,5 +1,10 @@
+0.2.1 / 2013-?-?
+==================
+  * run_cmd now can use str instead of list for args
+
 0.2.0 / 2013-03-06
 ==================
+  WARNING: This version is not backward compatible!
 
   * "dependency" is now always needed in BastTask class. Now if it is not an list,
     pymk will fail. It is becouse of often,  hidden, TYPO errors.
@@ -7,7 +12,6 @@
   * added template functionality with jinja2
   * added generating of graph
   * changed all dependencys to classes
-    WARNING: This is not backward compatible!
   * added help feature
   * changed generathing data from decorator to metaclass.
   * added hidding tasks.
