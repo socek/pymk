@@ -39,7 +39,7 @@ And run
 * Building 'task'
 Hello
 
-Ok, but now our task are build every time we make it. We need to make a file in
+Ok, but now our task are build every time we change it. We need to make a file in
 our script, and point which file we are creating. Out mkfile.py should look like
 this
 ::

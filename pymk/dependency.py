@@ -2,7 +2,7 @@ import os
 from pymk import error
 
 
-class BaseDependency(object):
+class Dependency(object):
     """Base of all dependencys."""
     detailed = []
 
@@ -39,7 +39,7 @@ class BaseDependency(object):
             datalog.write('"%s" [fillcolor=%s,%s];\n' % (self.name, self._get_shape_color(), self.get_graph_details()))
 
 
-class FileChanged(BaseDependency):
+class FileChanged(Dependency):
     """Dependency returns true if file provided was changed. If task argument is
     provided, then run that task if it should be done."""
 
@@ -102,7 +102,7 @@ class FileChanged(BaseDependency):
         )
 
 
-class FileDoesNotExists(BaseDependency):
+class FileDoesNotExists(Dependency):
     """Dependency returns ture if file does not exists."""
 
     def __init__(self, filename):
@@ -131,7 +131,7 @@ class FileDoesNotExists(BaseDependency):
         )
 
 
-class AlwaysRebuild(BaseDependency):
+class AlwaysRebuild(Dependency):
     """Dependency will always make a task rebuild."""
 
     def __init__(self):
@@ -155,7 +155,7 @@ class AlwaysRebuild(BaseDependency):
         return 'shape=diamond, regular=1,style=filled,fillcolor=red,label="Always\\nRebuild"'
 
 
-class InnerDependency(BaseDependency):
+class InnerDependency(Dependency):
 
     def __init__(self, parent):
         super(InnerDependency, self).__init__()

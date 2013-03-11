@@ -1,7 +1,7 @@
 import os
 import logging
 from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
-from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, BaseDependency
+from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Dependency
 
 logger = logging.getLogger('pymk')
 
@@ -18,7 +18,7 @@ class TaskMeta(type):
             if cls.dependencys == None:
                 raise NoDependencysInAClass(cls)
             for dependency in cls.dependencys:
-                if not issubclass(type(dependency), BaseDependency):
+                if not issubclass(type(dependency), Dependency):
                     raise NotADependencyError(dependency, cls)
         #-----------------------------------------------------------------------
         if name != 'Task':
@@ -38,13 +38,14 @@ class Task(object):
     __metaclass__ = TaskMeta
 
     dependencys = None
-    _name = None
     output_file = None
-    detailed = []
-    _runned = {}
     help = ''
     hide = False
     hide_graph = False
+
+    _name = None
+    detailed = []
+    _runned = {}
 
     @classmethod
     def name(cls):
@@ -68,8 +69,7 @@ class Task(object):
     @classmethod
     def test_dependencys(cls, dependency_force=False):
         """test_dependencys() -> bool
-        Test all dependency of the task and rebuild the dependency tasks.
-        Return True if this task needs to be rebuilded.
+
         """
         make_rebuild = False
         for dependency in cls.dependencys:
@@ -122,23 +122,11 @@ class Task(object):
             return cls._set_runned(False)
 
     @classmethod
-    def build(cls):
-        """build() -> None
-        What to do with this task to rebuild it. This method needs to be reimplemented after inheriting.
-        """
-
-    @classmethod
     def dependency_FileExists(cls):
-        """dependency_FileExists(cls) -> bool
-        Dependency that will run this task if not crated before.
-        """
         return InnerFileExists(cls)
 
     @classmethod
     def dependency_FileChanged(cls):
-        """dependency_FileChanged(cls, task) -> bool
-        Dependency that will run this task if nessesery and return True if file is newwer then task.output_file.
-        """
         return InnerFileChanged(cls)
 
     # -- graph specyfic --

@@ -6,13 +6,20 @@
 Welcome to pymk's documentation!
 ================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
    intro
    tutorial
+
+Api
+===
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   api/*
 
 
 Indices and tables

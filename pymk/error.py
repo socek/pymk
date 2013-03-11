@@ -72,7 +72,7 @@ class NoDependencysInAClass(PymkError):
 
 class NotADependencyError(PymkError):
     """NotADependencyError is raised when some object in dependency list are not
-    an object inherited from pymk.dependency.BaseDependency."""
+    an object inherited from pymk.dependency.Dependency."""
 
     def __init__(self, dependency, task):
         self.dependency = dependency
