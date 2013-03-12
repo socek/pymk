@@ -90,7 +90,7 @@ def run_tasks(mkfile, args):
                 mkfile.SETTINGS['default task'].run(force=args.force,
                                     dependency_force=args.dependency_force)
                 return 'run default'
-        except AttributeError:
+        except (AttributeError, KeyError):
             return list_all_tasks()
 
     def run_all_inputet_tasks():

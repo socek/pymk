@@ -1,6 +1,7 @@
 0.2.1 / 2013-?-?
 ==================
   * run_cmd now can use str instead of list for args
+  * Fixed pymk settings.
 
 0.2.0 / 2013-03-06
 ==================
