@@ -1,4 +1,4 @@
 ===============
 3. Command line
 ===============
-TODO!
+.. _command-line:

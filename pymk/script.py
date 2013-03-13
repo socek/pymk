@@ -45,9 +45,6 @@ def check_for_graphviz(args):
 
 
 def append_python_path(cwd=None):
-    """append_python_path(cwd) -> None
-    Append provided (or actual cwd if not provided) path to python path.
-    """
     if cwd:
         sys.path.append(cwd)
     else:

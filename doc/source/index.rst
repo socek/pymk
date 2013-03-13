@@ -22,6 +22,16 @@ Api
    api/task
    api/dependency
    api/error
+   api/extra/main
+
+Internal modules
+================
+
+.. toctree::
+   :maxdepth: 2
+
+   api/graph
+   api/script
 
 
 Indices and tables
