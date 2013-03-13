@@ -1,6 +1,10 @@
-========
-Tutorial
-========
+===========
+2. Tutorial
+===========
+
+2.1 Firs mkfile.py
+==================
+
 First, we need to make an empty "mkfile.py". Pymk will try to search for a list
 of taks and will find nothing.
 
@@ -114,8 +118,8 @@ As we can see, a.out will be created when b.out will be changed. This dependency
 is implemented for files that can changed by external programs (or programmers).
 And this is good moment for describing the -g option for pymk (make a graph).
 
-Making tasks graphs
-===================
+2.2 Making tasks graphs
+=======================
 We will change the mkfile a little bit, so we will have two dependencys.
 ::
     from pymk.task import Task
@@ -164,8 +168,8 @@ then only one dependency will be red.
 
 .. image:: ./images/tutorial_phase_5_run3.png
 
-Task dependency with another task
-=================================
+2.3 Task dependency with another task
+=====================================
 
 If we need a task depedency, like "if task changed, rebuild me" we can make something
 like that
@@ -274,8 +278,8 @@ and not when the task is rebuilded? We can use FileExists.
 
 .. image:: ./images/tutorial_phase_7_run2.png
 
-Command task
-============
+2.4 Command task
+================
 Sometimes task will run program instead of creating files (like run deveopers web
 server). For this task the "AlwaysRebuild" dependency is created. When used this
 dependency the task will be always rebuilded.

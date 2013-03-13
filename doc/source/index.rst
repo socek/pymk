@@ -11,15 +11,17 @@ Welcome to pymk's documentation!
 
    intro
    tutorial
+   commandline
 
 Api
 ===
 
 .. toctree::
    :maxdepth: 2
-   :glob:
 
-   api/*
+   api/task
+   api/dependency
+   api/error
 
 
 Indices and tables

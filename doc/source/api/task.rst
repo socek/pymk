@@ -1,6 +1,13 @@
 ======================
-Class: pymk.task.Task
+4.1 Task
 ======================
+
+.. module:: task
+
+4.1.1 Overall
+=============
+
+.. class:: Dependency
 
 .. note::
 
@@ -18,8 +25,8 @@ Class: pymk.task.Task
 
     What to do with this task to rebuild it. This method needs to be reimplemented after inheriting.
 
-Dependency methods
-==================
+4.1.2 Dependency methods
+========================
 
 .. note::
 
@@ -37,8 +44,8 @@ Dependency methods
 
     :return: dependency
 
-Inner methods
-=============
+4.1.3 Inner methods
+===================
 
 .. note::
 
@@ -59,7 +66,7 @@ Inner methods
 
     :param value: bool flag
 
-.. classmethod:: Task.test_dependencys(dependency_force=False))
+.. classmethod:: Task.test_dependencys([dependency_force=False])
 
     Test all dependency of the task and rebuild the dependency tasks.
 
@@ -79,8 +86,8 @@ Inner methods
     :return: ``True`` if this task needs to be rebuilded.
     :rtype: bool
 
-Graph specyfic methods
-======================
+4.1.4 Graph specyfic methods
+============================
 
 .. note::
 

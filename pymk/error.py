@@ -4,7 +4,6 @@ class PymkError(Exception):
 
 
 class CouldNotCreateFile(PymkError):
-    """Raised when there is a file in dependency, but mkfile do not defines how to build it."""
     def __init__(self, filename):
         self.filename = filename
 
@@ -13,7 +12,6 @@ class CouldNotCreateFile(PymkError):
 
 
 class TaskAlreadyExists(PymkError):
-    """Raised when task of that name already exits. Tasks can not be ovverided."""
     def __init__(self, task_name):
         self.task_name = task_name
 
@@ -22,11 +20,10 @@ class TaskAlreadyExists(PymkError):
 
 
 class NoMkfileFound(PymkError):
-    """Raised when the folder in which pymk was used do not have mkfile.py"""
+    pass
 
 
 class CommandError(PymkError):
-    """Raised when external command returns error."""
     def __init__(self, number, text):
         self.number = number
         self.text = text
@@ -36,7 +33,6 @@ class CommandError(PymkError):
 
 
 class BadTaskName(PymkError):
-    """Raised when inputed task name do not exists in mkfile (or was not add as a task with @AddTask)"""
     def __init__(self, taskname):
         self.taskname = taskname
 
@@ -45,14 +41,11 @@ class BadTaskName(PymkError):
 
 
 class WrongArgumentValue(PymkError):
-    """Raised when argument has a list of values, but inputet value is not in this list."""
     def __init__(self, description):
         self.description = description
 
 
 class TaskMustHaveOutputFile(PymkError):
-    """Raised when task has no output_file setted, but the dependency assigned to
-    that task (or to task that this task is assigned as dependency) need this value."""
     def __init__(self, name):
         self.name = name
 
@@ -61,8 +54,6 @@ class TaskMustHaveOutputFile(PymkError):
 
 
 class NoDependencysInAClass(PymkError):
-    """NoDependencysInAClass is raised when no depedencys attribute was provided,
-    or this attribute has wrong name."""
     def __init__(self, cls):
         self.cls = cls
 
@@ -71,8 +62,6 @@ class NoDependencysInAClass(PymkError):
 
 
 class NotADependencyError(PymkError):
-    """NotADependencyError is raised when some object in dependency list are not
-    an object inherited from pymk.dependency.Dependency."""
 
     def __init__(self, dependency, task):
         self.dependency = dependency

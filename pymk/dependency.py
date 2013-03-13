@@ -18,14 +18,14 @@ class Dependency(object):
         return self.runned
 
     # === graph specyfic ===
-    # def extra(self):
-    #     return ''
+    def extra(self):
+        return ''
 
     def get_graph_name(self):
         return '"' + str(self.name) + '"'
 
-    # def get_graph_details(self):
-    #     return ''
+    def get_graph_details(self):
+        return ''
 
     def _get_shape_color(self):
         if self.runned:
