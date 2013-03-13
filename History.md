@@ -2,6 +2,7 @@
 ==================
   * run_cmd now can use str instead of list for args
   * Fixed pymk settings.
+  * Moved templates to module "extra".
 
 0.2.0 / 2013-03-06
 ==================
