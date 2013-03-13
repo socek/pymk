@@ -1,10 +1,14 @@
-.. pymk documentation master file, created by
-   sphinx-quickstart2 on Mon Jan 21 12:57:45 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to pymk's documentation!
 ================================
+pymk
+================================
+
+``pymk`` is a program that provides the sam functionality that ``GNU make`` does,
+but the ``makefile`` (``mkfile.py``) is a python script. Code of ``mkfile.py``
+is clean, and it can do more things then ``makefile`` (like check all files from
+all folders and subfolders with specific name).
+
+Overall
+=================
 
 .. toctree::
    :maxdepth: 2
