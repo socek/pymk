@@ -1,8 +1,10 @@
-0.2.1 / 2013-?-?
+0.2.1 / 2013-03-14
 ==================
+
   * run_cmd now can use str instead of list for args
   * Fixed pymk settings.
   * Moved templates to module "extra".
+    WARNING: This change is not backward compatible!
 
 0.2.0 / 2013-03-06
 ==================

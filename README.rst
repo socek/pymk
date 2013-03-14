@@ -12,6 +12,10 @@ Setting dependency in makefile is not flexible. Supports only "if file is newear
 then rebuild". Pymk can have in it's dependency whatever python code you want.
 Event if you want to check something using network.
 
+Documentation
+=============
+Full documentation can be found here: http://pythonhosted.org/Pymk/
+
 Tutorial
 ========
 First, we need to make an empty "mkfile.py". Pymk will try to search for a list
