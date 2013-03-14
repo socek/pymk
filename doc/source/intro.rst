@@ -19,3 +19,9 @@ Event if you want to check something using network.
 ===========
 Pymk do not have any special project website, by we have a github projcet here:
 https://github.com/socek/pymk
+
+1.4 Install
+===========
+You can install using easy_install or pip:
+
+>>> easy_install pymk
