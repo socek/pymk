@@ -3,6 +3,7 @@ from pymk import error
 
 
 class Dependency(object):
+
     """Base of all dependencys."""
     detailed = []
 
@@ -39,13 +40,32 @@ class Dependency(object):
             datalog.write('"%s" [fillcolor=%s,%s];\n' % (self.name, self._get_shape_color(), self.get_graph_details()))
 
 
-class FileChanged(Dependency):
+class FileDependency(Dependency):
+
+    def __init__(self, filenames):
+        def convert_filenames(filenames):
+            if type(filenames) in [str, unicode]:
+                return [filenames]
+            else:
+                return filenames
+        super(FileDependency, self).__init__()
+        self.filenames = convert_filenames(filenames)
+
+    @property
+    def name(self):
+        if len(self.filenames) == 1:
+            return self.filenames[0]
+        else:
+            return 'Many files'
+
+
+class FileChanged(FileDependency):
+
     """Dependency returns true if file provided was changed. If task argument is
     provided, then run that task if it should be done."""
 
-    def __init__(self, filename, task=None):
-        super(FileChanged, self).__init__()
-        self.filename = filename
+    def __init__(self, filenames, task=None):
+        super(FileChanged, self).__init__(filenames)
         self.task = task
 
     def do_test(self, task, dependency_force=False):
@@ -67,7 +87,10 @@ class FileChanged(Dependency):
 
         def check_dependent_file():
             try:
-                return compare_mtime(self.filename, task.output_file)
+                result = False
+                for filename in self.filenames:
+                    result |= compare_mtime(filename, task.output_file)
+                return result
             except OSError:
                 return make_dependent_file()
         #-----------------------------------------------------------------------
@@ -80,10 +103,10 @@ class FileChanged(Dependency):
         if os.path.exists(task.output_file):
             return check_dependent_file()
         else:
-            if os.path.exists(self.filename):
-                return True
-            else:
-                raise error.CouldNotCreateFile(self.filename)
+            for filename in self.filenames:
+                if not os.path.exists(filename):
+                    raise error.CouldNotCreateFile(filename)
+            return True
 
     # === graph specyfic ===
     def extra(self):
@@ -92,27 +115,24 @@ class FileChanged(Dependency):
         else:
             return '[label="C"]'
 
-    @property
-    def name(self):
-        return self.filename
-
     def get_graph_details(self):
         return 'shape=hexagon,regular=1,style=filled,label="%s"' % (
             self.name.replace('/', '\\n')
         )
 
 
-class FileDoesNotExists(Dependency):
-    """Dependency returns ture if file does not exists."""
+class FileDoesNotExists(FileDependency):
 
-    def __init__(self, filename):
-        super(FileDoesNotExists, self).__init__()
-        self.filename = filename
+    """Dependency returns ture if file does not exists."""
 
     def do_test(self, task, dependency_force=False):
         if dependency_force:
             return True
-        return not os.path.exists(self.filename)
+
+        for filename in self.filenames:
+            if not os.path.exists(filename):
+                return True
+        return False
 
     # === graph specyfic ===
     def extra(self):
@@ -121,10 +141,6 @@ class FileDoesNotExists(Dependency):
         else:
             return '[label="NE"]'
 
-    @property
-    def name(self):
-        return self.filename
-
     def get_graph_details(self):
         return 'shape=triangle, regular=1,style=filled,label="%s"' % (
             self.name.replace('/', '\\n')
@@ -132,6 +148,7 @@ class FileDoesNotExists(Dependency):
 
 
 class AlwaysRebuild(Dependency):
+
     """Dependency will always make a task rebuild."""
 
     def __init__(self):

@@ -7,6 +7,7 @@ from pymk.task import Task
 
 
 class FileDoesNotExistsDependencyTest(PymkTestCase):
+
     def test_make(self):
         self._template('one_task_dependency_1', 'mkfile.py')
         self._import_mkfile()
@@ -45,6 +46,24 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
     def test_check_force(self):
         dep = FileDoesNotExists('filename')
         self.assertTrue(dep.do_test(None, True))
+
+    def test_two_files(self):
+        file1 = 'test.txt'
+        file2 = 'test2.txt'
+        taskname = 'task_22'
+        self._template('one_task_dependency_5', 'mkfile.py')
+        self._import_mkfile()
+
+        self._add_task(taskname)
+
+        self._pymk_runtask([taskname])
+        self._pymk_runtask([taskname, taskname])
+
+        self.touch(file1, None)
+        self._pymk_runtask([taskname, taskname, taskname])
+
+        self.touch(file2, None)
+        self._pymk_runtask([taskname, taskname, taskname])
 
 
 class FileChangedDependencyTest(PymkTestCase):
@@ -102,6 +121,27 @@ class FileChangedDependencyTest(PymkTestCase):
         sleep(0.001)
         self._pymk_runtask(['task_4', 'task_4'])
 
+    def test_FileChanged_two_files(self):
+        file1 = 'test.txt'
+        file2 = 'test2.txt'
+        self._template('one_task_dependency_4', 'mkfile.py')
+        self._import_mkfile()
+
+        self._add_task('task_21')
+
+        self.touch(file1, None)
+        self.touch(file2, None)
+
+        self._pymk_runtask(['task_21'])
+        self._pymk_runtask(['task_21'])
+
+        self.touch(file1)
+        self._pymk_runtask(['task_21', 'task_21'])
+
+        self.touch(file2)
+        self._pymk_runtask(['task_21', 'task_21', 'task_21'])
+        self._pymk_runtask(['task_21', 'task_21', 'task_21'])
+
     def test_graph(self):
         dep = FileChanged('filename')
 
@@ -143,7 +183,9 @@ class FileChangedDependencyTest(PymkTestCase):
         dep = FileChanged('filename', TaskBa)
         self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, TaskBb)
 
+
 class AlwaysRebuildDependencyTest(PymkTestCase):
+
     def test_success(self):
         self._template('three_task_dependency_always1', 'mkfile.py')
         self._import_mkfile()
@@ -183,7 +225,9 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
         dep.write_graph_detailed(output)
         self.assertNotEqual(0, len(output.getvalue().strip()))
 
+
 class InnerFileExistsTest(PymkTestCase):
+
     def test_graph(self):
         dep = InnerFileExists(Task)
 
@@ -197,6 +241,7 @@ class InnerFileExistsTest(PymkTestCase):
 
 
 class InnerFileChangedTest(PymkTestCase):
+
     def test_graph(self):
         dep = InnerFileChanged(Task)
 

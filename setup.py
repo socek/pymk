@@ -10,7 +10,7 @@ dependency_links = [
 
 if __name__ == '__main__':
     setup(name='Pymk',
-          version='0.2.1',
+          version='0.3.0',
           description="Make like program, which reads python script as makefile.",
           author='Dominik "Socek" Długajczyk',
           author_email='msocek@gmail.com',

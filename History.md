@@ -1,7 +1,8 @@
-0.3 / 2013-?-?
-==============
+0.3 / 2013-??-??
+================
 
   * Task is now a singelton.
+  * FileChanged and FileDoesNotExists now accepts lists.
 
 0.2.1 / 2013-03-14
 ==================
