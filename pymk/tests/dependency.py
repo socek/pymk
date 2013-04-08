@@ -123,27 +123,25 @@ class FileChangedDependencyTest(PymkTestCase):
         self.assertTrue(dep.do_test(None, True))
 
     def test_no_output_file(self):
-        task = Task()
-        task.output_file = 'something'
-        task2 = Task()
-        dep = FileChanged('filename', task2)
-        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, task)
+        class TaskA(Task):
+            output_file = 'something'
+            dependencys = []
+
+        class TaskB(Task):
+            dependencys = []
+
+        dep = FileChanged('filename', TaskB)
+        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, TaskA)
 
     def test_no_output_file2(self):
-        task = Task()
-        task.output_file = 'something'
-        task2 = Task()
-        dep = FileChanged('filename', task)
-        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, task2)
+        class TaskBa(Task):
+            output_file = 'something'
+            dependencys = []
 
-    # def test_output_file_not_found(self):
-    #     task = Task()
-    #     task.output_file = tempfile.NamedTemporaryFile().name
-    #     task2 = Task()
-    #     task2.output_file = tempfile.NamedTemporaryFile().name
-    #     touch(task.output_file)
-    #     dep = FileChanged(task.output_file, task2)
-    #     print dep.do_test(task)
+        class TaskBb(Task):
+            dependencys = []
+        dep = FileChanged('filename', TaskBa)
+        self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, TaskBb)
 
 class AlwaysRebuildDependencyTest(PymkTestCase):
     def test_success(self):
