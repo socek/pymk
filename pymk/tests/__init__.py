@@ -4,6 +4,7 @@ from . import task
 from . import dependency
 from . import extra
 from . import error
+from . import script
 
 all_test_cases = [
     task.TaskTest,
@@ -25,6 +26,7 @@ all_test_cases = [
 
     error.ErrorsTests,
 
+    script.TaskNameParseTest,
 ]
 
 

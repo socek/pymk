@@ -104,10 +104,16 @@ class Task(object):
             return False
 
     @classmethod
-    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None):
+    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None, args={}):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
+        def build_with_args_or_not(cls, args):
+            try:
+                cls().build(args)
+            except TypeError:
+                cls().build()
+        #-----------------------------------------------------------------------
         cls.running_list_element = {
             'type': 'task',
             'data': cls,
@@ -122,7 +128,7 @@ class Task(object):
         if cls.test_dependencys(force and dependency_force) or force:
             logger.info(" * Building '%s'" % (cls.name()))
             try:
-                cls().build()
+                build_with_args_or_not(cls, args)
             finally:
                 runned = cls._set_runned(True)
             return runned

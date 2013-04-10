@@ -6,6 +6,8 @@ from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentVa
 from pymk.graph import draw_graph
 from pymk.extra import run_cmd
 import argparse
+from urlparse import urlparse, parse_qs
+
 
 log = logging.getLogger('pymk')
 
@@ -61,6 +63,29 @@ def import_mkfile():
         module = __import__("mkfile", globals(), locals())
     return module
 
+def parse_task_name(task):
+    url = urlparse(task)
+    name = url.path
+    args = parse_qs(url.query)
+    return name, args
+
+def run_all_inputet_tasks(tasks, force, dependency_force):
+    def check_if_task_name_exists(name):
+        if not name in TaskMeta.tasks:
+            raise BadTaskName(task)
+    def run_task(name, force, dependency_force, args):
+        TaskMeta.tasks[name].run(
+            force=force,
+            dependency_force=dependency_force,
+            args=args,
+        )
+    #---------------------------------------------------------------------------
+    for task in tasks:
+        name, args = parse_task_name(task)
+        check_if_task_name_exists(name)
+        run_task(name, force, dependency_force, args)
+    return 'run tasks'
+
 
 def run_tasks(mkfile, args):
     def list_all_tasks():
@@ -85,26 +110,17 @@ def run_tasks(mkfile, args):
                 return 'do graph of all'
             else:
                 mkfile.SETTINGS['default task'].run(force=args.force,
-                                    dependency_force=args.dependency_force)
+                                                    dependency_force=args.dependency_force)
                 return 'run default'
         except (AttributeError, KeyError):
             return list_all_tasks()
-
-    def run_all_inputet_tasks():
-        for task in args.task:
-            try:
-                TaskMeta.tasks[task].run(force=args.force,
-                                         dependency_force=args.dependency_force)
-            except KeyError:
-                raise BadTaskName(task)
-        return 'run tasks'
     #-----------------------------------------------------------------------
     if args.all:
         return list_all_tasks()
     elif len(args.task) == 0:
         return run_default_task_or_list_all_tasks()
     else:
-        return run_all_inputet_tasks()
+        return run_all_inputet_tasks(args.task, args.force, args.dependency_force)
 
 
 def run():
