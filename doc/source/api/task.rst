@@ -25,6 +25,10 @@
 
     What to do with this task to rebuild it. This method needs to be reimplemented after inheriting.
 
+.. attribute:: Task._name
+
+    Set this attribute If you want to have different name then the class name (for example like this '/install/something').
+
 4.1.2 Dependency methods
 ========================
 

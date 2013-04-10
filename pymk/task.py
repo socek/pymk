@@ -29,7 +29,7 @@ class TaskMeta(type):
         #-----------------------------------------------------------------------
         if name != 'Task':
             check_if_task_exists(name)
-            TaskMeta.tasks[name] = cls
+            TaskMeta.tasks[cls().name()] = cls
             validate_dependency(cls)
 
     @classmethod
@@ -59,17 +59,20 @@ class Task(object):
         """name() -> str
         Returns name of the tasks provided by class value _name, or just classname if _name == None.
         """
-        return cls.__name__
+        if cls._name:
+            return cls._name
+        else:
+            return cls.__name__
 
     @classmethod
     def _set_runned(cls, value):
-        cls._runned[cls.__name__] = value
-        return cls._runned[cls.__name__]
+        cls._runned[cls.name()] = value
+        return cls._runned[cls.name()]
 
     @classmethod
     def _get_runned(cls):
         try:
-            return cls._runned[cls.__name__]
+            return cls._runned[cls.name()]
         except KeyError:
             return False
 

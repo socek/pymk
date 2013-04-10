@@ -2,6 +2,7 @@ import os
 import pymk.error as Perror
 from pymk.script import import_mkfile
 from pymk.tests.base import PymkTestCase
+from pymk.task import Task
 
 
 class TaskTest(PymkTestCase):
@@ -345,3 +346,20 @@ class TaskDependencyLinkTest(PymkTestCase):
 
         self.touch('b.dep.txt')
         self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka', 'task_linkb'])
+
+class TaskNameTest(PymkTestCase):
+
+    def test_simple(self):
+        name = 'something'
+        class MyTask(Task):
+            _name = name
+            dependencys = []
+
+        self.assertEqual(name, MyTask().name())
+
+    def test_script(self):
+        self._template('task_name_1', 'mkfile.py')
+
+        self._import_mkfile()
+        self._add_task('/something/usful')
+        self._pymk_runtask(['/something/usful'])
