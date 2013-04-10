@@ -6,22 +6,24 @@ from . import extra
 from . import error
 
 all_test_cases = [
-    task.TaskTest,
-    task.TaskDependencyFileExistsTest,
-    task.TaskDependencyFileChangedTest,
-    task.TaskForcing,
+    # task.TaskTest,
+    # task.TaskDependencyFileExistsTest,
+    # task.TaskDependencyFileChangedTest,
+    # task.TaskForcing,
+    task.TaskDependencyLinkTest,
 
-    dependency.FileDoesNotExistsDependencyTest,
-    dependency.FileChangedDependencyTest,
-    dependency.AlwaysRebuildDependencyTest,
-    dependency.InnerFileExistsTest,
-    dependency.InnerFileChangedTest,
+    # dependency.FileDoesNotExistsDependencyTest,
+    # dependency.FileChangedDependencyTest,
+    # dependency.AlwaysRebuildDependencyTest,
+    # dependency.InnerFileExistsTest,
+    # dependency.InnerFileChangedTest,
 
-    extra.TouchTest,
-    extra.FindFilesTest,
-    extra.RunCmdTest,
+    # extra.TouchTest,
+    # extra.FindFilesTest,
+    # extra.RunCmdTest,
 
-    error.ErrorsTests,
+    # error.ErrorsTests,
+
 ]
 
 

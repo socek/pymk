@@ -1,7 +1,7 @@
 import os
+import pymk.error as Perror
 from pymk.script import import_mkfile
 from pymk.tests.base import PymkTestCase
-import pymk.error as Perror
 
 
 class TaskTest(PymkTestCase):
@@ -84,7 +84,8 @@ class TaskForcing(PymkTestCase):
         self._args.force = True
         self._pymk_runtask(['task_17c', 'task_17b', 'task_17a',
                            'task_17c', 'task_17b', 'task_17a'])
-        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a'])
+        self._pymk_runtask(['task_17c', 'task_17b', 'task_17a', 'task_17c',
+                           'task_17b', 'task_17a', 'task_17c', 'task_17b', 'task_17a'])
 
     def test_forcing_file_exist(self):
         self._template('three_task_with_force_2', 'mkfile.py')
@@ -111,10 +112,12 @@ class TaskForcing(PymkTestCase):
         self._args.force = True
         self._pymk_runtask(['task_18c', 'task_18b', 'task_18a',
                            'task_18c', 'task_18b', 'task_18a'])
-        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a'])
+        self._pymk_runtask(['task_18c', 'task_18b', 'task_18a', 'task_18c',
+                           'task_18b', 'task_18a', 'task_18c', 'task_18b', 'task_18a'])
 
 
 class TaskDependencyFileExistsTest(PymkTestCase):
+
     def test_make_no_outputfile(self):
         self._template('three_task_dependency_exists2', 'mkfile.py')
         self._import_mkfile()
@@ -198,6 +201,7 @@ class TaskDependencyFileExistsTest(PymkTestCase):
 
 
 class TaskDependencyFileChangedTest(PymkTestCase):
+
     def test_make_once(self):
         self._template('two_task_dependency_changed1', 'mkfile.py')
         self._import_mkfile()
@@ -322,3 +326,22 @@ class TaskDependencyFileChangedTest(PymkTestCase):
         self._pymk_runtask(['task_8a'])
         self._pymk_runtask(['task_8a'])
         self._pymk_runtask(['task_8a'])
+
+
+class TaskDependencyLinkTest(PymkTestCase):
+
+    def test_link(self):
+        self._template('link_task_1', 'mkfile.py')
+        self._import_mkfile()
+        self._add_task('task_linkb')
+        self.touch('a.dep.txt', None)
+        self.touch('b.dep.txt', None)
+
+        self._pymk_runtask(['task_linka', 'task_linkb'])
+        self._pymk_runtask(['task_linka', 'task_linkb'])
+
+        self.touch('a.dep.txt')
+        self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka'])
+
+        self.touch('b.dep.txt')
+        self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka', 'task_linkb'])

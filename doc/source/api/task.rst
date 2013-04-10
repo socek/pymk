@@ -40,7 +40,14 @@
 
 .. classmethod:: Task.dependency_FileChanged()
 
-    Dependency that will run this task if nessesery and return ``True`` if file is newwer then task.output_file.
+    Dependency that will run this task if file is newwer then task.output_file.
+
+    :return: dependency
+
+.. classmethod:: Task.dependency_Link()
+
+    This is a fake dependency. Using this dependency will link one task to another. This task will be runned (like it
+    would be run manualy) before task linked to.
 
     :return: dependency
 

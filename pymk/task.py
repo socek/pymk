@@ -1,7 +1,7 @@
 import os
 import logging
 from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
-from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Dependency
+from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Dependency, InnerLink
 
 logger = logging.getLogger('pymk')
 
@@ -135,6 +135,10 @@ class Task(object):
     @classmethod
     def dependency_FileChanged(cls):
         return InnerFileChanged(cls)
+
+    @classmethod
+    def dependency_Link(cls):
+        return InnerLink(cls)
 
     # -- graph specyfic --
     @classmethod

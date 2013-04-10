@@ -186,9 +186,6 @@ class InnerDependency(Dependency):
 
 class InnerFileExists(InnerDependency):
 
-    def __init__(self, parent):
-        super(InnerFileExists, self).__init__(parent)
-
     def do_test(self, task, dependency_force=False):
         if dependency_force:
             self.parent.run(True, True, True, task)
@@ -213,9 +210,6 @@ class InnerFileExists(InnerDependency):
 
 class InnerFileChanged(InnerDependency):
 
-    def __init__(self, parent):
-        super(InnerFileChanged, self).__init__(parent)
-
     def do_test(self, task, dependency_force=False):
         if dependency_force:
             self.parent.run(True, True, True, parent=task)
@@ -228,3 +222,13 @@ class InnerFileChanged(InnerDependency):
             return '[label="C",color="red"]'
         else:
             return '[label="C"]'
+
+
+class InnerLink(InnerDependency):
+
+    def do_test(self, task, dependency_force=False):
+        self.parent.run(False, parent=task)
+        return False
+
+    def extra(self):
+        return '[label="L"]'

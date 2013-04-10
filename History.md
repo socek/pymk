@@ -3,6 +3,7 @@
 
   * Task is now a singelton.
   * FileChanged and FileDoesNotExists now accepts lists.
+  * Added Task.dependency_Link dependency.
 
 0.2.1 / 2013-03-14
 ==================
