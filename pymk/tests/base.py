@@ -11,6 +11,7 @@ from pymk.extra import touch
 
 
 class ArgsMockup(object):
+
     def __init__(self):
         self.all = False
         self.task = []
@@ -20,6 +21,7 @@ class ArgsMockup(object):
 
 
 class PymkTestCase(unittest.TestCase):
+
     def setUp(self):
         self._normal_path = os.getcwd()
         self._actual_path = tempfile.mkdtemp()
@@ -53,6 +55,10 @@ class PymkTestCase(unittest.TestCase):
         self._mkfile = import_mkfile()
 
     def _pymk(self):
+        def reset_all_task_runned_flags():
+            for name, task in TaskMeta.tasks.items():
+                task._set_runned(False)
+        reset_all_task_runned_flags()
         return run_tasks(self._mkfile, self._args)
 
     def _pymk_runtask(self, output_file):
@@ -71,6 +77,10 @@ class PymkTestCase(unittest.TestCase):
 
     def _remove_task(self, task):
         self._args.task.remove(task)
+
+    def _set_task(self, task, expected_tasks):
+        self._args.task = [task]
+        self._pymk_runtask(expected_tasks)
 
     def touch(self, path, wait=0.01):
         if wait:

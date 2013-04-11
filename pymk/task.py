@@ -8,6 +8,7 @@ logger = logging.getLogger('pymk')
 
 class TaskMeta(type):
     tasks = {}
+    args = {}
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -36,7 +37,7 @@ class TaskMeta(type):
     def init(cls):
         """Init new task collection."""
         cls.tasks = {}
-
+        cls.args = {}
 
 class Task(object):
 
@@ -52,7 +53,8 @@ class Task(object):
 
     _name = None
     detailed = []
-    _runned = {}
+    _runned = False
+    _args = {}
 
     @classmethod
     def name(cls):
@@ -66,13 +68,13 @@ class Task(object):
 
     @classmethod
     def _set_runned(cls, value):
-        cls._runned[cls.name()] = value
-        return cls._runned[cls.name()]
+        cls._runned = value
+        return cls._runned
 
     @classmethod
     def _get_runned(cls):
         try:
-            return cls._runned[cls.name()]
+            return cls._runned
         except KeyError:
             return False
 
@@ -104,13 +106,13 @@ class Task(object):
             return False
 
     @classmethod
-    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None, args={}):
+    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
-        def build_with_args_or_not(cls, args):
+        def build_with_args_or_not(cls):
             try:
-                cls().build(args)
+                cls().build(cls._args)
             except TypeError:
                 cls().build()
         #-----------------------------------------------------------------------
@@ -128,7 +130,7 @@ class Task(object):
         if cls.test_dependencys(force and dependency_force) or force:
             logger.info(" * Building '%s'" % (cls.name()))
             try:
-                build_with_args_or_not(cls, args)
+                build_with_args_or_not(cls)
             finally:
                 runned = cls._set_runned(True)
             return runned

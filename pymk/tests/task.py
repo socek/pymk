@@ -347,10 +347,12 @@ class TaskDependencyLinkTest(PymkTestCase):
         self.touch('b.dep.txt')
         self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka', 'task_linkb'])
 
+
 class TaskNameTest(PymkTestCase):
 
     def test_simple(self):
         name = 'something'
+
         class MyTask(Task):
             _name = name
             dependencys = []
@@ -363,3 +365,40 @@ class TaskNameTest(PymkTestCase):
         self._import_mkfile()
         self._add_task('/something/usful')
         self._pymk_runtask(['/something/usful'])
+
+    def test_arguments(self):
+        from json import load
+        self._template('task_args_1', 'mkfile.py')
+
+        self._import_mkfile()
+
+        self._set_task('/taska?arg=10', ['/taska'])
+        data = load(open('ta.out'))
+        self.assertEqual({u'arg': [u'10']}, data)
+
+        self._set_task('/taska?arg=10&arg=12', ['/taska', '/taska'])
+        data = load(open('ta.out'))
+        self.assertEqual({u'arg': [u'10', u'12']}, data)
+
+        self._set_task('/taska?arg=10&arg2=12', ['/taska', '/taska', '/taska'])
+        data = load(open('ta.out'))
+        self.assertEqual({u'arg': [u'10'], u'arg2': [u'12']}, data)
+
+    def test_arguments_2_tasks(self):
+        from json import load
+        self._template('task_args_2', 'mkfile.py')
+
+        self._import_mkfile()
+
+        self._add_task('/taskc?arg=1')
+        self._add_task('/taskb?arg2=2')
+        self._pymk_runtask(['/taska', '/taskb', '/taskc'])
+
+        data = load(open('ta.out'))
+        self.assertEqual({}, data)
+
+        data = load(open('tb.out'))
+        self.assertEqual({u'arg2': [u'2']}, data)
+
+        data = load(open('tc.out'))
+        self.assertEqual({u'arg': [u'1']}, data)

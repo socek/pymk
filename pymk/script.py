@@ -73,17 +73,23 @@ def run_all_inputet_tasks(tasks, force, dependency_force):
     def check_if_task_name_exists(name):
         if not name in TaskMeta.tasks:
             raise BadTaskName(task)
-    def run_task(name, force, dependency_force, args):
-        TaskMeta.tasks[name].run(
+    def run_task(name, force, dependency_force):
+        get_task(name).run(
             force=force,
             dependency_force=dependency_force,
-            args=args,
         )
+    def get_task(name):
+        return TaskMeta.tasks[name]
     #---------------------------------------------------------------------------
-    for task in tasks:
-        name, args = parse_task_name(task)
+    tasks = [ parse_task_name(task) for task in tasks ]
+    #First check all tasks names, then run tasks.
+    for name, args in tasks:
         check_if_task_name_exists(name)
-        run_task(name, force, dependency_force, args)
+        get_task(name)._args = args
+
+    for name, args in tasks:
+        if not get_task(name)._get_runned():
+            run_task(name, force, dependency_force)
     return 'run tasks'
 
 
