@@ -1,12 +1,8 @@
-from pymk.task import Task
+from pymk.tests.base import BaseTestTask
 
 
-class task_1(Task):
+class task_1(BaseTestTask):
 
     dependencys = []
 
-    def build(self):
-        fp = open('a.out', 'a')
-        fp.write(self.__class__.__name__)
-        fp.write('\n')
-        fp.close()
+

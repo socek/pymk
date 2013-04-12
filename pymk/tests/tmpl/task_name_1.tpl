@@ -1,17 +1,12 @@
-from pymk.task import Task
+from pymk.tests.base import BaseTestTask
 
 
-class task_namea(Task):
+class task_namea(BaseTestTask):
 
-    _name = '/something/usful'
+    name = '/something/usful'
 
     output_file = 'a.out'
 
     dependencys = [
     ]
 
-    def build(self):
-        fp = open('a.out', 'a')
-        fp.write(self.name())
-        fp.write('\n')
-        fp.close()

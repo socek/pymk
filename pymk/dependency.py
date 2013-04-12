@@ -73,7 +73,7 @@ class FileChanged(FileDependency):
             if task is None:
                 return
             if task.output_file is None:
-                raise error.TaskMustHaveOutputFile(task.name())
+                raise error.TaskMustHaveOutputFile(task.getName())
 
         def compare_mtime(first, second):
             if os.path.getmtime(first) > os.path.getmtime(second):
@@ -181,7 +181,7 @@ class InnerDependency(Dependency):
     # === graph specyfic ===
     @property
     def name(self):
-        return self.parent.__name__
+        return self.parent.getName()
 
 
 class InnerFileExists(InnerDependency):
@@ -198,7 +198,7 @@ class InnerFileExists(InnerDependency):
                 self.parent.run(parent=task)
                 return True
         else:
-            raise error.TaskMustHaveOutputFile(self.parent.name())
+            raise error.TaskMustHaveOutputFile(self.parent.getName())
 
     # === graph specyfic ===
     def extra(self):

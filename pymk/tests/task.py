@@ -351,13 +351,13 @@ class TaskDependencyLinkTest(PymkTestCase):
 class TaskNameTest(PymkTestCase):
 
     def test_simple(self):
-        name = 'something'
+        _name = 'something'
 
         class MyTask(Task):
-            _name = name
+            name = _name
             dependencys = []
 
-        self.assertEqual(name, MyTask().name())
+        self.assertEqual(_name, MyTask().getName())
 
     def test_script(self):
         self._template('task_name_1', 'mkfile.py')

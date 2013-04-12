@@ -1,7 +1,7 @@
-from pymk.task import Task
+from pymk.tests.base import BaseTestTask
 from pymk.dependency import FileChanged
 
-class task_linka(Task):
+class task_linka(BaseTestTask):
 
     output_file = 'a.out'
 
@@ -9,13 +9,8 @@ class task_linka(Task):
         FileChanged('a.dep.txt'),
     ]
 
-    def build(self):
-        fp = open('a.out', 'a')
-        fp.write(self.__class__.__name__)
-        fp.write('\n')
-        fp.close()
 
-class task_linkb(Task):
+class task_linkb(BaseTestTask):
 
     output_file = 'a.out'
 
@@ -24,8 +19,3 @@ class task_linkb(Task):
         task_linka.dependency_Link(),
     ]
 
-    def build(self):
-        fp = open('a.out', 'a')
-        fp.write(self.__class__.__name__)
-        fp.write('\n')
-        fp.close()

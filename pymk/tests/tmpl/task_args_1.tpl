@@ -1,9 +1,9 @@
-from pymk.task import Task
+from pymk.tests.base import BaseTestTask
 from json import dump
 
-class task_args1_a(Task):
+class task_args1_a(BaseTestTask):
 
-    _name = '/taska'
+    name = '/taska'
 
     dependencys = [
     ]
@@ -13,7 +13,4 @@ class task_args1_a(Task):
         dump(args, fp)
         fp.close()
 
-        fp = open('a.out', 'a')
-        fp.write(self.name())
-        fp.write('\n')
-        fp.close()
+        super(task_args1_a, self).build(args)

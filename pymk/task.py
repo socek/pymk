@@ -30,7 +30,7 @@ class TaskMeta(type):
         #-----------------------------------------------------------------------
         if name != 'Task':
             check_if_task_exists(name)
-            TaskMeta.tasks[cls().name()] = cls
+            TaskMeta.tasks[cls().getName()] = cls
             validate_dependency(cls)
 
     @classmethod
@@ -51,18 +51,18 @@ class Task(object):
     hide = False
     hide_graph = False
 
-    _name = None
+    name = None
     detailed = []
     _runned = False
     _args = {}
 
     @classmethod
-    def name(cls):
-        """name() -> str
+    def getName(cls):
+        """getName() -> str
         Returns name of the tasks provided by class value _name, or just classname if _name == None.
         """
-        if cls._name:
-            return cls._name
+        if cls.name:
+            return cls.name
         else:
             return cls.__name__
 
@@ -128,7 +128,7 @@ class Task(object):
             from pymk.graph import running_list
             running_list.append(cls.running_list_element)
         if cls.test_dependencys(force and dependency_force) or force:
-            logger.info(" * Building '%s'" % (cls.name()))
+            logger.info(" * Building '%s'" % (cls.getName()))
             try:
                 build_with_args_or_not(cls)
             finally:
@@ -136,7 +136,7 @@ class Task(object):
             return runned
         else:
             if log_uptodate:
-                logger.info(" * '%s' is up to date" % (cls.name()))
+                logger.info(" * '%s' is up to date" % (cls.getName()))
             return cls._set_runned(False)
 
     @classmethod
@@ -155,8 +155,8 @@ class Task(object):
     @classmethod
     def write_graph_detailed(cls, datalog):
         if not cls.hide_graph and not cls.name in cls.detailed:
-            cls.detailed.append(cls.name())
-            datalog.write('"%s" [%s];\n' % (cls.name(), cls.get_graph_details()))
+            cls.detailed.append(cls.getName())
+            datalog.write('"%s" [%s];\n' % (cls.getName(), cls.get_graph_details()))
 
     @classmethod
     def get_graph_details(cls):

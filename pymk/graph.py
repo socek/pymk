@@ -21,7 +21,7 @@ def draw_graph(filename):
             if type(dep) == AlwaysRebuild:
                 continue
             dep.write_graph_detailed(datalog)
-            datalog.write('"%s" -> %s %s;\n' % (dep.name, task.name(), dep.extra()))
+            datalog.write('"%s" -> %s %s;\n' % (dep.name, task.getName(), dep.extra()))
         task.write_graph_detailed(datalog)
 
     datalog.write('}\n')
@@ -39,7 +39,7 @@ def draw_done_task_graph(filename, tasks):
                     write_task_to_datalog(datalog, dep.parent)
                 else:
                     dep.write_graph_detailed(datalog)
-                datalog.write('"%s" -> %s %s;\n' % (dep.name, task.name(), dep.extra()))
+                datalog.write('"%s" -> %s %s;\n' % (dep.name, task.getName(), dep.extra()))
         task.write_graph_detailed(datalog)
     #---------------------------------------------------------------------------
     datalog = NamedTemporaryFile('wr', delete=False)

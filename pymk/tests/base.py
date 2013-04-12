@@ -8,6 +8,7 @@ from time import sleep
 
 from pymk.script import import_mkfile, run_tasks, TaskMeta
 from pymk.extra import touch
+from pymk.task import Task
 
 
 class ArgsMockup(object):
@@ -86,3 +87,14 @@ class PymkTestCase(unittest.TestCase):
         if wait:
             sleep(wait)
         touch(path)
+
+class BaseTestTask(Task):
+    log_file = 'a.out'
+
+    dependencys = []
+
+    def build(self, args=[]):
+        fp = open(self.log_file, 'a')
+        fp.write(self.getName())
+        fp.write('\n')
+        fp.close()

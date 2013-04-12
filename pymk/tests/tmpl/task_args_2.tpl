@@ -1,10 +1,11 @@
-from pymk.task import Task
+from pymk.tests.base import BaseTestTask
 from pymk.dependency import AlwaysRebuild
 from json import dump
 
-class task_args2_a(Task):
 
-    _name = '/taska'
+class task_args2_a(BaseTestTask):
+
+    name = '/taska'
 
     dependencys = [
         AlwaysRebuild(),
@@ -15,14 +16,11 @@ class task_args2_a(Task):
         dump(args, fp)
         fp.close()
 
-        fp = open('a.out', 'a')
-        fp.write(self.name())
-        fp.write('\n')
-        fp.close()
+        super(task_args2_a, self).build(args)
 
-class task_args2_b(Task):
+class task_args2_b(BaseTestTask):
 
-    _name = '/taskb'
+    name = '/taskb'
 
     dependencys = [
         task_args2_a.dependency_Link(),
@@ -30,19 +28,15 @@ class task_args2_b(Task):
     ]
 
     def build(self, args):
-        print 'build'
         fp = open('tb.out', 'w')
         dump(args, fp)
         fp.close()
 
-        fp = open('a.out', 'a')
-        fp.write(self.name())
-        fp.write('\n')
-        fp.close()
+        super(task_args2_b, self).build(args)
 
-class task_args2_c(Task):
+class task_args2_c(BaseTestTask):
 
-    _name = '/taskc'
+    name = '/taskc'
 
     dependencys = [
         task_args2_b.dependency_Link(),
@@ -54,7 +48,4 @@ class task_args2_c(Task):
         dump(args, fp)
         fp.close()
 
-        fp = open('a.out', 'a')
-        fp.write(self.name())
-        fp.write('\n')
-        fp.close()
+        super(task_args2_c, self).build(args)

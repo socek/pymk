@@ -105,7 +105,7 @@ def run_tasks(mkfile, args):
         template = '\t%-' + str(task_names_size) + 's %s\n'
         for name, task in TaskMeta.tasks.items():
             if not task.hide:
-                text += template % (task.name(), task.help)
+                text += template % (task.getName(), task.help)
 
         log.info(text)
         return 'list all'
