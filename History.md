@@ -5,6 +5,8 @@
   * FileChanged and FileDoesNotExists now accepts lists.
   * Added Task.dependency_Link dependency.
   * Added configurable name.
+  * Added template to pymk.extra
+  * Changed color of graph a little bit.
 
 0.2.1 / 2013-03-14
 ==================

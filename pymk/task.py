@@ -39,6 +39,7 @@ class TaskMeta(type):
         cls.tasks = {}
         cls.args = {}
 
+
 class Task(object):
 
     """Base of all taks."""
@@ -55,6 +56,7 @@ class Task(object):
     detailed = []
     _runned = False
     _args = {}
+    _error = False
 
     @classmethod
     def getName(cls):
@@ -131,6 +133,9 @@ class Task(object):
             logger.info(" * Building '%s'" % (cls.getName()))
             try:
                 build_with_args_or_not(cls)
+            except Exception as er:
+                cls._error = True
+                raise er
             finally:
                 runned = cls._set_runned(True)
             return runned
@@ -166,6 +171,8 @@ class Task(object):
             shape = 'circle'
             color = 'grey'
         if cls._get_runned():
+            color = 'green'
+        if cls._error:
             color = 'red'
 
         return 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)

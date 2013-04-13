@@ -87,6 +87,12 @@
 
     :rtype: str
 
+.. method:: Dependency._get_text_color()
+
+    Returns color of text.
+
+    :rtype: str
+
 4.2.3 InnerDependency
 =====================
 

@@ -27,6 +27,7 @@ all_test_cases = [
     error.ErrorsTests,
 
     script.TaskNameParseTest,
+    script.GraphTest,
 ]
 
 

@@ -1,4 +1,5 @@
 import os
+
 from pymk import error
 
 
@@ -30,14 +31,22 @@ class Dependency(object):
 
     def _get_shape_color(self):
         if self.runned:
-            return 'red'
+            return 'darkgreen'
         else:
             return 'white'
+
+    def _get_text_color(self):
+        return 'black'
 
     def write_graph_detailed(self, datalog):
         if not self.name in self.detailed:
             self.detailed.append(self.name)
-            datalog.write('"%s" [fillcolor=%s,%s];\n' % (self.name, self._get_shape_color(), self.get_graph_details()))
+            datalog.write('"%s" [fillcolor=%s,fontcolor=%s,%s];\n' % (
+                self.name,
+                self._get_shape_color(),
+                self._get_text_color(),
+                self.get_graph_details())
+            )
 
 
 class FileDependency(Dependency):
@@ -111,7 +120,7 @@ class FileChanged(FileDependency):
     # === graph specyfic ===
     def extra(self):
         if self.runned:
-            return '[label="C",color="red"]'
+            return '[label="C",color="blue"]'
         else:
             return '[label="C"]'
 
@@ -137,7 +146,7 @@ class FileDoesNotExists(FileDependency):
     # === graph specyfic ===
     def extra(self):
         if self.runned:
-            return '[label="NE",color="red"]'
+            return '[label="NE",color="blue"]'
         else:
             return '[label="NE"]'
 
@@ -160,7 +169,7 @@ class AlwaysRebuild(Dependency):
     # === graph specyfic ===
     def extra(self):
         if self.runned:
-            return '[label="A",color="red"]'
+            return '[label="A",color="blue"]'
         else:
             return '[label="A"]'
 
@@ -169,7 +178,7 @@ class AlwaysRebuild(Dependency):
         return id(self)
 
     def get_graph_details(self):
-        return 'shape=diamond, regular=1,style=filled,fillcolor=red,label="Always\\nRebuild"'
+        return 'shape=diamond, regular=1,style=filled,fillcolor=blue,fontcolor=yellow,label="Always\\nRebuild"'
 
 
 class InnerDependency(Dependency):
@@ -203,7 +212,7 @@ class InnerFileExists(InnerDependency):
     # === graph specyfic ===
     def extra(self):
         if self.runned:
-            return '[label="E",color="red"]'
+            return '[label="E",color="blue"]'
         else:
             return '[label="E"]'
 
@@ -219,7 +228,7 @@ class InnerFileChanged(InnerDependency):
     # === graph specyfic ===
     def extra(self):
         if self.runned:
-            return '[label="C",color="red"]'
+            return '[label="C",color="blue"]'
         else:
             return '[label="C"]'
 
