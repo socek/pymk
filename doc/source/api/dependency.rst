@@ -10,9 +10,13 @@
 
     Dependency returns true if file provided was changed. If task argument is provided, then run that task if it should be done.
 
+    :param path: Path or list of paths.
+
 * .. class:: FileDoesNotExists
 
     Dependency returns ture if file does not exists.
+
+    :param path: Path or list of paths.
 
 * .. class:: AlwaysRebuild
 
