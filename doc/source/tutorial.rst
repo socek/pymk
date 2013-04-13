@@ -154,8 +154,10 @@ near the arrow. If we run this:
 >>> pymk -g graph.png task
 
 .. image:: ./images/tutorial_phase_5_run1.png
-The red color means "this dependency accured" or "this task was runned". If we run
-this again:
+The dark green color means "this dependency accured".
+The green color means "this task was runned".
+The red color means "this task failed".
+If we run this again:
 
 >>> pymk -g graph.png task
 
@@ -266,13 +268,13 @@ and not when the task is rebuilded? We can use FileExists.
 
 >>> rm *.out
 >>> touch c.out d.out
->>> pymk task -g tutorial_phase_7_run1.png
+>>> pymk
  * Building 'secon_task'
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_7_run1.png
 >>> touch d.out
->>> pymk task -g tutorial_phase_7_run2.png
+>>> pymk
  * Building 'secon_task'
  * 'task' is up to date
 

@@ -3,6 +3,19 @@
 ==========
 .. module:: graph
 
+5.1.1 color description
+=======================
+.. glossary::
+
+    dark green
+        this dependency accured
+    green
+        this task was runned
+    red
+        this task failed
+
+5.1.2 api reference
+===================
 .. function:: run_dot(pipe, filename)
 
     Run dot program, which transfers dot language to graph image.
