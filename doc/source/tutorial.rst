@@ -18,7 +18,7 @@ Now we need to make simple task. Put this in mkfile.py
 
     class task(Task):
         dependencys = []
-        def build(cls):
+        def build(self, args):
             print 'Hello'
 
 And now we can execute
@@ -55,8 +55,8 @@ this
 
         output_file = 'a.out'
 
-        def build(cls):
-            touch(cls.output_file)
+        def build(self, args):
+            touch(self.output_file)
 
     SETTINGS = {
         'default task' : task,
@@ -83,8 +83,8 @@ And now we start playing. We need some dependency. Here's the file
             FileChanged('b.out'),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -133,8 +133,8 @@ We will change the mkfile a little bit, so we will have two dependencys.
             FileChanged('c.out'),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -187,8 +187,8 @@ like that
             FileChanged('d.out'),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -200,8 +200,8 @@ like that
             FileChanged('c.out')
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -242,8 +242,8 @@ and not when the task is rebuilded? We can use FileExists.
             FileChanged('d.out'),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -255,8 +255,8 @@ and not when the task is rebuilded? We can use FileExists.
             FileChanged('c.out')
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -296,8 +296,8 @@ dependency the task will be always rebuilded.
             FileChanged('d.out'),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -310,8 +310,8 @@ dependency the task will be always rebuilded.
             AlwaysRebuild(),
         ]
 
-        def build(cls):
-            fp = open(cls.output_file, 'a')
+        def build(self, args):
+            fp = open(self.output_file, 'a')
             fp.write('bulded!\n')
             fp.close()
 
@@ -334,3 +334,38 @@ graph and the "AlwaysRebuild" dependency is not shown. Now, we can run it.
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_8_run2.png
+
+2.4 Task arguments
+==================
+Task tan take arguments. And it can be named. This small example will show how
+to use it. Name can be like url paths.
+::
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+    class task(Task):
+
+        name = '/this/name'
+
+        dependencys = [
+            AlwaysRebuild(),
+        ]
+
+        def build(self, args):
+            print args
+
+We can use this task name like that:
+
+>>> pymk /this/name
+ * Building '/this/name'
+{}
+
+Arguments can be passet like the URL get params.
+
+>>>  pymk /this/name?var=1
+ * Building '/this/name'
+{'var': ['1']}
+
+>>> pymk "/this/name?var=1&var=2&var2=3"
+ * Building '/this/name'
+{'var': ['1', '2'], 'var2': ['3']}
