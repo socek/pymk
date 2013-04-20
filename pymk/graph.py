@@ -21,11 +21,12 @@ def draw_graph(filename):
             if type(dep) == AlwaysRebuild:
                 continue
             dep.write_graph_detailed(datalog)
-            datalog.write('"%s" -> %s %s;\n' % (dep.name, task.getName(), dep.extra()))
+            datalog.write('"%s" -> "%s" %s;\n' % (dep.name, task.getName(), dep.extra()))
         task.write_graph_detailed(datalog)
 
     datalog.write('}\n')
     datalog.seek(0)
+    print datalog.name
     run_dot(datalog, filename)
 
 
