@@ -5,8 +5,10 @@ from pymk.task import TaskMeta
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError
 from pymk.graph import draw_graph
 from pymk.extra import run_cmd
+from pymk.extra.cmd import init_signal_handling
 import argparse
 from urlparse import urlparse, parse_qs
+from pymk.error import CommandAborted
 
 
 log = logging.getLogger('pymk')
@@ -170,6 +172,7 @@ def run():
     #-------------------------------------------------------------------------
 
     try:
+        init_signal_handling()
         args = parse_command()
         start_loggin(args)
         append_python_path()
@@ -196,7 +199,7 @@ def run():
     except CouldNotCreateFile as er:
         log.error(er)
         return 5
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, CommandAborted) as er:
         log.error('\rCommand aborted!')
         return 6
     finally:

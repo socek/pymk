@@ -1,9 +1,11 @@
 class PymkError(Exception):
+
     """Base exception for pymk. Do nothing special.
     """
 
 
 class CouldNotCreateFile(PymkError):
+
     def __init__(self, filename):
         self.filename = filename
 
@@ -12,6 +14,7 @@ class CouldNotCreateFile(PymkError):
 
 
 class TaskAlreadyExists(PymkError):
+
     def __init__(self, task_name):
         self.task_name = task_name
 
@@ -24,6 +27,7 @@ class NoMkfileFound(PymkError):
 
 
 class CommandError(PymkError):
+
     def __init__(self, number, text):
         self.number = number
         self.text = text
@@ -32,7 +36,12 @@ class CommandError(PymkError):
         return 'Error: Command error (%d): %s' % (self.number, self.text)
 
 
+class CommandAborted(PymkError):
+    pass
+
+
 class BadTaskName(PymkError):
+
     def __init__(self, taskname):
         self.taskname = taskname
 
@@ -41,11 +50,13 @@ class BadTaskName(PymkError):
 
 
 class WrongArgumentValue(PymkError):
+
     def __init__(self, description):
         self.description = description
 
 
 class TaskMustHaveOutputFile(PymkError):
+
     def __init__(self, name):
         self.name = name
 
@@ -54,6 +65,7 @@ class TaskMustHaveOutputFile(PymkError):
 
 
 class NoDependencysInAClass(PymkError):
+
     def __init__(self, cls):
         self.cls = cls
 

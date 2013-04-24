@@ -1,4 +1,10 @@
-0.3 / 2013-??-??
+0.3.1 / 2013-04-24
+==================
+
+  * SIGTERM handler (now the subprocess will be killed)
+  * Added argparser to requires
+
+0.3 / 2013-04-15
 ================
 
   * Task is now a singelton.
