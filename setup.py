@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from setuptools import setup, find_packages
+from pymk import VERSION
 
 install_requires = [
     'jinja2',
@@ -11,7 +12,7 @@ dependency_links = [
 
 if __name__ == '__main__':
     setup(name='Pymk',
-          version='0.3.1',
+          version=VERSION,
           description="Make like program, which reads python script as makefile.",
           author='Dominik "Socek" Długajczyk',
           author_email='msocek@gmail.com',

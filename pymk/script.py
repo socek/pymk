@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from pymk import VERSION
 from pymk.task import TaskMeta
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError
 from pymk.graph import draw_graph
@@ -26,7 +27,7 @@ def make_graph(args, is_graphviz):
             except KeyError:
                 return False
         return tasks
-    #---------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     if is_graphviz:
         tasks = make_task_list()
 
@@ -65,26 +66,30 @@ def import_mkfile():
         module = __import__("mkfile", globals(), locals())
     return module
 
+
 def parse_task_name(task):
     url = urlparse(task)
     name = url.path
     args = parse_qs(url.query)
     return name, args
 
+
 def run_all_inputet_tasks(tasks, force, dependency_force):
     def check_if_task_name_exists(name):
         if not name in TaskMeta.tasks:
             raise BadTaskName(task)
+
     def run_task(name, force, dependency_force):
         get_task(name).run(
             force=force,
             dependency_force=dependency_force,
         )
+
     def get_task(name):
         return TaskMeta.tasks[name]
-    #---------------------------------------------------------------------------
-    tasks = [ parse_task_name(task) for task in tasks ]
-    #First check all tasks names, then run tasks.
+    #-------------------------------------------------------------------------
+    tasks = [parse_task_name(task) for task in tasks]
+    # First check all tasks names, then run tasks.
     for name, args in tasks:
         check_if_task_name_exists(name)
         get_task(name)._args = args
@@ -148,13 +153,16 @@ def run():
         parser.add_argument('task', nargs='*',
                             help='List of task to do.')
         parser.add_argument('-l', '--log', dest='log', default='info',
-                            help='Ser log level from "debug" or "info".')
+                            help='Set log level from "debug" or "info".')
         parser.add_argument('-a', '--all', dest='all', action='store_true',
                             help='Show all tasks avalible.')
         parser.add_argument('-f', '--force', dest='force', action='store_true',
                             help='Force task to rebuild.')
         parser.add_argument('-g', '--graph', dest='graph',
                             help='Draw a graph of tasks to a file.')
+        parser.add_argument(
+            '-v', '--version', dest='version', action='store_true',
+            help='Show version of pymk.')
         parser.add_argument(
             '-d', '--dependency-force', dest='dependency_force', action='store_true',
             help='Force depedency to rebuild (use only with --force).')
@@ -174,10 +182,16 @@ def run():
     try:
         init_signal_handling()
         args = parse_command()
-        start_loggin(args)
-        append_python_path()
-        module = import_mkfile()
-        is_graphviz = check_for_graphviz(args)
+        if args.version:
+            args.log = 'info'
+            start_loggin(args)
+            log.info('Pymk version %s' % (VERSION,))
+            return 0
+        else:
+            start_loggin(args)
+            append_python_path()
+            module = import_mkfile()
+            is_graphviz = check_for_graphviz(args)
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1
@@ -205,3 +219,6 @@ def run():
     finally:
         if args.graph:
             make_graph(args, is_graphviz)
+
+if __name__ == '__main__':
+    run()
