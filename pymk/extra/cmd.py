@@ -1,3 +1,4 @@
+import signal
 from subprocess import Popen, PIPE
 from pymk.error import CommandError, CommandAborted
 
@@ -5,24 +6,31 @@ _all_subprocesses = []
 _aborted = False
 
 
-def kill_process(spp):
+def send_signal(spp, signal):
     try:
         if spp.poll() == None:
-            spp.kill()
+            spp.send_signal(signal)
     except OSError:
         pass
 
 
-def on_sigterm(signum, frame):
+def on_signal(signum, frame):
     global _aborted
     _aborted = True
     for spp in _all_subprocesses:
-        kill_process(spp)
+        send_signal(spp, signum)
 
 
 def init_signal_handling():
-    import signal
-    signal.signal(signal.SIGTERM, on_sigterm)
+    for _signal in [
+        signal.SIGABRT,
+        signal.SIGFPE,
+        signal.SIGILL,
+        signal.SIGINT,
+        signal.SIGSEGV,
+        signal.SIGTERM
+    ]:
+        signal.signal(_signal, on_signal)
 
 
 def run_cmd(args, show_output=False):
@@ -47,13 +55,13 @@ def run_cmd(args, show_output=False):
                 raise CommandError(error, '')
             else:
                 raise CommandError(error, spp.stderr.read())
-    #---------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     args = make_args(args)
     spp = run_program(args, show_output)
     _all_subprocesses.append(spp)
     try:
         wait_for_termination(spp, show_output)
     finally:
-        kill_process(spp)
+        send_signal(spp, signal.SIGTERM)
         _all_subprocesses.remove(spp)
     return spp.stdout, spp.stderr
