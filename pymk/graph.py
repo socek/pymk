@@ -26,7 +26,6 @@ def draw_graph(filename):
 
     datalog.write('}\n')
     datalog.seek(0)
-    print datalog.name
     run_dot(datalog, filename)
 
 

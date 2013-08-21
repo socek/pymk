@@ -13,7 +13,8 @@ class TaskMeta(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(TaskMeta, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = super(
+                TaskMeta, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
     def __init__(cls, name, bases, dct):
@@ -27,11 +28,17 @@ class TaskMeta(type):
             for dependency in cls.dependencys:
                 if not issubclass(type(dependency), Dependency):
                     raise NotADependencyError(dependency, cls)
-        #-----------------------------------------------------------------------
-        if name != 'Task':
+        #----------------------------------------------------------------------
+        from pymk.modules import RecipeType
+        if not 'base' in dct or not dct['base']:
             check_if_task_exists(name)
             TaskMeta.tasks[cls().getName()] = cls
             validate_dependency(cls)
+            cls.base = False
+
+            if cls.__module__ in RecipeType.recipes:
+                recipe = RecipeType.recipes[cls.__module__]
+                cls.assign_recipe(recipe)
 
     @classmethod
     def init(cls):
@@ -43,6 +50,8 @@ class TaskMeta(type):
 class Task(object):
 
     """Base of all taks."""
+
+    base = True
 
     __metaclass__ = TaskMeta
 
@@ -57,6 +66,8 @@ class Task(object):
     _runned = False
     _args = {}
     _error = False
+    settings = {}
+    recipe = None
 
     @classmethod
     def getName(cls):
@@ -117,7 +128,7 @@ class Task(object):
                 cls().build(cls._args)
             except TypeError:
                 cls().build()
-        #-----------------------------------------------------------------------
+        #----------------------------------------------------------------------
         cls.running_list_element = {
             'type': 'task',
             'data': cls,
@@ -125,7 +136,8 @@ class Task(object):
             'childs': [],
         }
         if parent:
-            parent.running_list_element['childs'].append(cls.running_list_element)
+            parent.running_list_element[
+                'childs'].append(cls.running_list_element)
         else:
             from pymk.graph import running_list
             running_list.append(cls.running_list_element)
@@ -145,6 +157,10 @@ class Task(object):
             return cls._set_runned(False)
 
     @classmethod
+    def assign_recipe(cls, recipe):
+        cls.recipe = recipe
+
+    @classmethod
     def dependency_FileExists(cls):
         return InnerFileExists(cls)
 
@@ -161,7 +177,8 @@ class Task(object):
     def write_graph_detailed(cls, datalog):
         if not cls.hide_graph and not cls.name in cls.detailed:
             cls.detailed.append(cls.getName())
-            datalog.write('"%s" [%s];\n' % (cls.getName(), cls.get_graph_details()))
+            datalog.write('"%s" [%s];\n' %
+                          (cls.getName(), cls.get_graph_details()))
 
     @classmethod
     def get_graph_details(cls):

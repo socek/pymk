@@ -9,3 +9,6 @@ dist
 .coverage
 .ropeproject
 venv/
+pymkmodules
+test.py
+TODO
