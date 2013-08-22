@@ -65,7 +65,9 @@ def import_mkfile():
         reload(module)
     else:
         module = __import__("mkfile", globals(), locals())
-    RecipeType.getRecipeForModule('mkfile')()
+    recipe = RecipeType.getRecipeForModule('mkfile')
+    if recipe:
+        recipe()
     return module
 
 
