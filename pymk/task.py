@@ -36,8 +36,8 @@ class TaskMeta(type):
             validate_dependency(cls)
             cls.base = False
 
-            if cls.__module__ in RecipeType.recipes:
-                recipe = RecipeType.recipes[cls.__module__]
+            recipe = RecipeType.getRecipeForModule(cls.__module__)
+            if recipe:
                 cls.assign_recipe(recipe)
 
     @classmethod

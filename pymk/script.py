@@ -10,6 +10,7 @@ from pymk.extra.cmd import init_signal_handling
 import argparse
 from urlparse import urlparse, parse_qs
 from pymk.error import CommandAborted
+from pymk.modules import RecipeType
 
 
 log = logging.getLogger('pymk')
@@ -64,6 +65,7 @@ def import_mkfile():
         reload(module)
     else:
         module = __import__("mkfile", globals(), locals())
+    RecipeType.getRecipeForModule('mkfile')()
     return module
 
 

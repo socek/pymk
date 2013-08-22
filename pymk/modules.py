@@ -36,6 +36,10 @@ class RecipeType(type):
             RecipeType.recipes[cls.getName()] = cls
             assign_recipe_to_tasks()
 
+    @classmethod
+    def getRecipeForModule(cls, name):
+        return RecipeType.recipes.get(name)
+
 
 class BaseRecipe(object):
 
@@ -80,9 +84,10 @@ class BaseRecipe(object):
 
     def add_recipe(self, name):
         name = '.'.join(['pymkmodules', name])
-        package = __import__(name, globals(), locals(), [''])
-        if hasattr(package, 'Recipe'):
-            recipe = package.Recipe()
+        __import__(name, globals(), locals(), [''])
+        if name in RecipeType.recipes:
+            recipe = RecipeType.recipes[name]
+            recipe()
             self.recipes.append(recipe)
 
     def name(self):
