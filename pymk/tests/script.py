@@ -1,5 +1,7 @@
+from mock import patch
+
 from pymk.tests.base import PymkTestCase
-from pymk.script import parse_task_name
+from pymk.script import parse_task_name, init_recipe
 from pymk.error import CommandError
 from pymk.task import TaskMeta
 
@@ -19,7 +21,8 @@ class TaskNameParseTest(PymkTestCase):
         self.assertEqual('/something/elo/', name)
         self.assertEqual({'elo': ['10'], 'zbychu': ['12']}, args)
 
-        name, args = parse_task_name('/something/elo/?elo=10&zbychu=12,10&zbychu=ccc')
+        name, args = parse_task_name(
+            '/something/elo/?elo=10&zbychu=12,10&zbychu=ccc')
         self.assertEqual('/something/elo/', name)
         self.assertEqual({'elo': ['10'], 'zbychu': ['12,10', 'ccc']}, args)
 
@@ -35,4 +38,21 @@ class GraphTest(PymkTestCase):
         self.assertRaises(CommandError, self._pymk_runtask, [])
         task = TaskMeta.tasks[taskname]
         self.assertTrue(task._error)
-        self.assertEqual('shape=circle, regular=1,style=filled,fillcolor=red', task.get_graph_details())
+        self.assertEqual(
+            'shape=circle, regular=1,style=filled,fillcolor=red', task.get_graph_details())
+
+
+class InitRecipe(PymkTestCase):
+
+    @patch('pymk.script.RecipeType')
+    def test_init_recipe(self, RecipeType):
+        self.assertTrue(init_recipe('something'))
+        RecipeType.getRecipeForModule.assert_called_once_with('something')
+        value = RecipeType.getRecipeForModule.return_value
+        value.assert_called_once_with()
+
+    @patch('pymk.script.RecipeType')
+    def test_init_recipe_with_no_recipe(self, RecipeType):
+        RecipeType.getRecipeForModule.return_value = None
+        self.assertFalse(init_recipe('something'))
+        RecipeType.getRecipeForModule.assert_called_once_with('something')

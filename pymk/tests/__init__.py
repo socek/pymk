@@ -28,6 +28,7 @@ all_test_cases = [
 
     script.TaskNameParseTest,
     script.GraphTest,
+    script.InitRecipe,
 ]
 
 

@@ -5,6 +5,7 @@ from pymk import VERSION
 install_requires = [
     'jinja2',
     'argparse',
+    'mock',
 ]
 
 dependency_links = [

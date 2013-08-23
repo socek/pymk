@@ -57,18 +57,23 @@ def append_python_path(cwd=None):
         sys.path.append(os.getcwd())
 
 
-def import_mkfile():
-    if not os.path.exists('mkfile.py'):
+def import_mkfile(name='mkfile'):
+    if not os.path.exists('%s.py' % (name,)):
         raise NoMkfileFound()
     if 'mkfile' in sys.modules:
-        module = __import__("mkfile", globals(), locals())
+        module = __import__(name, globals(), locals())
         reload(module)
     else:
-        module = __import__("mkfile", globals(), locals())
-    recipe = RecipeType.getRecipeForModule('mkfile')
+        module = __import__(name, globals(), locals())
+    return module
+
+
+def init_recipe(name):
+    recipe = RecipeType.getRecipeForModule(name)
     if recipe:
         recipe()
-    return module
+        return True
+    return False
 
 
 def parse_task_name(task):
@@ -194,7 +199,8 @@ def run():
         else:
             start_loggin(args)
             append_python_path()
-            module = import_mkfile()
+            module = import_mkfile('mkfile')
+            init_recipe('mkfile')
             is_graphviz = check_for_graphviz(args)
     except NoMkfileFound as er:
         log.error("No mkfile.py file found!")
