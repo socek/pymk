@@ -1,16 +1,17 @@
-import os
 import sys
+import argparse
 import logging
+import os
+from glob import glob
+from urlparse import urlparse, parse_qs
+
 from pymk import VERSION
-from pymk.task import TaskMeta
-from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError
-from pymk.graph import draw_graph
+from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
 from pymk.extra import run_cmd
 from pymk.extra.cmd import init_signal_handling
-import argparse
-from urlparse import urlparse, parse_qs
-from pymk.error import CommandAborted
+from pymk.graph import draw_graph
 from pymk.modules import RecipeType
+from pymk.task import TaskMeta
 
 
 log = logging.getLogger('pymk')
@@ -66,6 +67,10 @@ def import_mkfile(name='mkfile'):
     else:
         module = __import__(name, globals(), locals())
     return module
+
+
+def add_eggs_to_sys_path():
+    sys.path[0:0] = ['pymkmodules'] + glob('pymkmodules/*.egg')
 
 
 def init_recipe(name):
@@ -199,6 +204,7 @@ def run():
         else:
             start_loggin(args)
             append_python_path()
+            add_eggs_to_sys_path()
             module = import_mkfile('mkfile')
             init_recipe('mkfile')
             is_graphviz = check_for_graphviz(args)

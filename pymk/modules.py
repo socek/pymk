@@ -1,6 +1,8 @@
+import os
 import sys
 from pymk import VERSION, compare_version
 from pymk.error import TaskAlreadyExists
+from pymk.download import download, extract_egg
 
 
 class RecipeType(type):
@@ -79,8 +81,17 @@ class BaseRecipe(object):
     def gather_recipes(self):
         pass
 
-    # def download_recipe(self, name, url):
-    #     pass
+    def download_recipe(self, name, url):
+        if not os.path.exists('pymkmodules'):
+            os.mkdir('pymkmodules')
+        destination_path = os.path.join('pymkmodules', name + '.egg')
+        if not os.path.exists(destination_path):
+            destination_egg_path = destination_path + '.zip'
+            print "Downloading %s..." % (name,)
+            download(url, destination_egg_path)
+            print "Extracting %s..." % (name,)
+            extract_egg(destination_egg_path, destination_path)
+
 
     def add_recipe(self, name):
         name = '.'.join(['pymkmodules', name])

@@ -6,6 +6,7 @@ install_requires = [
     'jinja2',
     'argparse',
     'mock',
+    'pypi-tools',
 ]
 
 dependency_links = [
