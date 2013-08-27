@@ -1,5 +1,6 @@
 from mock import patch
 
+from pymk import compare_version
 from pymk.tests.base import PymkTestCase
 from pymk.script import parse_task_name, init_recipe
 from pymk.error import CommandError
@@ -56,3 +57,25 @@ class InitRecipe(PymkTestCase):
         RecipeType.getRecipeForModule.return_value = None
         self.assertFalse(init_recipe('something'))
         RecipeType.getRecipeForModule.assert_called_once_with('something')
+
+
+class CompareVersion(PymkTestCase):
+
+    def test_greater(self):
+        self.assertEqual(-1, compare_version('0.3.9', '0.4.0'))
+        self.assertEqual(-1, compare_version('0.3.9.1', '0.4.0'))
+        self.assertEqual(-1, compare_version('0.3.9.2-custome', '0.4.0'))
+        self.assertEqual(-1, compare_version('0.3.9.3.custome', '0.4.0'))
+        self.assertEqual(-1, compare_version('0.4.0', '0.4.0.custome'))
+        self.assertEqual(-1, compare_version('0.4.0', '0.4.0-custome'))
+
+    def test_equal(self):
+        self.assertEqual(0, compare_version('0.4.0', '0.4.0'))
+
+    def test_lower(self):
+        self.assertEqual(1, compare_version('0.4.0', '0.3.9'))
+        self.assertEqual(1, compare_version('0.4.0', '0.3.9.1'))
+        self.assertEqual(1, compare_version('0.4.0', '0.3.9.2-custome'))
+        self.assertEqual(1, compare_version('0.4.0', '0.3.9.3.custome'))
+        self.assertEqual(1, compare_version('0.4.0.custome', '0.4.0', ))
+        self.assertEqual(1, compare_version('0.4.0-custome', '0.4.0'))

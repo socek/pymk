@@ -7,6 +7,7 @@ from . import error
 from . import script
 
 all_test_cases = [
+    task.TaskMetaTest,
     task.TaskTest,
     task.TaskDependencyFileExistsTest,
     task.TaskDependencyFileChangedTest,
@@ -29,6 +30,7 @@ all_test_cases = [
     script.TaskNameParseTest,
     script.GraphTest,
     script.InitRecipe,
+    script.CompareVersion,
 ]
 
 

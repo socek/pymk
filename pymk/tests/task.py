@@ -1,8 +1,23 @@
+from mock import patch
 import os
+
 import pymk.error as Perror
 from pymk.script import import_mkfile
+from pymk.task import Task, TaskMeta
 from pymk.tests.base import PymkTestCase
-from pymk.task import Task
+from pymk.error import TaskAlreadyExists
+
+
+class TaskMetaTest(PymkTestCase):
+
+    @patch.dict(TaskMeta.tasks, {'name1': 1})
+    def test_check_if_task_exists_fail(self):
+        self.assertRaises(
+            TaskAlreadyExists, TaskMeta.check_if_task_exists, 'name1')
+
+    @patch.object(TaskMeta, 'tasks', {'name1': 1})
+    def test_check_if_task_exists(self):
+        self.assertEqual(None, TaskMeta.check_if_task_exists('name2'))
 
 
 class TaskTest(PymkTestCase):
@@ -345,7 +360,8 @@ class TaskDependencyLinkTest(PymkTestCase):
         self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka'])
 
         self.touch('b.dep.txt')
-        self._pymk_runtask(['task_linka', 'task_linkb', 'task_linka', 'task_linkb'])
+        self._pymk_runtask(
+            ['task_linka', 'task_linkb', 'task_linka', 'task_linkb'])
 
 
 class TaskNameTest(PymkTestCase):
