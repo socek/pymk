@@ -1,9 +1,13 @@
 from time import sleep
+
 import StringIO
+from mock import patch, MagicMock
+
 import pymk.error as Perror
-from pymk.dependency import FileChanged, FileDoesNotExists, AlwaysRebuild, InnerFileExists, InnerFileChanged
-from pymk.tests.base import PymkTestCase
+from pymk.dependency import FileChanged, FileDoesNotExists, AlwaysRebuild, InnerFileExists, InnerFileChanged, Dependency, FileDependency
 from pymk.task import Task
+from pymk.tests.base import PymkTestCase
+from pymk.dependency import InnerLink
 
 
 class FileDoesNotExistsDependencyTest(PymkTestCase):
@@ -65,8 +69,86 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self.touch(file2, None)
         self._pymk_runtask([taskname, taskname, taskname])
 
+    def test_extra(self):
+        depedency = Dependency()
+        self.assertEqual('', depedency.extra())
+
+    def test_get_graph_details(self):
+        depedency = Dependency()
+        self.assertEqual('', depedency.get_graph_details())
+
+    def test_get_shape_color(self):
+        depedency = Dependency()
+        depedency.runned = False
+        self.assertEqual('white', depedency._get_shape_color())
+
+    def test_get_shape_color_after_run(self):
+        depedency = Dependency()
+        depedency.runned = True
+        self.assertEqual('darkgreen', depedency._get_shape_color())
+
+
+class FileDependencyTest(PymkTestCase):
+
+    filename = 'something.txt'
+
+    def setUp(self):
+        super(FileDependencyTest, self).setUp()
+        self.dep = FileDependency(self.filename)
+
+    def test_init(self):
+        self.assertEqual([self.filename, ], self.dep.filenames)
+
+    def test_name(self):
+        self.assertEqual('something.txt', self.dep.name)
+
+    def test_name_many_files(self):
+        self.dep = FileDependency([self.filename, 'filename2.txt'])
+        self.assertEqual('Many files', self.dep.name)
+
+    @patch('pymk.dependency.os.path.getmtime')
+    def test_compare_mtime(self, getmtime):
+        getmtime.return_value = 1
+        self.assertFalse(self.dep.compare_mtime('1', '2'))
+        self.assertEqual(2, getmtime.call_count)
+        getmtime.assert_called_with('2')
+        self.assertEqual(('1',), getmtime.mock_calls[0][1])
+        self.assertEqual(('2',), getmtime.mock_calls[1][1])
+
+    @patch('pymk.dependency.os.path.getmtime')
+    def test_compare_mtime_true(self, getmtime):
+        def side_effect_1(*args, **kwargs):
+            return 1
+
+        def side_effect_2(*args, **kwargs):
+            getmtime.side_effect = side_effect_1
+            return 2
+        getmtime.side_effect = side_effect_2
+
+        self.assertTrue(self.dep.compare_mtime('1', '2'))
+        self.assertEqual(2, getmtime.call_count)
+        getmtime.assert_called_with('2')
+        self.assertEqual(('1',), getmtime.mock_calls[0][1])
+        self.assertEqual(('2',), getmtime.mock_calls[1][1])
+
 
 class FileChangedDependencyTest(PymkTestCase):
+
+    def test_check_dependent_file_no_file(self):
+        dep = FileChanged('something', MagicMock())
+        with patch.object(dep, 'compare_mtime') as compare_mtime:
+            with patch.object(dep, 'make_dependent_file') as make_dependent_file:
+                compare_mtime.side_effect = OSError()
+
+                dep.check_dependent_file(MagicMock())
+                make_dependent_file.assert_called_once_with()
+
+    def test_check_dependent_file(self):
+        dep = FileChanged('something', MagicMock())
+        with patch.object(dep, 'compare_mtime') as compare_mtime:
+            result = dep.check_dependent_file(MagicMock())
+            compare_mtime.called_once_with('something')
+            self.assertEqual(compare_mtime.return_value.__ror__(), result)
 
     def test_FileChanged_dependency_make_fail(self):
         self._template('one_task_dependency_2', 'mkfile.py')
@@ -183,6 +265,13 @@ class FileChangedDependencyTest(PymkTestCase):
         dep = FileChanged('filename', TaskBa)
         self.assertRaises(Perror.TaskMustHaveOutputFile, dep.do_test, TaskBb)
 
+    def test_make_dependent_file(self):
+        task = MagicMock()
+        depedency = FileChanged('name', task)
+
+        self.assertTrue(depedency.make_dependent_file())
+        task.run.called_once_with(False)
+
 
 class AlwaysRebuildDependencyTest(PymkTestCase):
 
@@ -252,3 +341,18 @@ class InnerFileChangedTest(PymkTestCase):
 
         self.assertEqual(str, type(dep.extra()))
         self.assertEqual(str, type(dep.get_graph_name()))
+
+
+class InnerLinkTest(PymkTestCase):
+
+    def setUp(self):
+        super(InnerLinkTest, self).setUp()
+        self.parent = MagicMock()
+        self.dep = InnerLink(self.parent)
+
+    def test_do_test(self):
+        self.assertFalse(self.dep.do_test('1'))
+        self.parent.run.assert_called_once_with(False, parent='1')
+
+    def test_extra(self):
+        self.assertEqual('[label="L"]', self.dep.extra())

@@ -22,8 +22,14 @@ class TaskMeta(type):
         if name in list(cls.tasks):
             raise TaskAlreadyExists(name)
 
-    def __init__(cls, name, bases, dct):
+    @classmethod
+    def assign_recipe_if_able(basecls, cls):
+        from pymk.modules import RecipeType
+        recipe = RecipeType.getRecipeForModule(cls.__module__)
+        if recipe:
+            cls.assign_recipe(recipe)
 
+    def __init__(cls, name, bases, dct):
         def validate_dependency(cls):
             if cls.dependencys == None:
                 raise NoDependencysInAClass(cls)
@@ -31,16 +37,12 @@ class TaskMeta(type):
                 if not issubclass(type(dependency), Dependency):
                     raise NotADependencyError(dependency, cls)
         #----------------------------------------------------------------------
-        from pymk.modules import RecipeType
         if not 'base' in dct or not dct['base']:
             TaskMeta.check_if_task_exists(name)
             TaskMeta.tasks[cls().getName()] = cls
             validate_dependency(cls)
             cls.base = False
-
-            recipe = RecipeType.getRecipeForModule(cls.__module__)
-            if recipe:
-                cls.assign_recipe(recipe)
+            TaskMeta.assign_recipe_if_able(cls)
 
     @classmethod
     def init(cls):

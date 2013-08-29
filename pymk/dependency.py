@@ -67,6 +67,12 @@ class FileDependency(Dependency):
         else:
             return 'Many files'
 
+    def compare_mtime(self, first, second):
+        if os.path.getmtime(first) > os.path.getmtime(second):
+            return True
+        else:
+            return False
+
 
 class FileChanged(FileDependency):
 
@@ -77,32 +83,26 @@ class FileChanged(FileDependency):
         super(FileChanged, self).__init__(filenames)
         self.task = task
 
+    def make_dependent_file(self):
+        self.task.run(False)
+        return True
+
+    def check_dependent_file(self, task):
+        try:
+            result = False
+            for filename in self.filenames:
+                result |= self.compare_mtime(filename, task.output_file)
+            return result
+        except OSError:
+            return self.make_dependent_file()
+
     def do_test(self, task, dependency_force=False):
         def raise_error_if_task_has_no_output_file(task):
             if task is None:
                 return
             if task.output_file is None:
                 raise error.TaskMustHaveOutputFile(task.getName())
-
-        def compare_mtime(first, second):
-            if os.path.getmtime(first) > os.path.getmtime(second):
-                return True
-            else:
-                return False
-
-        def make_dependent_file():
-            self.task.run(False)
-            return True
-
-        def check_dependent_file():
-            try:
-                result = False
-                for filename in self.filenames:
-                    result |= compare_mtime(filename, task.output_file)
-                return result
-            except OSError:
-                return make_dependent_file()
-        #-----------------------------------------------------------------------
+        #----------------------------------------------------------------------
         raise_error_if_task_has_no_output_file(task)
         raise_error_if_task_has_no_output_file(self.task)
 
@@ -110,7 +110,7 @@ class FileChanged(FileDependency):
             return True
 
         if os.path.exists(task.output_file):
-            return check_dependent_file()
+            return self.check_dependent_file(task)
         else:
             for filename in self.filenames:
                 if not os.path.exists(filename):

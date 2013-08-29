@@ -1,4 +1,4 @@
-from mock import patch
+from mock import patch, MagicMock
 import os
 
 import pymk.error as Perror
@@ -6,6 +6,7 @@ from pymk.script import import_mkfile
 from pymk.task import Task, TaskMeta
 from pymk.tests.base import PymkTestCase
 from pymk.error import TaskAlreadyExists
+from pymk.modules import RecipeType
 
 
 class TaskMetaTest(PymkTestCase):
@@ -18,6 +19,22 @@ class TaskMetaTest(PymkTestCase):
     @patch.object(TaskMeta, 'tasks', {'name1': 1})
     def test_check_if_task_exists(self):
         self.assertEqual(None, TaskMeta.check_if_task_exists('name2'))
+
+    @patch.object(RecipeType, 'recipes', {})
+    def test_assign_recipe_if_able_fail(self):
+        cls = MagicMock()
+        cls.__module__ = 'name1'
+
+        TaskMeta.assign_recipe_if_able(cls)
+        self.assertEqual(0, cls.assign_recipe.call_count)
+
+    @patch.object(RecipeType, 'recipes', {'name1': 1})
+    def test_assign_recipe_if_able(self):
+        cls = MagicMock()
+        cls.__module__ = 'name1'
+
+        TaskMeta.assign_recipe_if_able(cls)
+        cls.assign_recipe.called_once_with(1)
 
 
 class TaskTest(PymkTestCase):

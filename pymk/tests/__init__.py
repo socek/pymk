@@ -20,6 +20,8 @@ all_test_cases = [
     dependency.AlwaysRebuildDependencyTest,
     dependency.InnerFileExistsTest,
     dependency.InnerFileChangedTest,
+    dependency.FileDependencyTest,
+    dependency.InnerLinkTest,
 
     extra.TouchTest,
     extra.FindFilesTest,
