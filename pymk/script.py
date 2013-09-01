@@ -8,7 +8,7 @@ from urlparse import urlparse, parse_qs
 from pymk import VERSION
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
 from pymk.extra import run_cmd
-from pymk.extra.cmd import init_signal_handling
+from pymk.extra.cmd import SignalHandling
 from pymk.graph import draw_graph
 from pymk.modules import RecipeType
 from pymk.task import TaskMeta
@@ -194,7 +194,7 @@ def run():
     #-------------------------------------------------------------------------
 
     try:
-        init_signal_handling()
+        SignalHandling()
         args = parse_command()
         if args.version:
             args.log = 'info'

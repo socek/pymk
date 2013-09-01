@@ -26,6 +26,7 @@ all_test_cases = [
     extra.TouchTest,
     extra.FindFilesTest,
     extra.RunCmdTest,
+    extra.SignalHandlingTest,
 
     error.ErrorsTests,
 
