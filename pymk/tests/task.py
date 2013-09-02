@@ -1,10 +1,10 @@
 from mock import patch, MagicMock
 import os
 
+from pymk.tests.base import PymkTestCase
 import pymk.error as Perror
 from pymk.script import import_mkfile
 from pymk.task import Task, TaskType
-from pymk.tests.base import PymkTestCase
 from pymk.error import TaskAlreadyExists
 from pymk.recipe import RecipeType
 

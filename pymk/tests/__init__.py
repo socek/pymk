@@ -5,6 +5,7 @@ from . import dependency
 from . import extra
 from . import error
 from . import script
+from . import recipe
 
 all_test_cases = [
     task.TaskTypeTest,
@@ -34,6 +35,8 @@ all_test_cases = [
     script.GraphTest,
     script.InitRecipe,
     script.CompareVersion,
+
+    recipe.RecipeTest,
 ]
 
 

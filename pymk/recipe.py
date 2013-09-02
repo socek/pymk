@@ -11,10 +11,13 @@ class RecipeType(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(
-                RecipeType, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+        if cls.singleton:
+            if cls not in cls._instances:
+                cls._instances[cls] = super(
+                    RecipeType, cls).__call__(*args, **kwargs)
+            return cls._instances[cls]
+        else:
+            return super(RecipeType, cls).__call__(*args, **kwargs)
 
     def __init__(cls, name, bases, dct):
         def check_if_recipe_exists(name):
@@ -48,6 +51,7 @@ class Recipe(object):
     default_task = None
     base = True
     __metaclass__ = RecipeType
+    singleton = True
 
     def __init__(self):
         self.settings = {
@@ -55,12 +59,16 @@ class Recipe(object):
             # 'name': None,
             'version': '0.0.0',
         }
+        self.paths = {}
         self.recipes = []
 
         self.create_settings()
         self.validate_settings()
         # self.gather_modules()
         self.gather_recipes()
+
+    def assign_main_path(self, path):
+        self.paths['main'] = os.path.dirname(path)
 
     @classmethod
     def getName(cls):
@@ -81,6 +89,20 @@ class Recipe(object):
 
     def create_settings(self):
         pass
+
+    def set_setting(self, name, value):
+        parsed_value = value % self.settings
+        self.settings[name] = parsed_value
+
+    def set_path(self, name, values):
+        if type(values) not in (list, tuple):
+            values = [values, ]
+        parsed_values = []
+        for value in values:
+            parsed_values.append(
+                value % self.paths
+            )
+        self.paths[name] = os.path.join(*parsed_values)
 
     # def gather_modules(self):
     #     pass
