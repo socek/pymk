@@ -91,7 +91,7 @@ class FileChanged(FileDependency):
         try:
             result = False
             for filename in self.filenames:
-                result |= self.compare_mtime(filename, task.output_file)
+                result |= self.compare_mtime(filename, task().output_file)
             return result
         except OSError:
             return self.make_dependent_file()
@@ -100,7 +100,7 @@ class FileChanged(FileDependency):
         def raise_error_if_task_has_no_output_file(task):
             if task is None:
                 return
-            if task.output_file is None:
+            if task().output_file is None:
                 raise error.TaskMustHaveOutputFile(task.getName())
         #----------------------------------------------------------------------
         raise_error_if_task_has_no_output_file(task)
@@ -109,7 +109,7 @@ class FileChanged(FileDependency):
         if dependency_force:
             return True
 
-        if os.path.exists(task.output_file):
+        if os.path.exists(task().output_file):
             return self.check_dependent_file(task)
         else:
             for filename in self.filenames:
@@ -199,8 +199,8 @@ class InnerFileExists(InnerDependency):
         if dependency_force:
             self.parent.run(True, True, True, task)
             return True
-        if self.parent.output_file:
-            if os.path.exists(self.parent.output_file):
+        if self.parent().output_file:
+            if os.path.exists(self.parent().output_file):
                 self.parent.run(False, parent=task)
                 return False
             else:
@@ -223,7 +223,7 @@ class InnerFileChanged(InnerDependency):
         if dependency_force:
             self.parent.run(True, True, True, parent=task)
         ret = self.parent.run(False, parent=task)
-        return FileChanged(self.parent.output_file, self.parent)(task) or ret
+        return FileChanged(self.parent().output_file, self.parent)(task) or ret
 
     # === graph specyfic ===
     def extra(self):

@@ -6,7 +6,7 @@ from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, De
 logger = logging.getLogger('pymk')
 
 
-class TaskMeta(type):
+class TaskType(type):
     tasks = {}
     args = {}
     _instances = {}
@@ -14,7 +14,7 @@ class TaskMeta(type):
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(
-                TaskMeta, cls).__call__(*args, **kwargs)
+                TaskType, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
     @classmethod
@@ -24,25 +24,25 @@ class TaskMeta(type):
 
     @classmethod
     def assign_recipe_if_able(basecls, cls):
-        from pymk.modules import RecipeType
+        from pymk.recipe import RecipeType
         recipe = RecipeType.getRecipeForModule(cls.__module__)
         if recipe:
             cls.assign_recipe(recipe)
 
     def __init__(cls, name, bases, dct):
         def validate_dependency(cls):
-            if cls.dependencys == None:
+            if cls().dependencys == None:
                 raise NoDependencysInAClass(cls)
-            for dependency in cls.dependencys:
+            for dependency in cls().dependencys:
                 if not issubclass(type(dependency), Dependency):
                     raise NotADependencyError(dependency, cls)
         #----------------------------------------------------------------------
         if not 'base' in dct or not dct['base']:
-            TaskMeta.check_if_task_exists(name)
-            TaskMeta.tasks[cls().getName()] = cls
-            validate_dependency(cls)
+            TaskType.assign_recipe_if_able(cls)
+            TaskType.check_if_task_exists(name)
+            TaskType.tasks[cls().getName()] = cls
             cls.base = False
-            TaskMeta.assign_recipe_if_able(cls)
+            validate_dependency(cls)
 
     @classmethod
     def init(cls):
@@ -57,7 +57,7 @@ class Task(object):
 
     base = True
 
-    __metaclass__ = TaskMeta
+    __metaclass__ = TaskType
 
     dependencys = None
     output_file = None
@@ -101,7 +101,7 @@ class Task(object):
 
         """
         make_rebuild = False
-        for dependency in cls.dependencys:
+        for dependency in cls().dependencys:
             cond = dependency(cls, dependency_force=dependency_force)
             make_rebuild = make_rebuild or cond
             cls.running_list_element['childs'].append({
@@ -113,12 +113,12 @@ class Task(object):
         if make_rebuild:
             return make_rebuild
         else:
-            if cls.output_file:
-                if not os.path.exists(cls.output_file):
+            if cls().output_file:
+                if not os.path.exists(cls().output_file):
                     return True
                 else:
                     return False
-            if len(cls.dependencys) == 0:
+            if len(cls().dependencys) == 0:
                 return True
             return False
 
@@ -164,6 +164,10 @@ class Task(object):
     def assign_recipe(cls, recipe):
         cls.recipe = recipe
 
+    @property
+    def settings(self):
+        return self.recipe().settings
+
     @classmethod
     def dependency_FileExists(cls):
         return InnerFileExists(cls)
@@ -188,7 +192,7 @@ class Task(object):
     def get_graph_details(cls):
         shape = 'box'
         color = 'white'
-        if AlwaysRebuild in [type(dependency) for dependency in cls.dependencys]:
+        if AlwaysRebuild in [type(dependency) for dependency in cls().dependencys]:
             shape = 'circle'
             color = 'grey'
         if cls._get_runned():

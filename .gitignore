@@ -12,3 +12,4 @@ venv/
 pymkmodules
 test.py
 TODO
+htmlcov

@@ -43,10 +43,10 @@ class RecipeType(type):
         return RecipeType.recipes.get(name)
 
 
-class BaseRecipe(object):
+class Recipe(object):
 
+    default_task = None
     base = True
-
     __metaclass__ = RecipeType
 
     def __init__(self):
@@ -65,6 +65,13 @@ class BaseRecipe(object):
     @classmethod
     def getName(cls):
         return cls.__module__
+
+    def getDefaultTask(self):
+        from pymk.task import TaskType
+        if self.default_task is None:
+            return None
+        else:
+            return TaskType.tasks[self.default_task]
 
     def validate_settings(self):
         min_pymk_version = self.settings['minimal pymk version']
@@ -91,7 +98,6 @@ class BaseRecipe(object):
             download(url, destination_egg_path)
             print "Extracting %s..." % (name,)
             extract_egg(destination_egg_path, destination_path)
-
 
     def add_recipe(self, name):
         name = '.'.join(['pymkmodules', name])

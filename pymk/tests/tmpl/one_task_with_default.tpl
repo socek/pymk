@@ -1,5 +1,8 @@
 from pymk.task import Task
+from pymk.recipe import Recipe
 
+class MyRecipe(Recipe):
+    default_task = 'task_0'
 
 class task_0(Task):
 
@@ -11,6 +14,3 @@ class task_0(Task):
         fp.write('\n')
         fp.close()
 
-SETTINGS = {
-    'default task' : task_0,
-}

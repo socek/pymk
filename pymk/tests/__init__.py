@@ -7,7 +7,7 @@ from . import error
 from . import script
 
 all_test_cases = [
-    task.TaskMetaTest,
+    task.TaskTypeTest,
     task.TaskTest,
     task.TaskDependencyFileExistsTest,
     task.TaskDependencyFileChangedTest,

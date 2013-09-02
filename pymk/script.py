@@ -10,8 +10,8 @@ from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentVa
 from pymk.extra import run_cmd
 from pymk.extra.cmd import SignalHandling
 from pymk.graph import draw_graph
-from pymk.modules import RecipeType
-from pymk.task import TaskMeta
+from pymk.recipe import RecipeType
+from pymk.task import TaskType
 
 
 log = logging.getLogger('pymk')
@@ -25,7 +25,7 @@ def make_graph(args, is_graphviz):
             return False
         else:
             try:
-                return [TaskMeta.tasks[task] for task in args.task]
+                return [TaskType.tasks[task] for task in args.task]
             except KeyError:
                 return False
         return tasks
@@ -90,7 +90,7 @@ def parse_task_name(task):
 
 def run_all_inputet_tasks(tasks, force, dependency_force):
     def check_if_task_name_exists(name):
-        if not name in TaskMeta.tasks:
+        if not name in TaskType.tasks:
             raise BadTaskName(task)
 
     def run_task(name, force, dependency_force):
@@ -100,7 +100,7 @@ def run_all_inputet_tasks(tasks, force, dependency_force):
         )
 
     def get_task(name):
-        return TaskMeta.tasks[name]
+        return TaskType.tasks[name]
     #-------------------------------------------------------------------------
     tasks = [parse_task_name(task) for task in tasks]
     # First check all tasks names, then run tasks.
@@ -118,13 +118,13 @@ def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n'
         task_names_size = 0
-        for name, task in TaskMeta.tasks.items():
+        for name, task in TaskType.tasks.items():
             if not task.hide:
                 if len(name) > task_names_size:
                     task_names_size = len(name)
         task_names_size += 2
         template = '\t%-' + str(task_names_size) + 's %s\n'
-        for name, task in TaskMeta.tasks.items():
+        for name, task in TaskType.tasks.items():
             if not task.hide:
                 text += template % (task.getName(), task.help)
 
@@ -136,10 +136,12 @@ def run_tasks(mkfile, args):
             if args.graph:
                 return 'do graph of all'
             else:
-                mkfile.SETTINGS['default task'].run(force=args.force,
-                                                    dependency_force=args.dependency_force)
+                recipe = RecipeType.getRecipeForModule('mkfile')
+                task = recipe().getDefaultTask()
+                task.run(
+                    force=args.force, dependency_force=args.dependency_force)
                 return 'run default'
-        except (AttributeError, KeyError):
+        except (AttributeError, KeyError, TypeError):
             return list_all_tasks()
     #-----------------------------------------------------------------------
     if args.all:

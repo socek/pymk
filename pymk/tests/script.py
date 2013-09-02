@@ -4,7 +4,7 @@ from pymk import compare_version
 from pymk.tests.base import PymkTestCase
 from pymk.script import parse_task_name, init_recipe
 from pymk.error import CommandError
-from pymk.task import TaskMeta
+from pymk.task import TaskType
 
 
 class TaskNameParseTest(PymkTestCase):
@@ -37,7 +37,7 @@ class GraphTest(PymkTestCase):
         self._add_task(taskname)
 
         self.assertRaises(CommandError, self._pymk_runtask, [])
-        task = TaskMeta.tasks[taskname]
+        task = TaskType.tasks[taskname]
         self.assertTrue(task._error)
         self.assertEqual(
             'shape=circle, regular=1,style=filled,fillcolor=red', task.get_graph_details())
