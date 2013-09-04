@@ -7,7 +7,7 @@ from urlparse import urlparse, parse_qs
 
 from pymk import VERSION
 from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
-from pymk.extra import run_cmd
+from pymk.extra import run
 from pymk.extra.cmd import SignalHandling
 from pymk.graph import draw_graph
 from pymk.recipe import RecipeType
@@ -44,7 +44,7 @@ def make_graph(args, is_graphviz):
 def check_for_graphviz(args):
     if args.graph:
         try:
-            run_cmd('which dot')
+            run('which dot')
             return True
         except CommandError:
             pass

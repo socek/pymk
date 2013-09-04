@@ -93,6 +93,6 @@ class Process(object):
         self.all_elements.remove(self.spp)
 
 
-def run_cmd(args, show_output=False):
+def run(args, show_output=False):
     process = Process(args, show_output)
     return process.spp.stdout, process.spp.stderr

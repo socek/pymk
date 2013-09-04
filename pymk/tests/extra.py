@@ -3,6 +3,7 @@ from time import sleep, time
 from mock import patch, call, MagicMock
 from contextlib import nested
 from subprocess import PIPE
+import signal
 
 import pymk.error as Perror
 from pymk import extra
@@ -76,24 +77,24 @@ class FindFilesTest(PymkTestCase):
 class RunCmdTest(PymkTestCase):
 
     def test_success(self):
-        ret = extra.run_cmd(['ls -al'])
+        ret = extra.run(['ls -al'])
         self.assertEqual(file, type(ret[0]))
         self.assertEqual(file, type(ret[1]))
 
     def test_show_output(self):
-        ret = extra.run_cmd(['ls', '*.py'], show_output=True)
+        ret = extra.run(['ls', '*.py'], show_output=True)
         self.assertEqual(None, ret[0])
         self.assertEqual(None, ret[1])
 
     def test_fail(self):
-        self.assertRaises(Perror.CommandError, extra.run_cmd, ['ls *.py'])
+        self.assertRaises(Perror.CommandError, extra.run, ['ls *.py'])
 
     def test_fail_with_show_enabled(self):
         self.assertRaises(
-            Perror.CommandError, extra.run_cmd, ['ls *.py'], True)
+            Perror.CommandError, extra.run, ['ls *.py'], True)
 
     def test_providing_string(self):
-        ret = extra.run_cmd('ls', '*.py')
+        ret = extra.run('ls', '*.py')
         self.assertEqual(None, ret[0])
         self.assertEqual(None, ret[1])
 
@@ -125,19 +126,19 @@ class SignalHandlingTest(PymkTestCase):
     def test_send_signal(self):
         spp = MagicMock()
         spp.poll.return_value = None
-        signal = MagicMock()
-        self.handler.send_signal(spp, signal)
+        mysignal = MagicMock()
+        self.handler.send_signal(spp, mysignal)
 
-        spp.send_signal.assert_called_once(signal)
+        spp.send_signal.assert_called_once(mysignal)
 
     def test_send_signal_with_oserror(self):
         spp = MagicMock()
         spp.poll.return_value = None
         spp.send_signal.side_effect = OSError()
-        signal = MagicMock()
-        self.handler.send_signal(spp, signal)
+        mysignal = MagicMock()
+        self.handler.send_signal(spp, mysignal)
 
-        spp.send_signal.assert_called_once(signal)
+        spp.send_signal.assert_called_once(mysignal)
 
     @patch('pymk.extra.cmd.Process')
     def test_on_signal(self, Process):
@@ -245,5 +246,47 @@ class ProccessTest(PymkTestCase):
         SignalHandling.return_value.aborted = True
         self.proccess.spp.wait.return_value = 5
         with patch.object(self.proccess, 'raise_error') as raise_error:
-            self.assertRaises(CommandAborted, self.proccess.wait_for_termination)
+            self.assertRaises(
+                CommandAborted, self.proccess.wait_for_termination)
             self.assertEqual(0, raise_error.call_count)
+
+    @patch('pymk.extra.cmd.CommandError')
+    def test_raise_error_with_output(self, CommandError):
+        self.proccess.show_output = True
+        CommandError.return_value = Exception()
+
+        self.assertRaises(Exception, self.proccess.raise_error, 5)
+        CommandError.assert_called_once_with(5, '')
+
+    @patch('pymk.extra.cmd.CommandError')
+    def test_raise_error_without_output(self, CommandError):
+        self.proccess.show_output = False
+        CommandError.return_value = Exception()
+
+        self.assertRaises(Exception, self.proccess.raise_error, 5)
+        CommandError.assert_called_once_with(
+            5, self.proccess.spp.stderr.read.return_value)
+
+    def test_append_proccess(self):
+        self.proccess.append_proccess()
+
+        self.assertEqual([self.proccess.spp, ], self.proccess.all_elements)
+
+    @patch('pymk.extra.cmd.SignalHandling')
+    def test_end_proccess(self, SignalHandling):
+        self.proccess.all_elements.append(self.proccess.spp)
+
+        self.proccess.end_proccess()
+
+        SignalHandling.return_value.send_signal.assert_called_once_with(
+            self.proccess.spp, signal.SIGTERM)
+        self.assertEqual([], self.proccess.all_elements)
+
+    @patch('pymk.text.cmd.Process')
+    def test_run_function(self, Process):
+        extra.run([1,2,3], True)
+
+        ret = Process.assert_called_once_with([1,2,3], True)
+        spp = Process.return_value.spp
+
+        self.assertEqual([spp.stdout, spp.stderr], ret)
