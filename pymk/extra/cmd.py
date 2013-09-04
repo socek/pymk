@@ -58,8 +58,7 @@ class Process(object):
         try:
             self.wait_for_termination()
         finally:
-            SignalHandling().send_signal(self.spp, signal.SIGTERM)
-            self.all_elements.remove(self.spp)
+            self.end_proccess()
 
     def prepere_args(self, args):
         if type(args) in (str,  unicode):
@@ -88,6 +87,10 @@ class Process(object):
 
     def append_proccess(self):
         self.all_elements.append(self.spp)
+
+    def end_proccess(self):
+        SignalHandling().send_signal(self.spp, signal.SIGTERM)
+        self.all_elements.remove(self.spp)
 
 
 def run_cmd(args, show_output=False):

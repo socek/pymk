@@ -28,6 +28,7 @@ all_test_cases = [
     extra.FindFilesTest,
     extra.RunCmdTest,
     extra.SignalHandlingTest,
+    extra.ProccessTest,
 
     error.ErrorsTests,
 
