@@ -1,5 +1,3 @@
-import os
-from time import sleep, time
 from mock import patch, call, MagicMock
 from contextlib import nested
 from subprocess import PIPE
@@ -9,69 +7,6 @@ import pymk.error as Perror
 from pymk import extra
 from pymk.tests.base import PymkTestCase
 from pymk.error import CommandAborted
-
-
-class TouchTest(PymkTestCase):
-    test_file = 'testme.file'
-
-    def test_new_file(self):
-        actual_time = int(time())
-        extra.touch(self.test_file)
-        file_time = int(os.path.getmtime(self.test_file))
-        self.assertTrue(os.path.exists(self.test_file))
-        self.assertEqual(actual_time, file_time)
-
-    def test_change_time(self):
-        extra.touch(self.test_file)
-        first_file_time = os.path.getmtime(self.test_file)
-
-        sleep(0.01)
-        extra.touch(self.test_file)
-        second_file_time = os.path.getmtime(self.test_file)
-
-        self.assertNotEqual(first_file_time, second_file_time)
-
-
-class FindFilesTest(PymkTestCase):
-
-    def setUp(self):
-        super(FindFilesTest, self).setUp()
-
-        os.mkdir('first')
-        os.mkdir('second')
-        os.mkdir('third')
-
-        extra.touch('file1.test')
-        extra.touch('file2.test')
-        extra.touch('file3.notest')
-
-        for filename in ['file3.test', 'file4.test', 'file5.notest']:
-            path = os.path.join('first', filename)
-            extra.touch(path)
-
-        for filename in ['file6.test', 'file7.test', 'file8.notest']:
-            path = os.path.join('second', filename)
-            extra.touch(path)
-
-        for filename in ['file9.test', 'file10.test', 'file11.notest']:
-            path = os.path.join('third', filename)
-            extra.touch(path)
-
-    def test_nothing_found(self):
-        self.assertEqual([], list(extra.find_files('.', '*.py')))
-
-    def test_found_all_tests(self):
-        should_found = [
-            './file2.test',
-            './file1.test',
-            './third/file10.test',
-            './third/file9.test',
-            './second/file7.test',
-            './second/file6.test',
-            './first/file4.test',
-            './first/file3.test'
-        ]
-        self.assertEqual(should_found, list(extra.find_files('.', '*.test')))
 
 
 class RunCmdTest(PymkTestCase):
@@ -97,6 +32,15 @@ class RunCmdTest(PymkTestCase):
         ret = extra.run('ls', '*.py')
         self.assertEqual(None, ret[0])
         self.assertEqual(None, ret[1])
+
+    @patch('pymk.extra.cmd.Process')
+    def test_run_function(self, Process):
+        ret = extra.run([1, 2, 3], True)
+
+        Process.assert_called_once_with([1, 2, 3], True)
+        spp = Process.return_value.spp
+
+        self.assertEqual((spp.stdout, spp.stderr), ret)
 
 
 class SignalHandlingTest(PymkTestCase):
@@ -281,12 +225,3 @@ class ProccessTest(PymkTestCase):
         SignalHandling.return_value.send_signal.assert_called_once_with(
             self.proccess.spp, signal.SIGTERM)
         self.assertEqual([], self.proccess.all_elements)
-
-    @patch('pymk.text.cmd.Process')
-    def test_run_function(self, Process):
-        extra.run([1,2,3], True)
-
-        ret = Process.assert_called_once_with([1,2,3], True)
-        spp = Process.return_value.spp
-
-        self.assertEqual([spp.stdout, spp.stderr], ret)
