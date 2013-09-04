@@ -56,15 +56,13 @@ class Recipe(object):
     def __init__(self):
         self.settings = {
             'minimal pymk version': VERSION,
-            # 'name': None,
-            'version': '0.0.0',
+            'version': '4.0.0',
         }
         self.paths = {}
         self.recipes = []
 
         self.create_settings()
         self.validate_settings()
-        # self.gather_modules()
         self.gather_recipes()
 
     def assign_main_path(self, path):
@@ -103,9 +101,6 @@ class Recipe(object):
                 value % self.paths
             )
         self.paths[name] = os.path.join(*parsed_values)
-
-    # def gather_modules(self):
-    #     pass
 
     def gather_recipes(self):
         pass
