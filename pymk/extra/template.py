@@ -1,10 +1,21 @@
 from jinja2 import Environment, PackageLoader
-_cache = {}
+
+
+class Template(object):
+    cache = {}  # yes, this should be "static"
+
+    def get_env(self):
+        if not 'env' in self.cache:
+            loader = PackageLoader('pymktemplates', '.')
+            self.cache['env'] = Environment(loader=loader)
+        return self.cache['env']
+
+    def make(self, template_path, output_file, data={}):
+        env = self.get_env()
+        template = env.get_template(template_path)
+        stream = template.stream(**data)
+        stream.dump(output_file)
 
 
 def mktemplate(template_path, output_file, data={}):
-    global _cache
-    if not 'env' in _cache:
-        _cache['env'] = Environment(loader=PackageLoader('pymktemplates', '.'))
-    template = _cache['env'].get_template(template_path)
-    template.stream(**data).dump(output_file)
+    return Template().make(template_path, output_file, data)

@@ -29,6 +29,7 @@ all_test_cases = [
     extra.RunCmdTest,
     extra.SignalHandlingTest,
     extra.ProccessTest,
+    extra.TemplateTest,
 
     error.ErrorsTests,
 
