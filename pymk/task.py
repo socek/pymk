@@ -70,7 +70,6 @@ class Task(object):
     _runned = False
     _args = {}
     _error = False
-    settings = {}
     recipe = None
 
     @classmethod
@@ -149,9 +148,9 @@ class Task(object):
             logger.info(" * Building '%s'" % (cls.getName()))
             try:
                 build_with_args_or_not(cls)
-            except Exception as er:
+            except Exception:
                 cls._error = True
-                raise er
+                raise
             finally:
                 runned = cls._set_runned(True)
             return runned
@@ -167,6 +166,10 @@ class Task(object):
     @property
     def settings(self):
         return self.recipe().settings
+
+    @property
+    def paths(self):
+        return self.recipe().paths
 
     @classmethod
     def dependency_FileExists(cls):

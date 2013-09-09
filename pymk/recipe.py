@@ -1,8 +1,10 @@
 import os
 import sys
+
 from pymk import VERSION, compare_version
-from pymk.error import TaskAlreadyExists
+from pymk.error import RecipeAlreadyExists
 from pymk.download import download, extract_egg
+from pymk.task import Task
 
 
 class RecipeType(type):
@@ -20,26 +22,30 @@ class RecipeType(type):
             return super(RecipeType, cls).__call__(*args, **kwargs)
 
     def __init__(cls, name, bases, dct):
-        def check_if_recipe_exists(name):
-            if name in list(RecipeType.recipes):
-                raise TaskAlreadyExists(name)  # TODO: make it's own error
-
-        def assign_recipe_to_tasks():
-            from pymk.task import Task
-            module = sys.modules[cls.__module__]
-            for name in dir(module):
-                obj = getattr(module, name)
-                try:
-                    if issubclass(obj, Task) and not obj.base:
-                        obj.assign_recipe(cls)
-                except TypeError:
-                    pass
-
-        #----------------------------------------------------------------------
         if not 'base' in dct or not dct['base']:
-            check_if_recipe_exists(cls.__module__)
+            RecipeType.check_if_recipe_exists(cls.__module__)
             RecipeType.recipes[cls.getName()] = cls
-            assign_recipe_to_tasks()
+            RecipeType.assign_recipe_to_tasks(cls)
+
+    @classmethod
+    def check_if_recipe_exists(cls, name):
+        if name in list(cls.recipes):
+            raise RecipeAlreadyExists(name)
+
+    @classmethod
+    def assign_recipe_to_tasks(cls, recipe):
+        def is_not_a_base_class(task):
+            return hasattr(task, 'base') and not task.base
+        #----------------------------------------------------------------------
+        module = sys.modules[recipe.__module__]
+        for name in dir(module):
+            task = getattr(module, name)
+            try:
+                if issubclass(task, Task) and is_not_a_base_class(task):
+                    task.assign_recipe(recipe)
+            except TypeError:
+                # class do not have a base value
+                pass
 
     @classmethod
     def getRecipeForModule(cls, name):

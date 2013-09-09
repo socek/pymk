@@ -6,21 +6,12 @@ from pymk.extra.template import mktemplate, Template
 
 class TemplateTest(PymkTestCase):
 
-    def setUp(self):
-        super(TemplateTest, self).setUp()
-        self.patchers = {}
-        self.mocks = {}
+    def _init_patchers(self):
+        super(TemplateTest, self)._init_patchers()
         self.patchers['cache'] = patch.dict(Template.cache, {})
         self.patchers['PackageLoader'] = patch(
             'pymk.extra.template.PackageLoader')
         self.patchers['Environment'] = patch('pymk.extra.template.Environment')
-        for name, patcher in self.patchers.items():
-            self.mocks[name] = patcher.start()
-
-    def tearDown(self):
-        super(TemplateTest, self).tearDown()
-        for name, patcher in self.patchers.items():
-            patcher.stop()
 
     def test_get_env(self):
         env = Template().get_env()

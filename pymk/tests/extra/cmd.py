@@ -6,13 +6,13 @@ import signal
 import pymk.error as Perror
 from pymk import extra
 from pymk.tests.base import PymkTestCase
-from pymk.error import CommandAborted
+from pymk.error import CommandAborted, CommandError
 
 
 class RunCmdTest(PymkTestCase):
 
     def test_success(self):
-        ret = extra.run(['ls -al'])
+        ret = extra.run(['ls -al'], False)
         self.assertEqual(file, type(ret[0]))
         self.assertEqual(file, type(ret[1]))
 
@@ -29,9 +29,7 @@ class RunCmdTest(PymkTestCase):
             Perror.CommandError, extra.run, ['ls *.py'], True)
 
     def test_providing_string(self):
-        ret = extra.run('ls', '*.py')
-        self.assertEqual(None, ret[0])
-        self.assertEqual(None, ret[1])
+        self.assertRaises(CommandError, extra.run, 'ls *.py', False)
 
     @patch('pymk.extra.cmd.Process')
     def test_run_function(self, Process):
@@ -123,7 +121,7 @@ class ProccessTest(PymkTestCase):
         ) as (run, wait_for_termination, append_proccess, end_proccess):
             process = extra.cmd.Process('something')
             self.assertEqual(['something', ], process.args)
-            self.assertFalse(process.show_output)
+            self.assertTrue(process.show_output)
             run.assert_called_once_with()
             append_proccess.assert_called_once_with()
             end_proccess.assert_called_once_with()

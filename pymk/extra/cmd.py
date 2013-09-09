@@ -50,7 +50,7 @@ class SignalHandling(object):
 class Process(object):
     all_elements = []
 
-    def __init__(self, args, show_output=False):
+    def __init__(self, args, show_output=True):
         self.prepere_args(args)
         self.show_output = show_output
         self.run()
@@ -93,6 +93,6 @@ class Process(object):
         self.all_elements.remove(self.spp)
 
 
-def run(args, show_output=False):
+def run(args, show_output=True):
     process = Process(args, show_output)
     return process.spp.stdout, process.spp.stderr

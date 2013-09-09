@@ -21,6 +21,14 @@ class TaskAlreadyExists(PymkError):
     def __str__(self):
         return 'Error: Task name already exists "%s".' % (self.task_name)
 
+class RecipeAlreadyExists(PymkError):
+
+    def __init__(self, recipe_name):
+        self.recipe_name = recipe_name
+
+    def __str__(self):
+        return 'Error: Recipe name already exists "%s".' % (self.recipe_name)
+
 
 class NoMkfileFound(PymkError):
     pass

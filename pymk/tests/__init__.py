@@ -39,6 +39,7 @@ all_test_cases = [
     script.CompareVersion,
 
     recipe.RecipeTest,
+    recipe.RecipeTypeTest,
 ]
 
 

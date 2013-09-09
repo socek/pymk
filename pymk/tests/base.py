@@ -31,6 +31,18 @@ class PymkTestCase(unittest.TestCase):
         self._args = ArgsMockup()
         logging.getLogger('pymk').info('=== (%s) %s ===' % (
             self.__class__.__name__, self._testMethodName))
+        self.patchers = {}
+        self.mocks = {}
+
+        self._init_patchers()
+        self._start_patchers()
+
+    def _init_patchers(self):
+        pass
+
+    def _start_patchers(self):
+        for name, patcher in self.patchers.items():
+            self.mocks[name] = patcher.start()
 
     def tearDown(self):
         sys.path.remove(self._actual_path)
@@ -41,6 +53,8 @@ class PymkTestCase(unittest.TestCase):
             del sys.modules['mkfile']
             del self._mkfile
         self._mkfile = None
+        for name, patcher in self.patchers.items():
+            patcher.stop()
 
     def _template(self, name, out_path=None, vars={}):
         template_path = os.path.join(
