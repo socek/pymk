@@ -32,7 +32,7 @@ def draw_graph(filename):
 def draw_done_task_graph(filename, tasks):
     def write_task_to_datalog(datalog, task, parent=None):
         if hasattr(task, 'dependencys'):
-            for dep in task.dependencys:
+            for dep in task().dependencys:
                 if type(dep) == AlwaysRebuild:
                     continue
                 if hasattr(dep, 'parent'):
