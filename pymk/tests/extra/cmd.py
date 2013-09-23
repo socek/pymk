@@ -22,7 +22,7 @@ class RunCmdTest(PymkTestCase):
         self.assertEqual(None, ret[1])
 
     def test_fail(self):
-        self.assertRaises(Perror.CommandError, extra.run, ['ls *.py'])
+        self.assertRaises(Perror.CommandError, extra.run, ['ls *.py'], False)
 
     def test_fail_with_show_enabled(self):
         self.assertRaises(

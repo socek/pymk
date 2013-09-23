@@ -36,19 +36,25 @@ class RecipeType(type):
             raise RecipeAlreadyExists(name)
 
     @classmethod
+    def is_not_a_base_class(cls, task):
+        return hasattr(task, 'base') and not task.base
+
+    @classmethod
+    def assign_recipe_to_task_if_able(cls, recipe, task):
+        try:
+            if issubclass(task, Task) and cls.is_not_a_base_class(task):
+                task.assign_recipe(recipe)
+        except TypeError:
+            # class do not have a base value
+            pass
+
+    @classmethod
     def assign_recipe_to_tasks(cls, recipe):
-        def is_not_a_base_class(task):
-            return hasattr(task, 'base') and not task.base
         #----------------------------------------------------------------------
         module = sys.modules[recipe.__module__]
         for name in dir(module):
             task = getattr(module, name)
-            try:
-                if issubclass(task, Task) and is_not_a_base_class(task):
-                    task.assign_recipe(recipe)
-            except TypeError:
-                # class do not have a base value
-                pass
+            cls.assign_recipe_to_task_if_able(recipe, task)
 
     @classmethod
     def getRecipeForModule(cls, name):
