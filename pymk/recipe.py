@@ -1,6 +1,7 @@
 import os
 import sys
 
+from smallsettings import Settings, Paths
 from pymk import VERSION, compare_version
 from pymk.error import RecipeAlreadyExists
 from pymk.download import download, extract_egg
@@ -60,11 +61,11 @@ class Recipe(object):
     singleton = True
 
     def __init__(self):
-        self.settings = {
+        self.settings = Settings({
             'minimal pymk version': VERSION,
             'version': '4.0.0',
-        }
-        self.paths = {}
+        })
+        self.paths = Paths()
         self.recipes = []
 
         self.create_settings()

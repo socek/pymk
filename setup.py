@@ -6,6 +6,7 @@ install_requires = [
     'jinja2',
     'argparse',
     'mock',
+    'smallsettings',
 ]
 
 dependency_links = [
