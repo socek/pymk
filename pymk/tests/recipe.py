@@ -95,6 +95,43 @@ class RecipeTest(PymkTestCase):
             compare_version.assert_called_once_with(
                 VERSION, self.recipe.settings['minimal pymk version'])
 
+    def test_name(self):
+        self.recipe.settings['name'] = 'my name'
+        self.assertEqual('my name', self.recipe.name())
+
+    def test_import_wrapper(self):
+        with nested(
+                patch('__builtin__.globals'),
+                patch('__builtin__.locals'),
+                patch('__builtin__.__import__'),
+        ) as (_globals, _locals, _import):
+            self.recipe.import_wrapper('name')
+            _import.assert_called_once_with(
+                'name', _globals.return_value, _locals.return_value, [''])
+
+    def test_add_recipe(self):
+        task = MagicMock()
+        with nested(
+                patch.dict(RecipeType.recipes, {'pymkmodules.name': task}),
+                patch.object(self.recipe, 'import_wrapper'),
+        ) as (recipes, import_wrapper):
+            self.recipe.add_recipe('name')
+
+            import_wrapper.assert_called_once_with('pymkmodules.name')
+            self.assertTrue(task in self.recipe.recipes)
+            task.assert_called_once_with()
+
+    def test_add_recipe_no_recipe(self):
+        task = MagicMock()
+        with nested(
+                patch.dict(RecipeType.recipes, {}),
+                patch.object(self.recipe, 'import_wrapper'),
+        ) as (recipes, import_wrapper):
+            self.recipe.add_recipe('name')
+            import_wrapper.assert_called_once_with('pymkmodules.name')
+            self.assertFalse(task in self.recipe.recipes)
+            self.assertEqual(0, task.call_count)
+
 
 class RecipeTypeTest(PymkTestCase):
 

@@ -130,9 +130,12 @@ class Recipe(object):
             print "Extracting %s..." % (name,)
             extract_egg(destination_egg_path, destination_path)
 
+    def import_wrapper(self, name):
+        return __import__(name, globals(), locals(), [''])
+
     def add_recipe(self, name):
         name = '.'.join(['pymkmodules', name])
-        __import__(name, globals(), locals(), [''])
+        self.import_wrapper(name)
         if name in RecipeType.recipes:
             recipe = RecipeType.recipes[name]
             recipe()

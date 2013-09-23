@@ -1,6 +1,7 @@
 import unittest
 from pymk import error
 
+
 class ErrorsTests(unittest.TestCase):
 
     def test_CouldNotCreateFile(self):
@@ -32,6 +33,14 @@ class ErrorsTests(unittest.TestCase):
         self.assertEqual(str, type(str(er)))
 
     def test_NotADependencyError(self):
-        er = error.NotADependencyError(error.NoDependencysInAClass, error.NoDependencysInAClass)
+        er = error.NotADependencyError(
+            error.NoDependencysInAClass, error.NoDependencysInAClass)
         self.assertEqual(str, type(str(er)))
 
+    def test_RecipeAlreadyExists(self):
+        er = error.RecipeAlreadyExists('name')
+        self.assertEqual(str, type(str(er)))
+
+    def test_WrongPymkVersion(self):
+        er = error.WrongPymkVersion('pymk_version', 'mkfile_version')
+        self.assertEqual(str, type(str(er)))

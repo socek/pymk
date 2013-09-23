@@ -1,7 +1,9 @@
-import os
 import logging
-from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
+import os
+
 from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Dependency, InnerLink
+from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
+
 
 logger = logging.getLogger('pymk')
 
