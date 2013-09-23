@@ -21,6 +21,7 @@ class TaskAlreadyExists(PymkError):
     def __str__(self):
         return 'Error: Task name already exists "%s".' % (self.task_name)
 
+
 class RecipeAlreadyExists(PymkError):
 
     def __init__(self, recipe_name):
@@ -89,3 +90,13 @@ class NotADependencyError(PymkError):
 
     def __str__(self):
         return 'Error: Object "%s" of a task "%s" is not a dependency!' % (str(self.dependency.__name__), self.task.__name__)
+
+
+class WrongPymkVersion(PymkError):
+
+    def __init__(self, pymk_version, mkfile_version):
+        self.pymk_version = pymk_version
+        self.mkfile_version = mkfile_version
+
+    def __str__(self):
+        return 'Error: mkfile need greater version (%s) of pymk (%s). Please update.' % (self.mkfile_version, self.pymk_version)

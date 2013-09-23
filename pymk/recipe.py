@@ -2,10 +2,12 @@ import os
 import sys
 
 from smallsettings import Settings, Paths
+
 from pymk import VERSION, compare_version
 from pymk.error import RecipeAlreadyExists
 from pymk.download import download, extract_egg
 from pymk.task import Task
+from pymk.error import WrongPymkVersion
 
 
 class RecipeType(type):
@@ -89,8 +91,7 @@ class Recipe(object):
     def validate_settings(self):
         min_pymk_version = self.settings['minimal pymk version']
         if compare_version(VERSION, min_pymk_version) == -1:
-            raise RuntimeError(  # TODO: make this seperate exception class
-                'Bad pymk version. Please update pymk to use this recipe.')
+            raise WrongPymkVersion(VERSION, min_pymk_version)
 
     def create_settings(self):
         pass
