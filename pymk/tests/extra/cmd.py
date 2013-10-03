@@ -33,9 +33,9 @@ class RunCmdTest(PymkTestCase):
 
     @patch('pymk.extra.cmd.Process')
     def test_run_function(self, Process):
-        ret = extra.run([1, 2, 3], True)
+        ret = extra.run([1, 2, 3], True, 'env')
 
-        Process.assert_called_once_with([1, 2, 3], True)
+        Process.assert_called_once_with([1, 2, 3], True, env='env')
         spp = Process.return_value.spp
 
         self.assertEqual((spp.stdout, spp.stderr), ret)
@@ -152,20 +152,22 @@ class ProccessTest(PymkTestCase):
     def test_run(self, Popen):
         self.proccess.args = 'args'
         self.proccess.show_output = False
+        self.proccess.env = None
 
         self.proccess.run()
 
         Popen.assert_called_once_with(
-            'args', stdout=PIPE, stderr=PIPE, shell=True)
+            'args', stdout=PIPE, stderr=PIPE, shell=True, env=None)
 
     @patch('pymk.extra.cmd.Popen')
     def test_run_with_output(self, Popen):
         self.proccess.args = 'args'
         self.proccess.show_output = True
+        self.proccess.env = 'env'
 
         self.proccess.run()
 
-        Popen.assert_called_once_with('args', shell=True)
+        Popen.assert_called_once_with('args', shell=True, env='env')
 
     @patch('pymk.extra.cmd.SignalHandling')
     def test_wait_for_termination_no_error(self, SignalHandling):

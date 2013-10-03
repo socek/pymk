@@ -50,9 +50,10 @@ class SignalHandling(object):
 class Process(object):
     all_elements = []
 
-    def __init__(self, args, show_output=True):
+    def __init__(self, args, show_output=True, env=None):
         self.prepere_args(args)
         self.show_output = show_output
+        self.env = env
         self.run()
         self.append_proccess()
         try:
@@ -68,9 +69,9 @@ class Process(object):
 
     def run(self):
         if self.show_output:
-            self.spp = Popen(self.args, shell=True)
+            self.spp = Popen(self.args, shell=True, env=self.env)
         else:
-            self.spp = Popen(self.args, stdout=PIPE, stderr=PIPE, shell=True)
+            self.spp = Popen(self.args, stdout=PIPE, stderr=PIPE, shell=True, env=self.env)
 
     def wait_for_termination(self):
         error = self.spp.wait()
@@ -93,6 +94,6 @@ class Process(object):
         self.all_elements.remove(self.spp)
 
 
-def run(args, show_output=True):
-    process = Process(args, show_output)
+def run(args, show_output=True, env=None):
+    process = Process(args, show_output, env=env)
     return process.spp.stdout, process.spp.stderr
