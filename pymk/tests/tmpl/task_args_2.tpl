@@ -5,7 +5,8 @@ from json import dump
 
 class task_args2_a(BaseTestTask):
 
-    name = '/taska'
+    name = 'Task A'
+    path = '/taska'
 
     dependencys = [
         AlwaysRebuild(),
@@ -20,7 +21,8 @@ class task_args2_a(BaseTestTask):
 
 class task_args2_b(BaseTestTask):
 
-    name = '/taskb'
+    name = 'Task B'
+    path = '/taskb'
 
     dependencys = [
         task_args2_a.dependency_Link(),
@@ -36,7 +38,8 @@ class task_args2_b(BaseTestTask):
 
 class task_args2_c(BaseTestTask):
 
-    name = '/taskc'
+    name = 'Task C'
+    path = '/taskc'
 
     dependencys = [
         task_args2_b.dependency_Link(),

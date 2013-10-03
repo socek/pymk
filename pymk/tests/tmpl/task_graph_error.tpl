@@ -4,7 +4,7 @@ from pymk.extra import run
 
 class task_graph1_a(BaseTestTask):
 
-    name = '/taska'
+    path = '/taska'
 
     dependencys = [
         AlwaysRebuild(),

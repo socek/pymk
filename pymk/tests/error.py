@@ -17,7 +17,7 @@ class ErrorsTests(unittest.TestCase):
         self.assertEqual(str, type(str(er)))
 
     def test_BadTaskName(self):
-        er = error.BadTaskName('task name')
+        er = error.BadTaskPath('task name')
         self.assertEqual(str, type(str(er)))
 
     def test_WrongArgumentValue(self):

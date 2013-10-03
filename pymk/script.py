@@ -6,7 +6,7 @@ from glob import glob
 from urlparse import urlparse, parse_qs
 
 from pymk import VERSION
-from pymk.error import NoMkfileFound, CommandError, BadTaskName, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
+from pymk.error import NoMkfileFound, CommandError, BadTaskPath, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
 from pymk.extra.cmd import SignalHandling
 from pymk.graph import draw_graph
 from pymk.recipe import RecipeType
@@ -89,44 +89,54 @@ def parse_task_name(task):
 
 
 def run_all_inputet_tasks(tasks, force, dependency_force):
-    def check_if_task_name_exists(name):
-        if not name in TaskType.tasks:
-            raise BadTaskName(task)
+    def check_if_task_name_exists(path):
+        if not path in TaskType.tasks:
+            raise BadTaskPath(task)
 
-    def run_task(name, force, dependency_force):
-        get_task(name).run(
+    def run_task(path, force, dependency_force):
+        get_task(path).run(
             force=force,
             dependency_force=dependency_force,
         )
 
-    def get_task(name):
-        return TaskType.tasks[name]
+    def get_task(path):
+        return TaskType.tasks[path]
     #-------------------------------------------------------------------------
     tasks = [parse_task_name(task) for task in tasks]
     # First check all tasks names, then run tasks.
-    for name, args in tasks:
-        check_if_task_name_exists(name)
-        get_task(name)._args = args
+    for path, args in tasks:
+        check_if_task_name_exists(path)
+        get_task(path)._args = args
 
-    for name, args in tasks:
-        if not get_task(name)._get_runned():
-            run_task(name, force, dependency_force)
+    for path, args in tasks:
+        if not get_task(path)._get_runned():
+            run_task(path, force, dependency_force)
     return 'run tasks'
 
 
 def run_tasks(mkfile, args):
     def list_all_tasks():
         text = 'Avalible tasks:\n'
-        task_names_size = 0
+        task_names_size = 4
+        task_path_size = 4
         for name, task in TaskType.tasks.items():
             if not task.hide:
                 if len(name) > task_names_size:
                     task_names_size = len(name)
+                if len(task.getPath()) > task_path_size:
+                    task_path_size = len(task.getPath())
         task_names_size += 2
-        template = '\t%-' + str(task_names_size) + 's %s\n'
+        task_path_size += 2
+        template = '  %-' + str(task_names_size) + 's %-' + str(task_path_size) + 's %s\n'
+        text += template % ( 'Name', 'Path', 'Help')
+        text += template % ( '----', '----', '----')
         for name, task in TaskType.tasks.items():
             if not task.hide:
-                text += template % (task.getName(), task.help)
+                text += template % (
+                    task.getName(),
+                    task.getPath(),
+                    task.help,
+                )
 
         log.info(text)
         return 'list all'
@@ -222,7 +232,7 @@ def run():
     except CommandError as er:
         log.error(er)
         return 2
-    except BadTaskName as er:
+    except BadTaskPath as er:
         log.error(er)
         return 3
     except TaskMustHaveOutputFile as er:

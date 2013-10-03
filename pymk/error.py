@@ -49,13 +49,13 @@ class CommandAborted(PymkError):
     pass
 
 
-class BadTaskName(PymkError):
+class BadTaskPath(PymkError):
 
-    def __init__(self, taskname):
-        self.taskname = taskname
+    def __init__(self, taskpath):
+        self.taskpath = taskpath
 
     def __str__(self):
-        return 'Error: Bad task name: %s' % (self.taskname)
+        return 'Error: Bad task path: %s' % (self.taskpath)
 
 
 class WrongArgumentValue(PymkError):

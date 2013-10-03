@@ -42,7 +42,7 @@ class TaskType(type):
         if not 'base' in dct or not dct['base']:
             TaskType.assign_recipe_if_able(cls)
             TaskType.check_if_task_exists(name)
-            TaskType.tasks[cls().getName()] = cls
+            TaskType.tasks[cls().getPath()] = cls
             cls.base = False
             validate_dependency(cls)
 
@@ -68,6 +68,7 @@ class Task(object):
     hide_graph = False
 
     name = None
+    path = None
     detailed = []
     _runned = False
     _args = {}
@@ -77,10 +78,20 @@ class Task(object):
     @classmethod
     def getName(cls):
         """getName() -> str
-        Returns name of the tasks provided by class value _name, or just classname if _name == None.
+        Returns name of the tasks provided by class value name, or just classname if name == None.
         """
         if cls.name:
             return cls.name
+        else:
+            return cls.__name__
+
+    @classmethod
+    def getPath(cls):
+        """getPath(cls) -> str
+        Returns path (for using in command line) of the tasks provided by class value path, or just classname if path == None.
+        """
+        if cls.path:
+            return cls.path
         else:
             return cls.__name__
 

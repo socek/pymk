@@ -3,7 +3,7 @@ from pymk.tests.base import BaseTestTask
 
 class task_namea(BaseTestTask):
 
-    name = '/something/usful'
+    path = '/something/usful'
 
     output_file = 'a.out'
 

@@ -3,7 +3,8 @@ from json import dump
 
 class task_args1_a(BaseTestTask):
 
-    name = '/taska'
+    name = 'Task A'
+    path = '/taska'
 
     dependencys = [
     ]

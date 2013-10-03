@@ -53,7 +53,7 @@ class TaskTest(PymkTestCase):
         self._import_mkfile()
         self._add_task('bad_task_name')
 
-        self.assertRaises(Perror.BadTaskName, self._pymk)
+        self.assertRaises(Perror.BadTaskPath, self._pymk)
 
     def test_default_task(self):
         self._template('one_task_with_default', 'mkfile.py')
@@ -397,7 +397,7 @@ class TaskNameTest(PymkTestCase):
 
         self._import_mkfile()
         self._add_task('/something/usful')
-        self._pymk_runtask(['/something/usful'])
+        self._pymk_runtask(['task_namea'])
 
     def test_arguments(self):
         from json import load
@@ -405,15 +405,15 @@ class TaskNameTest(PymkTestCase):
 
         self._import_mkfile()
 
-        self._set_task('/taska?arg=10', ['/taska'])
+        self._set_task('/taska?arg=10', ['Task A'])
         data = load(open('ta.out'))
         self.assertEqual({u'arg': [u'10']}, data)
 
-        self._set_task('/taska?arg=10&arg=12', ['/taska', '/taska'])
+        self._set_task('/taska?arg=10&arg=12', ['Task A', 'Task A'])
         data = load(open('ta.out'))
         self.assertEqual({u'arg': [u'10', u'12']}, data)
 
-        self._set_task('/taska?arg=10&arg2=12', ['/taska', '/taska', '/taska'])
+        self._set_task('/taska?arg=10&arg2=12', ['Task A', 'Task A', 'Task A'])
         data = load(open('ta.out'))
         self.assertEqual({u'arg': [u'10'], u'arg2': [u'12']}, data)
 
@@ -425,7 +425,7 @@ class TaskNameTest(PymkTestCase):
 
         self._add_task('/taskc?arg=1')
         self._add_task('/taskb?arg2=2')
-        self._pymk_runtask(['/taska', '/taskb', '/taskc'])
+        self._pymk_runtask(['Task A', 'Task B', 'Task C'])
 
         data = load(open('ta.out'))
         self.assertEqual({}, data)
