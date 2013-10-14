@@ -15,6 +15,7 @@ all_test_cases = [
     task.TaskForcing,
     task.TaskDependencyLinkTest,
     task.TaskNameTest,
+    task.GetPathTest,
 
     dependency.FileDoesNotExistsDependencyTest,
     dependency.FileChangedDependencyTest,

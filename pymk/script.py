@@ -121,8 +121,8 @@ def run_tasks(mkfile, args):
         task_path_size = 4
         for name, task in TaskType.tasks.items():
             if not task.hide:
-                if len(name) > task_names_size:
-                    task_names_size = len(name)
+                if len(task.getName()) > task_names_size:
+                    task_names_size = len(task.getName())
                 if len(task.getPath()) > task_path_size:
                     task_path_size = len(task.getPath())
         task_names_size += 2

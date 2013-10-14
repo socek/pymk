@@ -14,6 +14,8 @@ class TaskType(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
+        if getattr(cls, '_no_singleton', False):
+            return super(TaskType, cls).__call__(*args, **kwargs)
         if cls not in cls._instances:
             cls._instances[cls] = super(
                 TaskType, cls).__call__(*args, **kwargs)
@@ -93,7 +95,7 @@ class Task(object):
         if cls.path:
             return cls.path
         else:
-            return cls.__name__
+            return '/' + cls.__name__.lower()
 
     @classmethod
     def _set_runned(cls, value):

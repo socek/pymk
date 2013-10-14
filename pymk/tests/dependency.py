@@ -16,7 +16,7 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self._template('one_task_dependency_1', 'mkfile.py')
         self._import_mkfile()
 
-        self._args.task.append('task_2')
+        self._args.task.append('/task_2')
         self._pymk_runtask(['task_2'])
         self._pymk_runtask(['task_2', 'task_2'])
         self._pymk_runtask(['task_2', 'task_2', 'task_2'])
@@ -26,7 +26,7 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self._template('one_task_dependency_1', 'test.txt')
         self._import_mkfile()
 
-        self._add_task('task_2')
+        self._add_task('/task_2')
         self._pymk_runtask([])
         self._pymk_runtask([])
 
@@ -58,7 +58,7 @@ class FileDoesNotExistsDependencyTest(PymkTestCase):
         self._template('one_task_dependency_5', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task(taskname)
+        self._add_task('/' + taskname)
 
         self._pymk_runtask([taskname])
         self._pymk_runtask([taskname, taskname])
@@ -154,7 +154,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self._template('one_task_dependency_2', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task('task_3')
+        self._add_task('/task_3')
 
         self.assertRaises(Perror.TaskMustHaveOutputFile, self._pymk)
         self._check_output_file([])
@@ -164,7 +164,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self.touch('test.txt', None)
         self._import_mkfile()
 
-        self._add_task('task_3')
+        self._add_task('/task_3')
 
         self.assertRaises(Perror.TaskMustHaveOutputFile, self._pymk)
         self._check_output_file([])
@@ -173,7 +173,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self._template('one_task_dependency_3', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task('task_4')
+        self._add_task('/task_4')
 
         self.assertRaises(Perror.CouldNotCreateFile, self._pymk)
         self._check_output_file([])
@@ -182,7 +182,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self._template('one_task_dependency_3', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task('task_4')
+        self._add_task('/task_4')
 
         self.touch('test.txt', None)
         self._pymk_runtask(['task_4'])
@@ -192,7 +192,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self._template('one_task_dependency_3', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task('task_4')
+        self._add_task('/task_4')
 
         self.touch('test.txt', None)
         self._pymk_runtask(['task_4'])
@@ -209,7 +209,7 @@ class FileChangedDependencyTest(PymkTestCase):
         self._template('one_task_dependency_4', 'mkfile.py')
         self._import_mkfile()
 
-        self._add_task('task_21')
+        self._add_task('/task_21')
 
         self.touch(file1, None)
         self.touch(file2, None)
@@ -278,7 +278,7 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
     def test_success(self):
         self._template('three_task_dependency_always1', 'mkfile.py')
         self._import_mkfile()
-        self._add_task('task_16a')
+        self._add_task('/task_16a')
 
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a', 'task_16a'])
@@ -288,7 +288,7 @@ class AlwaysRebuildDependencyTest(PymkTestCase):
     def test_dependency_rebuild(self):
         self._template('three_task_dependency_always1', 'mkfile.py')
         self._import_mkfile()
-        self._add_task('task_16a')
+        self._add_task('/task_16a')
 
         self._pymk_runtask(['task_16c', 'task_16b', 'task_16a'])
         self.touch('c.out')

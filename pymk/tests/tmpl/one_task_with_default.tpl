@@ -2,7 +2,7 @@ from pymk.task import Task
 from pymk.recipe import Recipe
 
 class MyRecipe(Recipe):
-    default_task = 'task_0'
+    default_task = '/task_0'
 
 class task_0(Task):
 
