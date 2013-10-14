@@ -3,7 +3,7 @@ from contextlib import nested
 from mock import patch, MagicMock
 
 from pymk.error import RecipeAlreadyExists, WrongPymkVersion
-from pymk.recipe import Recipe, RecipeType
+from pymk.recipe import Recipe, RecipeType, DownloadRecipe
 from pymk.task import TaskType, Task
 from pymk.tests.base import PymkTestCase
 
@@ -231,3 +231,80 @@ class RecipeTypeTest(PymkTestCase):
 
             self.assertEqual(0, is_not_a_base_class.call_count)
             self.assertEqual(0, assign_recipe.call_count)
+
+
+class DownloadRecipeTest(PymkTestCase):
+
+    def setUp(self):
+        super(DownloadRecipeTest, self).setUp()
+        self.downloader = DownloadRecipe('name', 'url')
+
+    @patch('pymk.recipe.DownloadRecipe')
+    def test_download_from_recipe(self, DownloadRecipe):
+        recipe = RecipeExample()
+        recipe.download_recipe('name', 'url')
+
+        DownloadRecipe.assert_called_once_with('name', 'url')
+        DownloadRecipe.return_value.run.assert_called_once_with()
+
+    def test_init(self):
+        self.assertEqual('name', self.downloader.name)
+        self.assertEqual('url', self.downloader.url)
+
+    @patch('pymk.recipe.os.path.exists')
+    def test_run_exists(self, existsmock):
+        existsmock.return_value = True
+        with patch.object(self.downloader, 'create_pymkmodules_path') as create_pymkmodules_path:
+            with patch.object(self.downloader, 'download') as download:
+                self.downloader.run()
+
+                self.assertEqual(0, download.call_count)
+                create_pymkmodules_path.assert_called_once_with()
+                existsmock.assert_called_once_with(
+                    '%s/%s.egg' % (self.downloader.modules_path, self.downloader.name))
+
+    @patch('pymk.recipe.os.path.exists')
+    def test_run_not_exists(self, existsmock):
+        existsmock.return_value = False
+        with patch.object(self.downloader, 'create_pymkmodules_path') as create_pymkmodules_path:
+            with patch.object(self.downloader, 'download') as download:
+                self.downloader.run()
+
+                download.assert_called_once_with()
+                create_pymkmodules_path.assert_called_once_with()
+                existsmock.assert_called_once_with(
+                    '%s/%s.egg' % (self.downloader.modules_path, self.downloader.name))
+
+    @patch('pymk.recipe.os.path.exists')
+    def test_create_pymkmodules_path_exists(self, existsmock):
+        existsmock.return_value = True
+        with patch('pymk.recipe.os.mkdir') as mkdirmock:
+            self.downloader.create_pymkmodules_path()
+
+            existsmock.assert_called_once_with(self.downloader.modules_path)
+            self.assertEqual(0, mkdirmock.call_count)
+
+    @patch('pymk.recipe.os.path.exists')
+    def test_create_pymkmodules_path_not_exists(self, existsmock):
+        existsmock.return_value = False
+        with patch('pymk.recipe.os.mkdir') as mkdirmock:
+            self.downloader.create_pymkmodules_path()
+
+            existsmock.assert_called_once_with(self.downloader.modules_path)
+            mkdirmock.assert_called_once_with(self.downloader.modules_path)
+
+    @patch('pymk.recipe.log')
+    def test_download(self, log):
+        with patch('pymk.recipe.download') as download:
+            with patch('pymk.recipe.extract_egg') as extract_egg:
+                self.downloader.download()
+
+                destination_egg_path = self.downloader.destination_path + \
+                    '.zip'
+
+                self.assertEqual(2, log.info.call_count)
+                download.assert_called_once_with(
+                    self.downloader.url, destination_egg_path)
+
+                extract_egg.assert_called_once_with(
+                    destination_egg_path, self.downloader.destination_path)

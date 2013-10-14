@@ -41,6 +41,7 @@ all_test_cases = [
 
     recipe.RecipeTest,
     recipe.RecipeTypeTest,
+    recipe.DownloadRecipeTest,
 ]
 
 

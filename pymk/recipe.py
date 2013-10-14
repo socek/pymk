@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 from smallsettings import Settings, Paths
 
@@ -8,6 +9,8 @@ from pymk.error import RecipeAlreadyExists
 from pymk.download import download, extract_egg
 from pymk.task import Task
 from pymk.error import WrongPymkVersion
+
+log = logging.getLogger('pymk')
 
 
 class RecipeType(type):
@@ -120,15 +123,8 @@ class Recipe(object):
         pass
 
     def download_recipe(self, name, url):
-        if not os.path.exists('pymkmodules'):
-            os.mkdir('pymkmodules')
-        destination_path = os.path.join('pymkmodules', name + '.egg')
-        if not os.path.exists(destination_path):
-            destination_egg_path = destination_path + '.zip'
-            print "Downloading %s..." % (name,)
-            download(url, destination_egg_path)
-            print "Extracting %s..." % (name,)
-            extract_egg(destination_egg_path, destination_path)
+        download_recipe = DownloadRecipe(name, url)
+        return download_recipe.run()
 
     def import_wrapper(self, name):
         return __import__(name, globals(), locals(), [''])
@@ -143,3 +139,29 @@ class Recipe(object):
 
     def name(self):
         return self.settings['name']
+
+
+class DownloadRecipe(object):
+    modules_path = 'pymkmodules'
+
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
+        self.destination_path = os.path.join(
+            self.modules_path, self.name + '.egg')
+
+    def run(self):
+        self.create_pymkmodules_path()
+        if not os.path.exists(self.destination_path):
+            self.download()
+
+    def create_pymkmodules_path(self):
+        if not os.path.exists(self.modules_path):
+            os.mkdir(self.modules_path)
+
+    def download(self):
+        destination_egg_path = self.destination_path + '.zip'
+        log.info("Downloading %s..." % (self.name,))
+        download(self.url, destination_egg_path)
+        log.info("Extracting %s..." % (self.name,))
+        extract_egg(destination_egg_path, self.destination_path)
