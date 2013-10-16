@@ -19,7 +19,7 @@ class TaskExample(Task):
     dependencys = []
 
     def build(self):
-        pass
+        pass # pragma: no cover
 
 
 class RecipeTest(PymkTestCase):
