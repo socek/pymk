@@ -161,6 +161,10 @@ def run_tasks(mkfile, args):
     else:
         return run_all_inputet_tasks(args.task, args.force, args.dependency_force)
 
+def show_tasks_paths(arg_path):
+    for name, task in TaskType.tasks.items():
+        if task.getPath().startswith(arg_path):
+            print task.getPath()
 
 def run():
     """run() -> error code
@@ -186,6 +190,8 @@ def run():
                             help='Force task to rebuild.')
         parser.add_argument('-g', '--graph', dest='graph',
                             help='Draw a graph of tasks to a file.')
+        parser.add_argument('-p', '--paths', dest='paths', const='', nargs='?',
+                            help='Show tasks paths')
         parser.add_argument(
             '-v', '--version', dest='version', action='store_true',
             help='Show version of pymk.')
@@ -227,26 +233,31 @@ def run():
         log.error(er)
         return 7
 
-    try:
-        run_tasks(module, args)
-    except CommandError as er:
-        log.error(er)
-        return 2
-    except BadTaskPath as er:
-        log.error(er)
-        return 3
-    except TaskMustHaveOutputFile as er:
-        log.error(er)
-        return 4
-    except CouldNotCreateFile as er:
-        log.error(er)
-        return 5
-    except (KeyboardInterrupt, CommandAborted) as er:
-        log.error('\rCommand aborted!')
-        return 6
-    finally:
-        if args.graph:
-            make_graph(args, is_graphviz)
+    if args.paths != None:
+        start_loggin(args)
+        show_tasks_paths(args.paths)
+        return 0
+    else:
+        try:
+            run_tasks(module, args)
+        except CommandError as er:
+            log.error(er)
+            return 2
+        except BadTaskPath as er:
+            log.error(er)
+            return 3
+        except TaskMustHaveOutputFile as er:
+            log.error(er)
+            return 4
+        except CouldNotCreateFile as er:
+            log.error(er)
+            return 5
+        except (KeyboardInterrupt, CommandAborted) as er:
+            log.error('\rCommand aborted!')
+            return 6
+        finally:
+            if args.graph:
+                make_graph(args, is_graphviz)
 
 if __name__ == '__main__':
     run()
