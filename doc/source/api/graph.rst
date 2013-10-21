@@ -8,10 +8,15 @@
 .. glossary::
 
     dark green
+
         this dependency accured
+
     green
+
         this task was runned
+
     red
+
         this task failed
 
 5.1.2 api reference

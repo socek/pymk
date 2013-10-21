@@ -22,6 +22,10 @@ https://github.com/socek/pymk
 
 1.4 Install
 ===========
-You can install using easy_install or pip:
+You can install using easy_install:
 
 >>> easy_install pymk
+
+or pip:
+
+>>> pip install pymk
