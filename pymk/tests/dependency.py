@@ -272,6 +272,9 @@ class FileChangedDependencyTest(PymkTestCase):
         self.assertTrue(depedency.make_dependent_file())
         task.run.called_once_with(False)
 
+    def test_CouldNotCreateFile(self):
+        depedency = FileChanged('name')
+        self.assertRaises(Perror.CouldNotCreateFile, depedency.make_dependent_file)
 
 class AlwaysRebuildDependencyTest(PymkTestCase):
 

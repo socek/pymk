@@ -5,7 +5,7 @@ from pymk.tests.base import PymkTestCase
 import pymk.error as Perror
 from pymk.script import import_mkfile
 from pymk.task import Task, TaskType
-from pymk.error import TaskAlreadyExists
+from pymk.error import TaskAlreadyExists, CouldNotCreateFile
 from pymk.recipe import RecipeType
 
 

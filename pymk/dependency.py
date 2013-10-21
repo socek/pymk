@@ -84,7 +84,11 @@ class FileChanged(FileDependency):
         self.task = task
 
     def make_dependent_file(self):
-        self.task.run(False)
+        if self.task is None:
+            filenames = ', '.join(self.filenames)
+            raise error.CouldNotCreateFile(filenames)
+        else:
+            self.task.run(False)
         return True
 
     def check_dependent_file(self, task):
