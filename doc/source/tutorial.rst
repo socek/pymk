@@ -28,23 +28,11 @@ And now we can execute
 
 >>> pymk
 Avalible tasks:
-    task
->>> pymk task
+  Name   Path    Help
+  ----   ----    ----
+  task   /task
+>>> pymk /task
  * Building 'task'
-Hello
-
-If you want pymk to run some task by default, just put this line at the end of
-the mkfile.py
-::
-
-    SETTINGS = {
-        'default task' : task,
-    }
-
-And run
-
->>> pymk
-* Building 'task'
 Hello
 
 Ok, but now our task are build every time we change it. We need to make a file in
@@ -63,15 +51,11 @@ this
         def build(self, args):
             touch(self.output_file)
 
-    SETTINGS = {
-        'default task' : task,
-    }
-
 And then we execute
 
->>> pymk
+>>> pymk /task
 * Building 'task'
->>> pymk
+>>> pymk /task
 * 'task' is up to date
 >>> ls a.out
 a.out
@@ -94,15 +78,12 @@ And now we start playing. We need some dependency. Here's the file
             fp.write('bulded!\n')
             fp.close()
 
-    SETTINGS = {
-        'default task' : task,
-    }
 
 .. image:: ./images/tutorial_phase_4.png
 
 This is how the graph will draw our mkfile. Now we can try:
 
->>> pymk
+>>> pymk /task
 Could not create file b.out
 >>> ls
 mkfile.py  mkfile.pyc
@@ -146,10 +127,6 @@ We will change the mkfile a little bit, so we will have two dependencys.
             fp.write('bulded!\n')
             fp.close()
 
-    SETTINGS = {
-        'default task' : task,
-    }
-
 >>> pymk -g graph.png
 
 .. image:: ./images/tutorial_phase_5.png
@@ -160,7 +137,7 @@ near the arrow. If we run this:
 
 >>> touch b.out
 >>> touch c.out
->>> pymk -g graph.png task
+>>> pymk -g graph.png /task
 
 .. image:: ./images/tutorial_phase_5_run1.png
 
@@ -169,7 +146,7 @@ The green color means "this task was runned".
 The red color means "this task failed".
 If we run this again:
 
->>> pymk -g graph.png task
+>>> pymk -g graph.png /task
 
 .. image:: ./images/tutorial_phase_5_run2.png
 
@@ -177,7 +154,7 @@ No task was builded, because no depedency accured. If we change one of this file
 then only one dependency will be red.
 
 >>> touch c.out
->>> pymk -g graph.png task
+>>> pymk -g graph.png /task
 
 .. image:: ./images/tutorial_phase_5_run3.png
 
@@ -218,9 +195,6 @@ like that
             fp.write('bulded!\n')
             fp.close()
 
-    SETTINGS = {
-        'default task' : task,
-    }
 
 .. image:: ./images/tutorial_phase_6.png
 
@@ -228,19 +202,19 @@ And new can run this:
 
 >>> rm *.out # if something was left before
 >>> touch c.out d.out
->>> pymk
+>>> pymk /task
  * Building 'secon_task'
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_6_run1.png
 
->>> pymk
+>>> pymk /task
  * 'task' is up to date
 
 .. image:: ./images/tutorial_phase_6_run2.png
 
 >>> touch d.out
->>> pymk
+>>> pymk /task
  * Building 'secon_task'
  * Building 'task'
 
@@ -278,23 +252,20 @@ and not when the task is rebuilded? We can use FileExists.
             fp.write('bulded!\n')
             fp.close()
 
-    SETTINGS = {
-        'default task' : task,
-    }
 
 .. image:: ./images/tutorial_phase_7.png
 
 
 >>> rm *.out
 >>> touch c.out d.out
->>> pymk
+>>> pymk /task
  * Building 'secon_task'
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_7_run1.png
 
 >>> touch d.out
->>> pymk
+>>> pymk /task
  * Building 'secon_task'
  * 'task' is up to date
 
@@ -337,9 +308,6 @@ dependency the task will be always rebuilded.
             fp.write('bulded!\n')
             fp.close()
 
-    SETTINGS = {
-        'default task' : task,
-    }
 
 .. image:: ./images/tutorial_phase_8.png
 
@@ -348,13 +316,13 @@ graph and the "AlwaysRebuild" dependency is not shown. Now, we can run it.
 
 >>> rm *.out
 >>> touch c.out d.out
->>> pymk
+>>> pymk /task
  * Building 'secon_task'
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_8_run1.png
 
->>> pymk
+>>> pymk /task
  * Building 'task'
 
 .. image:: ./images/tutorial_phase_8_run2.png
