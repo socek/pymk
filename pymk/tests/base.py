@@ -9,6 +9,7 @@ from time import sleep
 from pymk.script import import_mkfile, run_tasks, TaskType
 from pymk.extra import touch
 from pymk.task import Task
+from pymk.recipe import RecipeType
 
 
 class ArgsMockup(object):
@@ -67,6 +68,7 @@ class PymkTestCase(unittest.TestCase):
 
     def _import_mkfile(self):
         TaskType.init()
+        RecipeType.recipes = {}
         self._mkfile = import_mkfile()
 
     def _pymk(self):

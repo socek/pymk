@@ -9,6 +9,7 @@ from pymk.error import RecipeAlreadyExists
 from pymk.download import download, extract_egg
 from pymk.task import Task
 from pymk.error import WrongPymkVersion
+from pymk.error import BadTaskPath
 
 log = logging.getLogger('pymk')
 
@@ -95,7 +96,10 @@ class Recipe(object):
         if self.default_task is None:
             return None
         else:
-            return TaskType.tasks[self.default_task]
+            try:
+                return TaskType.tasks[self.default_task]
+            except KeyError:
+                raise BadTaskPath(self.default_task)
 
     def validate_settings(self):
         min_pymk_version = self.settings['minimal pymk version']

@@ -151,7 +151,7 @@ def run_tasks(mkfile, args):
                 task.run(
                     force=args.force, dependency_force=args.dependency_force)
                 return 'run default'
-        except (AttributeError, KeyError, TypeError):
+        except (AttributeError, TypeError):
             return list_all_tasks()
     #-----------------------------------------------------------------------
     if args.all:
