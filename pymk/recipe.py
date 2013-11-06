@@ -85,6 +85,11 @@ class Recipe(object):
         self.validate_settings()
         self.gather_recipes()
         self.refresh_modules()
+        self.validate_pymkmodules()
+
+    def validate_pymkmodules(self):
+        if os.path.exists('pymkmodules') and not os.path.exists('pymkmodules/__init__.py'):
+            open('pymkmodules/__init__.py', 'a').close()
 
     def assign_main_path(self, path):
         self.paths['main'] = os.path.dirname(path)
@@ -133,6 +138,7 @@ class Recipe(object):
 
     def refresh_modules(self):
         sys.path[0:0] = ['pymkmodules'] + glob('pymkmodules/*.egg')
+
     def download_recipe(self, name, url):
         download_recipe = DownloadRecipe(name, url)
         return download_recipe.run()
