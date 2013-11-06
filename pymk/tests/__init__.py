@@ -34,7 +34,7 @@ all_test_cases = [
 
     error.ErrorsTests,
 
-    script.TaskNameParseTest,
+    script._GetTaskTest,
     script.GraphTest,
     script.InitRecipe,
     script.CompareVersion,

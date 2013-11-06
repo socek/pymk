@@ -2,11 +2,9 @@ import sys
 import argparse
 import logging
 import os
-from glob import glob
-from urlparse import urlparse, parse_qs
 
 from pymk import VERSION
-from pymk.error import NoMkfileFound, CommandError, BadTaskPath, WrongArgumentValue, TaskMustHaveOutputFile, CouldNotCreateFile, NotADependencyError, CommandAborted
+from pymk import error
 from pymk.extra.cmd import SignalHandling
 from pymk.graph import draw_graph
 from pymk.recipe import RecipeType
@@ -46,7 +44,7 @@ def check_for_graphviz(args):
         try:
             run('which dot')
             return True
-        except CommandError:
+        except error.CommandError:
             pass
     return False
 
@@ -60,7 +58,7 @@ def append_python_path(cwd=None):
 
 def import_mkfile(name='mkfile'):
     if not os.path.exists('%s.py' % (name,)):
-        raise NoMkfileFound()
+        raise error.NoMkfileFound()
     if 'mkfile' in sys.modules:
         module = __import__(name, globals(), locals())
         reload(module)
@@ -77,36 +75,21 @@ def init_recipe(name):
     return False
 
 
-def parse_task_name(task):
-    url = urlparse(task)
-    name = url.path
-    args = parse_qs(url.query)
-    return name, args
+def run_all_inputet_tasks(urls, force, dependency_force):
+    def gather_tasks(urls):
+        tasks = []
 
+        for url in urls:
+            tasks.append(TaskType.get_task(url))
+        return tasks
 
-def run_all_inputet_tasks(tasks, force, dependency_force):
-    def check_if_task_name_exists(path):
-        if not path in TaskType.tasks:
-            raise BadTaskPath(task)
-
-    def run_task(path, force, dependency_force):
-        get_task(path).run(
-            force=force,
-            dependency_force=dependency_force,
-        )
-
-    def get_task(path):
-        return TaskType.tasks[path]
-    #-------------------------------------------------------------------------
-    tasks = [parse_task_name(task) for task in tasks]
-    # First check all tasks names, then run tasks.
-    for path, args in tasks:
-        check_if_task_name_exists(path)
-        get_task(path)._args = args
-
-    for path, args in tasks:
-        if not get_task(path)._get_runned():
-            run_task(path, force, dependency_force)
+    tasks = gather_tasks(urls) #this needs to be 2 phased
+    for task in tasks:
+        if not task._get_runned():
+            task.run(
+                force=force,
+                dependency_force=dependency_force,
+            )
     return 'run tasks'
 
 
@@ -123,9 +106,10 @@ def run_tasks(mkfile, args):
                     task_path_size = len(task.getPath())
         task_names_size += 2
         task_path_size += 2
-        template = '  %-' + str(task_names_size) + 's %-' + str(task_path_size) + 's %s\n'
-        text += template % ( 'Name', 'Path', 'Help')
-        text += template % ( '----', '----', '----')
+        template = '  %-' + \
+            str(task_names_size) + 's %-' + str(task_path_size) + 's %s\n'
+        text += template % ('Name', 'Path', 'Help')
+        text += template % ('----', '----', '----')
         for name, task in TaskType.tasks.items():
             if not task.hide:
                 text += template % (
@@ -155,12 +139,18 @@ def run_tasks(mkfile, args):
     elif len(args.task) == 0:
         return run_default_task_or_list_all_tasks()
     else:
-        return run_all_inputet_tasks(args.task, args.force, args.dependency_force)
+        return run_all_inputet_tasks(
+            args.task,
+            args.force,
+            args.dependency_force
+        )
+
 
 def show_tasks_paths(arg_path):
     for name, task in TaskType.tasks.items():
         if task.getPath().startswith(arg_path):
             print task.getPath()
+
 
 def run():
     """run() -> error code
@@ -203,7 +193,7 @@ def run():
         elif args.log == 'info':
             logging.basicConfig(level=logging.INFO, format=FORMAT)
         else:
-            raise WrongArgumentValue(
+            raise error.WrongArgumentValue(
                 'Wrong argument for log! Avalible are: "debug" and "info".')
     #-------------------------------------------------------------------------
 
@@ -221,33 +211,33 @@ def run():
             module = import_mkfile('mkfile')
             init_recipe('mkfile')
             is_graphviz = check_for_graphviz(args)
-    except NoMkfileFound as er:
+    except error.NoMkfileFound as er:
         log.error("No mkfile.py file found!")
         return 1
-    except NotADependencyError as er:
+    except error.NotADependencyError as er:
         log.error(er)
         return 7
 
-    if args.paths != None:
+    if args.paths is not None:
         start_loggin(args)
         show_tasks_paths(args.paths)
         return 0
     else:
         try:
             run_tasks(module, args)
-        except CommandError as er:
+        except error.CommandError as er:
             log.error(er)
             return 2
-        except BadTaskPath as er:
+        except error.BadTaskPath as er:
             log.error(er)
             return 3
-        except TaskMustHaveOutputFile as er:
+        except error.TaskMustHaveOutputFile as er:
             log.error(er)
             return 4
-        except CouldNotCreateFile as er:
+        except error.CouldNotCreateFile as er:
             log.error(er)
             return 5
-        except (KeyboardInterrupt, CommandAborted) as er:
+        except (KeyboardInterrupt, error.CommandAborted) as er:
             log.error('\rCommand aborted!')
             return 6
         finally:

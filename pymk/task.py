@@ -1,11 +1,40 @@
 import logging
 import os
+from urlparse import urlparse, parse_qs
 
-from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild, Dependency, InnerLink
-from pymk.error import TaskAlreadyExists, NoDependencysInAClass, NotADependencyError
+from pymk.dependency import InnerFileExists, InnerFileChanged, AlwaysRebuild
+from pymk.dependency import Dependency, InnerLink
+from pymk.error import TaskAlreadyExists, NoDependencysInAClass
+from pymk.error import NotADependencyError, BadTaskPath
 
 
 logger = logging.getLogger('pymk')
+
+
+class _GetTask(object):
+
+    def __init__(self, url):
+        self.url = url
+
+    def parse_url(self):
+        url = urlparse(self.url)
+        path = url.path
+        args = parse_qs(url.query)
+        return path, args
+
+    def check_if_task_name_exists(self, path):
+        if not path in TaskType.tasks:
+            raise BadTaskPath(path)
+
+    def get_task(self, path):
+        return TaskType.tasks[path]
+
+    def __call__(self):
+        path, args = self.parse_url()
+        self.check_if_task_name_exists(path)
+        task = self.get_task(path)
+        task._args = args
+        return task
 
 
 class TaskType(type):
@@ -33,9 +62,13 @@ class TaskType(type):
         if recipe:
             cls.assign_recipe(recipe)
 
+    @classmethod
+    def get_task(self, url):
+        return _GetTask(url)()
+
     def __init__(cls, name, bases, dct):
         def validate_dependency(cls):
-            if cls().dependencys == None:
+            if cls().dependencys is None:
                 raise NoDependencysInAClass(cls)
             for dependency in cls().dependencys:
                 if not issubclass(type(dependency), Dependency):
@@ -80,7 +113,8 @@ class Task(object):
     @classmethod
     def getName(cls):
         """getName() -> str
-        Returns name of the tasks provided by class value name, or just classname if name == None.
+        Returns name of the tasks provided by class value name, or just
+        classname if name == None.
         """
         if cls.name:
             return cls.name
@@ -90,7 +124,8 @@ class Task(object):
     @classmethod
     def getPath(cls):
         """getPath(cls) -> str
-        Returns path (for using in command line) of the tasks provided by class value path, or just classname if path == None.
+        Returns path (for using in command line) of the tasks provided by class
+        value path, or just classname if path == None.
         """
         if cls.path:
             return cls.path
@@ -137,7 +172,11 @@ class Task(object):
             return False
 
     @classmethod
-    def run(cls, log_uptodate=True, force=False, dependency_force=False, parent=None):
+    def run(cls,
+            log_uptodate=True,
+            force=False,
+            dependency_force=False,
+            parent=None):
         """run(log_uptodate = True): -> bool
         Test dependency of this task, and rebuild it if nessesery.
         """
@@ -210,7 +249,8 @@ class Task(object):
     def get_graph_details(cls):
         shape = 'box'
         color = 'white'
-        if AlwaysRebuild in [type(dependency) for dependency in cls().dependencys]:
+        types = [type(dependency) for dependency in cls().dependencys]
+        if AlwaysRebuild in types:
             shape = 'circle'
             color = 'grey'
         if cls._get_runned():

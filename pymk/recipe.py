@@ -98,6 +98,9 @@ class Recipe(object):
     def getName(cls):
         return cls.__module__
 
+    def getTask(cls, path):
+        self._getTaskType().tasks[path]
+
     def _getTaskType(self):
         from pymk.task import TaskType
         return TaskType
@@ -107,7 +110,7 @@ class Recipe(object):
             return None
         else:
             try:
-                return self._getTaskType().tasks[self.default_task]
+                return self._getTaskType().get_task(self.default_task)
             except KeyError:
                 raise BadTaskPath(self.default_task)
 

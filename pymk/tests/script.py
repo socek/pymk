@@ -1,31 +1,59 @@
-from mock import patch
+from mock import patch, MagicMock
 
 from pymk import compare_version
 from pymk.tests.base import PymkTestCase
-from pymk.script import parse_task_name, init_recipe
-from pymk.error import CommandError
-from pymk.task import TaskType
+from pymk.script import init_recipe
+from pymk.error import CommandError, BadTaskPath
+from pymk.task import TaskType, _GetTask
 
 
-class TaskNameParseTest(PymkTestCase):
+class _GetTaskTest(PymkTestCase):
 
     def test_parse_task_name(self):
-        name, args = parse_task_name('/something/elo')
+        name, args = _GetTask('/something/elo').parse_url()
         self.assertEqual('/something/elo', name)
         self.assertEqual({}, args)
 
-        name, args = parse_task_name('/something/elo?elo=10')
+        name, args = _GetTask('/something/elo?elo=10').parse_url()
         self.assertEqual('/something/elo', name)
         self.assertEqual({'elo': ['10']}, args)
 
-        name, args = parse_task_name('/something/elo/?elo=10&zbychu=12')
+        name, args = _GetTask('/something/elo/?elo=10&zbychu=12').parse_url()
         self.assertEqual('/something/elo/', name)
         self.assertEqual({'elo': ['10'], 'zbychu': ['12']}, args)
 
-        name, args = parse_task_name(
-            '/something/elo/?elo=10&zbychu=12,10&zbychu=ccc')
+        name, args = _GetTask(
+            '/something/elo/?elo=10&zbychu=12,10&zbychu=ccc').parse_url()
         self.assertEqual('/something/elo/', name)
         self.assertEqual({'elo': ['10'], 'zbychu': ['12,10', 'ccc']}, args)
+
+    @patch.object(TaskType, 'tasks', {})
+    def test_check_if_task_name_exists_fail(self):
+        data = _GetTask('/something/elo')
+        self.assertRaises(
+            BadTaskPath, data.check_if_task_name_exists, '/something/elo')
+
+    @patch.object(TaskType, 'tasks', {})
+    def test_check_if_task_name_exists_success(self):
+        TaskType.tasks['/something/elo'] = 1
+        data = _GetTask('/something/elo')
+        result = data.check_if_task_name_exists('/something/elo')
+        self.assertEqual(None, result)
+
+    @patch.object(TaskType, 'tasks', {})
+    def test_get_task(self):
+        TaskType.tasks['/something/elo'] = 2
+        data = _GetTask('/something/elo')
+        self.assertEqual(2, data.get_task('/something/elo'))
+
+    @patch.object(TaskType, 'tasks', {})
+    def test_call(self):
+        mock = MagicMock()
+        TaskType.tasks['/something/elo'] = mock
+        data = _GetTask('/something/elo?elo=10')
+        task = data()
+        self.assertEqual(mock, task)
+        self.assertEqual({'elo': ['10']}, mock._args)
 
 
 class GraphTest(PymkTestCase):
