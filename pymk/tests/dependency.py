@@ -274,7 +274,9 @@ class FileChangedDependencyTest(PymkTestCase):
 
     def test_CouldNotCreateFile(self):
         depedency = FileChanged('name')
-        self.assertRaises(Perror.CouldNotCreateFile, depedency.make_dependent_file)
+        self.assertRaises(
+            Perror.CouldNotCreateFile, depedency.make_dependent_file)
+
 
 class AlwaysRebuildDependencyTest(PymkTestCase):
 
