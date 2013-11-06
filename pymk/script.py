@@ -69,10 +69,6 @@ def import_mkfile(name='mkfile'):
     return module
 
 
-def add_eggs_to_sys_path():
-    sys.path[0:0] = ['pymkmodules'] + glob('pymkmodules/*.egg')
-
-
 def init_recipe(name):
     recipe = RecipeType.getRecipeForModule(name)
     if recipe:
@@ -222,7 +218,6 @@ def run():
         else:
             start_loggin(args)
             append_python_path()
-            add_eggs_to_sys_path()
             module = import_mkfile('mkfile')
             init_recipe('mkfile')
             is_graphviz = check_for_graphviz(args)

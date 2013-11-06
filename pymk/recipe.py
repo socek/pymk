@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from glob import glob
 
 from smallsettings import Settings, Paths
 
@@ -83,6 +84,7 @@ class Recipe(object):
         self.create_settings()
         self.validate_settings()
         self.gather_recipes()
+        self.refresh_modules()
 
     def assign_main_path(self, path):
         self.paths['main'] = os.path.dirname(path)
@@ -129,6 +131,8 @@ class Recipe(object):
     def gather_recipes(self):
         pass
 
+    def refresh_modules(self):
+        sys.path[0:0] = ['pymkmodules'] + glob('pymkmodules/*.egg')
     def download_recipe(self, name, url):
         download_recipe = DownloadRecipe(name, url)
         return download_recipe.run()
