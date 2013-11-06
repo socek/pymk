@@ -43,7 +43,7 @@ class TaskType(type):
         #----------------------------------------------------------------------
         if not 'base' in dct or not dct['base']:
             TaskType.assign_recipe_if_able(cls)
-            TaskType.check_if_task_exists(name)
+            TaskType.check_if_task_exists(cls().getPath())
             TaskType.tasks[cls().getPath()] = cls
             cls.base = False
             validate_dependency(cls)
