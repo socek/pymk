@@ -6,7 +6,7 @@ import tempfile
 import logging
 from time import sleep
 
-from pymk.script import import_mkfile, run_tasks, TaskType
+from pymk.script import import_mkfile, run_tasks, TaskType, init_recipe
 from pymk.extra import touch
 from pymk.task import Task
 from pymk.recipe import RecipeType
@@ -70,6 +70,7 @@ class PymkTestCase(unittest.TestCase):
         TaskType.init()
         RecipeType.recipes = {}
         self._mkfile = import_mkfile()
+        init_recipe('mkfile')
 
     def _pymk(self):
         def reset_all_task_runned_flags():

@@ -101,6 +101,10 @@ class TaskTest(PymkTestCase):
         self._template('one_task_bad_depedency', 'mkfile.py')
         self.assertRaises(Perror.NotADependencyError, self._import_mkfile)
 
+    def test_NotADependencyError_with_recipe(self):
+        self._template('one_task_bad_depedency_with_recipe', 'mkfile.py')
+        self.assertRaises(Perror.NotADependencyError, self._import_mkfile)
+
 
 class TaskForcing(PymkTestCase):
 

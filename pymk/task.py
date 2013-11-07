@@ -68,11 +68,12 @@ class TaskType(type):
 
     def __init__(cls, name, bases, dct):
         def validate_dependency(cls):
-            if cls().dependencys is None:
+            if cls.dependencys is None:
                 raise NoDependencysInAClass(cls)
-            for dependency in cls().dependencys:
-                if not issubclass(type(dependency), Dependency):
-                    raise NotADependencyError(dependency, cls)
+            if cls.recipe is None:
+                for dependency in cls().dependencys:
+                    if not issubclass(type(dependency), Dependency):
+                        raise NotADependencyError(dependency, cls)
         #----------------------------------------------------------------------
         if not 'base' in dct or not dct['base']:
             TaskType.assign_recipe_if_able(cls)
@@ -259,3 +260,6 @@ class Task(object):
             color = 'red'
 
         return 'shape=%s, regular=1,style=filled,fillcolor=%s' % (shape, color)
+
+    def get_task(self, url):
+        return TaskType.get_task(url)

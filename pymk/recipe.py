@@ -1,16 +1,16 @@
-import os
 import sys
-import logging
-from glob import glob
 
+import logging
+import os
+from glob import glob
 from smallsettings import Settings, Paths
 
 from pymk import VERSION, compare_version
-from pymk.error import RecipeAlreadyExists
+from pymk.dependency import Dependency
 from pymk.download import download, extract_egg
+from pymk.error import WrongPymkVersion, BadTaskPath, NotADependencyError, RecipeAlreadyExists
 from pymk.task import Task
-from pymk.error import WrongPymkVersion
-from pymk.error import BadTaskPath
+
 
 log = logging.getLogger('pymk')
 
@@ -86,6 +86,7 @@ class Recipe(object):
         self.gather_recipes()
         self.refresh_modules()
         self.validate_pymkmodules()
+        self.validate_tasks()
 
     def validate_pymkmodules(self):
         if os.path.exists('pymkmodules') and not os.path.exists('pymkmodules/__init__.py'):
@@ -98,8 +99,8 @@ class Recipe(object):
     def getName(cls):
         return cls.__module__
 
-    def getTask(cls, path):
-        self._getTaskType().tasks[path]
+    def getTask(self, path):
+        self._getTaskType().get_task(path)
 
     def _getTaskType(self):
         from pymk.task import TaskType
@@ -159,6 +160,12 @@ class Recipe(object):
 
     def name(self):
         return self.settings['name']
+
+    def validate_tasks(self):
+        for path, task in self._getTaskType().tasks.items():
+            for dependency in task().dependencys:
+                if not issubclass(type(dependency), Dependency):
+                    raise NotADependencyError(dependency, task)
 
 
 class DownloadRecipe(object):
