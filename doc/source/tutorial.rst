@@ -339,7 +339,7 @@ to use it. Name can be like url paths.
 
     class task(Task):
 
-        name = '/this/name'
+        path = '/this/name'
 
         dependencys = [
             AlwaysRebuild(),
@@ -363,3 +363,173 @@ Arguments can be passet like the URL get params.
 >>> pymk "/this/name?var=1&var=2&var2=3"
  * Building '/this/name'
 {'var': ['1', '2'], 'var2': ['3']}
+
+2.5 Recipes
+===========
+Recipes can provide you with some basic configuration.
+
+2.5.1 Default task
+==================
+::
+
+    from pymk.recipe import Recipe
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+
+    class RecipeMy(Recipe):
+
+        default_task = '/this/name'
+
+
+    class task(Task):
+
+        path = '/this/name'
+
+        dependencys = [
+            AlwaysRebuild(),
+        ]
+
+        def build(self, args):
+            print args
+
+>>> pymk
+ * Building 'task'
+{}
+
+2.5.2 Settings
+==============
+Pymk use SmallSettings module for settings. For more info about settings please go to https://github.com/socek/smallsettings
+Recipe has 2 vars for settings. Recipe.settings and Recipe.paths. Both of this properties are avalible in the task class.
+::
+
+    from pymk.recipe import Recipe
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+
+    class RecipeMy(Recipe):
+
+        default_task = '/this/name'
+
+        def create_settings(self):
+            super(RecipeMy, self).create_settings()
+            self.settings['elo'] = 10
+            self.settings['2elo'] = '<%(elo)d 20>'
+            self.paths['root'] = '/tmp'
+            self.paths['my'] = ['%(root)s', 'somedir', 'file']
+
+
+    class task(Task):
+
+        path = '/this/name'
+
+        dependencys = [
+            AlwaysRebuild(),
+        ]
+
+        def build(self, args):
+            print self.settings['elo'], self.settings['2elo']
+            print self.paths['root'], self.paths['my']
+
+>>> pymk
+ * Building 'task'
+10 <10 20>
+/tmp /tmp/somedir/file
+
+2.6 External modules
+====================
+Pymk can download external modules. But the external modules need to be imported in the task, not globally, or it will crashe.
+::
+
+    from pymk.recipe import Recipe
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+
+    class RecipeMy(Recipe):
+
+        default_task = '/this/name'
+
+        def gather_recipes(self):
+            self.download_recipe('pyrg', 'https://pypi.python.org/packages/2.6/p/pyrg/pyrg-0.2.6-py2.6.egg#md5=95b391580e63d097a40c15de11943723')
+
+
+    class task(Task):
+
+        path = '/this/name'
+
+        dependencys = [
+            AlwaysRebuild(),
+        ]
+
+        def build(self, args):
+            import pyrg
+            print pyrg
+
+
+>>> pymk
+Downloading pyrg...
+Extracting pyrg...
+ * Building 'task'
+<module 'pyrg' from 'pymkmodules/pyrg.egg/pyrg.py'>
+
+2.6.1 Additional recipes
+========================
+When you need to split tasks in to seperate files, you can create pymkmodules directory and store this files there. It is good practice for all thoes files to have it's own recipe.
+
+pymkmodules/mymodule.py
+-----------------------
+::
+
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+
+    class task(Task):
+
+        path = '/that/name'
+
+        dependencys = [
+            AlwaysRebuild(),
+        ]
+
+        def build(self, args):
+            print 'that!'
+
+
+mkfile.py
+---------
+::
+
+    from pymk.recipe import Recipe
+    from pymk.task import Task
+    from pymk.dependency import AlwaysRebuild
+
+
+    class RecipeMy(Recipe):
+
+        def gather_recipes(self):
+            self.add_recipe('mymodule')
+
+
+    class task(Task):
+
+        path = '/this/name'
+
+        @property
+        def dependencys(self):
+            return [
+                self.get_task('/that/name').dependency_Link(),
+                AlwaysRebuild(),
+            ]
+
+        def build(self, args):
+            print 'hello'
+
+
+>>> pymk /this/name
+ * Building 'task'
+that!
+ * Building 'task'
+hello
