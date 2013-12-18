@@ -13,13 +13,15 @@ class RecipeExample(Recipe):
 
     def create_settings(self):
         self.set_path('home', ['/tmp', ])
+        self.settings['one'] = 1
+        self.settings['two'] = 2
 
 
 class TaskExample(Task):
     dependencys = []
 
     def build(self):
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
 
 class RecipeTest(PymkTestCase):
@@ -35,6 +37,15 @@ class RecipeTest(PymkTestCase):
             os.path.join('/tmp', 'elf', 'samantha'),
             self.recipe.paths['path']
         )
+
+    def test_init_with_parent(self):
+        self.recipe.settings['one'] = 3
+
+        recipe = RecipeExample(self.recipe)
+
+        self.assertEqual(self.recipe.settings, recipe.settings)
+        self.assertEqual(self.recipe.paths, recipe.paths)
+        self.assertEqual(self.recipe.settings['one'], 1)
 
     def test_set_path_no_list(self):
         self.recipe.set_path('path', '/something')
@@ -119,7 +130,7 @@ class RecipeTest(PymkTestCase):
 
             import_wrapper.assert_called_once_with('pymkmodules.name')
             self.assertTrue(task in self.recipe.recipes)
-            task.assert_called_once_with()
+            task.assert_called_once_with(self.recipe)
 
     def test_add_recipe_no_recipe(self):
         task = MagicMock()

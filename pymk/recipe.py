@@ -73,10 +73,9 @@ class Recipe(object):
     __metaclass__ = RecipeType
     singleton = True
 
-    def __init__(self):
+    def __init__(self, parent=None):
         self.settings = Settings({
             'minimal pymk version': VERSION,
-            'version': '4.0.0',
         })
         self.paths = Paths()
         self.recipes = []
@@ -87,6 +86,15 @@ class Recipe(object):
         self.refresh_modules()
         self.validate_pymkmodules()
         self.validate_tasks()
+
+        if parent is not None:
+            parent.settings.update(self.settings)
+            self.settings = parent.settings
+
+            parent.paths.update(self.paths)
+            self.paths = parent.paths
+
+        self.post_action()
 
     def validate_pymkmodules(self):
         if os.path.exists('pymkmodules') and not os.path.exists('pymkmodules/__init__.py'):
@@ -123,6 +131,9 @@ class Recipe(object):
     def create_settings(self):
         pass
 
+    def post_action(self):
+        pass
+
     def set_setting(self, name, value):
         parsed_value = value % self.settings
         self.settings[name] = parsed_value
@@ -155,7 +166,7 @@ class Recipe(object):
         self.import_wrapper(name)
         if name in RecipeType.recipes:
             recipe = RecipeType.recipes[name]
-            recipe()
+            recipe(self)
             self.recipes.append(recipe)
 
     def name(self):

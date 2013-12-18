@@ -1,6 +1,6 @@
 import re
 
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 
 def compare_version(a, b, separator='.', ignorecase=True):
